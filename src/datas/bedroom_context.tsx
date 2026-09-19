@@ -53,3 +53,5 @@ export function useBedRoom() {
     }
     return context;
 }
+export { BedRoomType };
+
