@@ -95,6 +95,13 @@ async fn handle_connection( // Connexion
                 esp.clone(),
                 read
             ).await;
+
+            disconnection(
+                app,
+                esp_map,
+                esp.room_id.clone()
+            ).await;
+
             Some(esp)
         },
 
@@ -103,4 +110,19 @@ async fn handle_connection( // Connexion
             None
         }
     }
+}
+
+async fn disconnection( // Disonnexion
+    app: tauri::AppHandle,
+    esp_map: EspMap,
+    room_id: String,
+) {
+    println!("CH-{} ❌", room_id.clone());
+
+    app.emit("power-status", EspStatus {
+        room_id: room_id.clone(),
+        power: "DISCONNECTED".to_string(),
+    }).unwrap();
+
+    esp_map.lock().await.remove(&room_id);
 }

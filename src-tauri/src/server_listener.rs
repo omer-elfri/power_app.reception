@@ -53,12 +53,6 @@ pub async fn handle_listener( // Message ESP32
             // }
 
             Ok(Message::Close(_)) => {
-                println!("CH-{} ❌", esp.room_id.clone());
-
-                app.emit("power-status", EspStatus {
-                    room_id: esp.room_id.clone(),
-                    power: "DISCONNECTED".to_string(),
-                }).unwrap();
                 break;
             }
 

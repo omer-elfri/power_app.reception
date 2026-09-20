@@ -6,6 +6,8 @@ import { bedRoomIds, PowerStatus, type BedRoomId, BedRoomMap, type BedRoomType }
 type RoomContextType = {
     bedRooms: BedRoomMap;
     updateBedRoom: UpdateBedRoomCallback;
+    bedroomModal: BedRoomId | null;
+    setBedroomModal: (value: BedRoomId | null) => void;
 };
 
 export type UpdateBedRoomCallback = (
@@ -18,6 +20,8 @@ export type UpdateBedRoomCallback = (
 export const BedRoomContext = React.createContext<RoomContextType | null>(null);
 
 export function BedRoomProvider({ children }: { children: React.ReactNode }) {
+
+    const [bedroomModal, setBedroomModal] = React.useState<BedRoomId | null>(null);
 
     const [bedRooms, setBedRooms] = useState<BedRoomMap>(
         Object.fromEntries( bedRoomIds
@@ -38,7 +42,9 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
     }, [setBedRooms]);
 
     return (
-        <BedRoomContext.Provider value={{ bedRooms, updateBedRoom }}>
+        <BedRoomContext.Provider value={{
+            bedRooms, updateBedRoom, bedroomModal, setBedroomModal,
+        }}>
             {children}
         </BedRoomContext.Provider>
     );

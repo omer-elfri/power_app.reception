@@ -12,9 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "reception",
-        "width": 800,
-        "height": 600
+        "title": "Hotel Power Reception",
+        "width": 700,
+        "height": 600,
+        "resizable": false
       }
     ],
     "security": {
