@@ -4,6 +4,7 @@ mod server_listener;
 mod types;
 
 use types::EspMap;
+use types::EspStatus;
 use tauri::State;
 use tokio_tungstenite::tungstenite::Message;
 
@@ -18,9 +19,10 @@ pub fn run() {
     let esp_map: EspMap = Arc::new(Mutex::new(HashMap::new()));
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_notification::init())
         .manage(esp_map.clone())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![power_control])
+        .invoke_handler(tauri::generate_handler![power_control, general_status])
         .setup(|app| {
             let app_handle_clone = app.handle().clone();
             tauri::async_runtime::spawn(async move {
@@ -33,6 +35,27 @@ pub fn run() {
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[tauri::command] // general_status
+async fn general_status(
+    state: State<'_, EspMap>,
+) -> Result<Vec<EspStatus>, String> {
+
+    let esp_map = state.lock().await;
+
+    println!("general_status");
+
+    let result = esp_map
+        .values()
+        .map(|esp| EspStatus {
+            room_id: esp.room_id.clone(),
+            power: esp.power.clone(),
+        })
+        .collect();
+    println!("result {:?}", result);
+
+    Ok(result)
 }
 
 #[tauri::command] // control power

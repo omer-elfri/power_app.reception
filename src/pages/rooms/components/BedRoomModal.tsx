@@ -36,7 +36,6 @@ export default function BedRoomModal({ }: {
     );
   }, []);
 
-  const espConnected = bedRooms[bedroomModal!].power !== "DISCONNECTED";
   const powerOn = bedRooms[bedroomModal!].power === "POWER_OK";
   const powerOff = bedRooms[bedroomModal!].power === "POWER_KO";
 

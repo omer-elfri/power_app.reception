@@ -10,11 +10,14 @@ export function isBedRoomId(roomId: string | null): roomId is BedRoomId {
     return bedRoomIds.includes(roomId as BedRoomId);
 }
 
+export type EspStatus = {
+    room_id: BedRoomId,
+    power: PowerStatus,
+}
 
 
 export type BedRoomType = {
     id: BedRoomId,
-    socket?: WebSocket,
     power: PowerStatus,
 }
 

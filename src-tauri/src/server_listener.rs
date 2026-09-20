@@ -1,6 +1,12 @@
+use futures_util::{SinkExt, StreamExt, stream::{SplitStream}};
+use tokio::time::{
+    // self, 
+    Duration};
+
 use tokio::net::{//TcpListener,
      TcpStream};
 use tokio_tungstenite::{
+    WebSocketStream,
     // accept_hdr_async,
     tungstenite::{
         Message,
@@ -9,8 +15,6 @@ use tokio_tungstenite::{
 };
 // use std::sync::Arc;
 // use tokio::sync::Mutex;
-use tokio_tungstenite::WebSocketStream;
-use futures_util::{StreamExt, stream::{SplitStream}};
 use tauri::Emitter;
 // use tokio::time::{timeout, Duration};
 
@@ -23,45 +27,68 @@ pub async fn handle_listener( // Message ESP32
     esp: EspData,
     mut read: SplitStream<WebSocketStream<TcpStream>>,
 ) {
-    // let timeoutId = 0;
+    let timeout = tokio::time::sleep(Duration::from_secs(5));
+    tokio::pin!(timeout);
 
-    while let Some(message) = read.next().await {
-        match message {
-            Ok(Message::Text(message)) => {
-            // Ok(message) => {
-                // let text = message.to_text().unwrap();
-                let text = message.to_string();
-                println!("CH-{} <- {}", esp.room_id.clone(), text);
+    // while let Some(message) = read.next().await {
 
-                if text == "POWER_OK"
-                    || text == "POWER_KO"
-                    || text == "DISCONNECTED"
-                {
-                    app.emit("power-status", EspStatus {
-                        room_id: esp.room_id.clone(),
-                        power: text.to_string(),
-                    }).unwrap();
+    loop {
+        tokio::select! {
+            message = read.next() => {
+
+                match message {
+                    Some(Ok(Message::Text(message))) => {
+                    // Ok(message) => {
+                        // let text = message.to_text().unwrap();
+                        let text = message.to_string();
+                        println!("CH-{} <- {}", esp.room_id.clone(), text);
+
+                        if text == "POWER_OK"
+                            || text == "POWER_KO"
+                            || text == "DISCONNECTED"
+                        {
+                            app.emit("power-status", EspStatus {
+                                room_id: esp.room_id.clone(),
+                                power: text.to_string(),
+                            }).unwrap();
+                        }
+                    }
+
+                    Some(Ok(Message::Ping(data))) => {
+                        timeout.as_mut().reset(
+                            tokio::time::Instant::now() + Duration::from_secs(5)
+                        );
+                        esp.web_socket
+                            .lock().await
+                            .send(Message::Pong(data)).await;
+                    //     clearTimeout(timeout);
+                    //     pong
+                    //     timeoutId = setTimeout ... après 5
+                    //         esp.websocket.close()
+                        // println!("CH-{} ← PING", esp.room_id);
+                    }
+
+                    Some(Ok(Message::Close(_))) => {
+                        break;
+                    }
+
+                    Some(Ok(_)) => { }
+
+                    Some(Err(error)) => {
+                        println!("Erreur réception : {}", error);
+                        break;
+                    }
+
+                    None => break,
                 }
             }
-
-            // Ok(Message::Ping(data)) => {
-            //     clearTimeout(timeout);
-            //     pong
-            //     timeoutId = setTimeout ... après 5s
-            //         esp.websocket.close()
-            //     // println!("CH-{} ← PING", esp.room_id);
-            // }
-
-            Ok(Message::Close(_)) => {
-                break;
-            }
-
-            Ok(_) => { }
-
-            Err(error) => {
-                println!("Erreur réception : {}", error);
+            _ = &mut timeout => {
+                esp.web_socket
+                    .lock().await
+                    .close().await;
                 break;
             }
         }
     }
+    // }
 }

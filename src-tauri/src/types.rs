@@ -8,7 +8,7 @@ use tokio_tungstenite::tungstenite::Message;
 use tokio_tungstenite::WebSocketStream;
 use futures_util::stream::SplitSink;
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug)]
 pub struct EspStatus {
     pub room_id: String,
     pub power: String,

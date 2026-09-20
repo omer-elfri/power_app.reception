@@ -16,7 +16,7 @@ pub async fn start(
     app: tauri::AppHandle,
 ) {
     let port = std::env::var("VITE_WEB_SOCKET_PORT")
-        .unwrap_or_else(|_| "82".to_string());
+        .unwrap_or_else(|_| "81".to_string());
 
     let listener = TcpListener::bind(format!("0.0.0.0:{}", port))
         .await.expect("Impossible de démarrer le serveur WebSocket");

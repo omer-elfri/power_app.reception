@@ -6,6 +6,11 @@ import GlobalPage from "./pages/global";
 import RoomsPage from "./pages/rooms";
 import { twMerge } from "tailwind-merge";
 
+import {
+  isPermissionGranted,
+  requestPermission,
+} from "@tauri-apps/plugin-notification";
+
 export default function App() {
   const [page, setPage] = React.useState<PageId>("ROOMS");
 
@@ -18,6 +23,13 @@ export default function App() {
       null }
     </div>
   );
+}
+
+export async function askNotificationPermission() {
+  let permission = await isPermissionGranted();
+  if (!permission) {
+    permission = (await requestPermission()) === "granted";
+  }
 }
 
 export function PageMain({ className, topClassName, children }: {
