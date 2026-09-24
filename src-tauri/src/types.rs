@@ -20,5 +20,32 @@ pub struct EspData {
     pub web_socket: Arc<Mutex<SplitSink<WebSocketStream<TcpStream>, Message>>>,
     pub power: String,
 }
-
 pub type EspMap = Arc<Mutex<HashMap<String, EspData>>>;
+
+
+
+// #[derive(Clone)]
+// pub struct AuthSession {
+//     pub name: String,
+// }
+
+// pub struct AppState {
+//     auth: AuthSession,
+//     esp_map: EspMap,
+// }
+
+
+// struct Auth {
+//     name: String,
+//     password: String,
+// }
+// pub vec<Auth> users = [
+//     Auth({
+//         name: "Hillary",
+//         password: "A",
+//     }),
+//     Auth({
+//         name: "Romuald",
+//         password: "B",
+//     }),
+// ]

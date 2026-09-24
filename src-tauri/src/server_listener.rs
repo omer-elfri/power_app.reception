@@ -1,36 +1,19 @@
-use futures_util::{SinkExt, StreamExt, stream::{SplitStream}};
-use tokio::time::{
-    // self, 
-    Duration};
+use futures_util::{SinkExt, StreamExt, stream::SplitStream};
+use tokio::time::{Duration};
 
-use tokio::net::{//TcpListener,
-     TcpStream};
-use tokio_tungstenite::{
-    WebSocketStream,
-    // accept_hdr_async,
-    tungstenite::{
-        Message,
-        // handshake::server::{Request, Response}
-    }
-};
-// use std::sync::Arc;
-// use tokio::sync::Mutex;
+use tokio::net::{TcpStream};
+use tokio_tungstenite::{WebSocketStream, tungstenite::Message};
 use tauri::Emitter;
-// use tokio::time::{timeout, Duration};
-
-use crate::types::{EspStatus, EspData,
-    //  EspMap
-};
+use crate::types::{EspStatus, EspData, EspMap};
 
 pub async fn handle_listener( // Message ESP32
+    esp_map: EspMap,
     app: tauri::AppHandle,
     esp: EspData,
     mut read: SplitStream<WebSocketStream<TcpStream>>,
 ) {
     let timeout = tokio::time::sleep(Duration::from_secs(5));
     tokio::pin!(timeout);
-
-    // while let Some(message) = read.next().await {
 
     loop {
         tokio::select! {
@@ -48,9 +31,16 @@ pub async fn handle_listener( // Message ESP32
                             || text == "DISCONNECTED"
                         {
                             app.emit("power-status", EspStatus {
-                                room_id: esp.room_id.clone(),
-                                power: text.to_string(),
+                                room_id: esp.clone().room_id,
+                                power: if text == "POWER_OK" { "ON".to_string() }
+                                    else if text == "POWER_KO" { "OFF".to_string() }
+                                    else { "NONE".to_string() },
                             }).unwrap();
+
+                            esp_map.lock().await.insert(
+                                esp.clone().room_id,
+                                esp.clone()
+                            );
                         }
                     }
 

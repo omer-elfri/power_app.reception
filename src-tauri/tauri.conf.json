@@ -13,9 +13,8 @@
     "windows": [
       {
         "title": "Hotel Power Reception",
-        "width": 600,
-        "height": 600,
-        "resizable": false
+        "width": 1280,
+        "height": 600
       }
     ],
     "security": {

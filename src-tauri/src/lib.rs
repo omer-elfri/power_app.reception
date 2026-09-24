@@ -3,15 +3,18 @@ mod websocket;
 mod server_listener;
 mod types;
 
+use std::sync::Arc;
+use std::collections::HashMap;
+use tokio::sync::Mutex;
+
 use types::EspMap;
 use types::EspStatus;
 use tauri::State;
 use tokio_tungstenite::tungstenite::Message;
 
-use std::sync::Arc;
-use std::collections::HashMap;
-use tokio::sync::Mutex;
 use futures_util::SinkExt;
+
+
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -22,11 +25,11 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .manage(esp_map.clone())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![power_control, general_status])
+        .invoke_handler(tauri::generate_handler![general_status, power_control, ])
         .setup(|app| {
             let app_handle_clone = app.handle().clone();
             tauri::async_runtime::spawn(async move {
-                websocket::start(
+                websocket::start_server(
                     esp_map.clone(),
                     app_handle_clone, 
                 ).await;
@@ -37,15 +40,13 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
+
+
 #[tauri::command] // general_status
 async fn general_status(
     state: State<'_, EspMap>,
 ) -> Result<Vec<EspStatus>, String> {
-
     let esp_map = state.lock().await;
-
-    println!("general_status");
-
     let result = esp_map
         .values()
         .map(|esp| EspStatus {
@@ -53,8 +54,7 @@ async fn general_status(
             power: esp.power.clone(),
         })
         .collect();
-    println!("result {:?}", result);
-
+    println!("general_status");
     Ok(result)
 }
 
