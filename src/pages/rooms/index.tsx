@@ -1,78 +1,48 @@
+"use client"
+
 import React from "react";
-import { listen } from "@tauri-apps/api/event";
+import { useNavigate } from "react-router-dom";
+import BedRoom from "../../types/bedroom";
+import { useDataContext } from "../../datas/context";
+
+import PageTitle from "../../components/PageTitle";
+import RoomBox from "../../components/RoomBox";
 import { HiLockClosed } from "react-icons/hi";
+import { IoMdHome } from "react-icons/io";
 
-import { useBedRoom } from "../../datas/bedroom_context";
-import { BedRoomId, EspStatus, floorsTabRoomsIds, PageId, PowerStatus } from "../../datas/type";
-import RoomBox from "./components/BedRoomBox";
-import { askNotificationPermission, PageMain } from "../../App";
-import BedRoomModal from "./components/BedRoomModal";
-import { invoke } from "@tauri-apps/api/core";
+export default function RoomsPage() {
+    const [ goodIp ] = React.useState(true);
+    const { bedRooms } = useDataContext();
+    const navigate = useNavigate();
 
-import { sendNotification } from "@tauri-apps/plugin-notification";
-
-export default function RoomsPage({ switchPage }: {
-    switchPage: (pageId: PageId) => void
-}) {
-    const { bedRooms, updateBedRoom, bedroomModal } = useBedRoom();
-    const [goodIp] = React.useState(true);
-
-    React.useEffect(() => {
-        (async () => {
-            const espTab = await invoke<EspStatus[]>("general_status");
-            espTab.forEach((esp) => updateBedRoom(esp.room_id, esp));
-        })();
-    }, []);
-
-    React.useEffect(() => {
-        console.log("ask notif")
-        askNotificationPermission();
-    }, []);
-
-    React.useEffect(() => { // reponse du serveur
-        const unlisten = listen<{
-            room_id: BedRoomId;
-            power: PowerStatus;
-        }>("power-status", (event) => {
-            const { room_id:roomId, power } = event.payload;
-            updateBedRoom(roomId, { power });
-            sendNotification({
-                title: "Chambre 104",
-                body: "La climatisation vient d'être allumée.",
-            });
-        });
-        return () => {
-            unlisten.then((fn) => fn());
-        };
-    }, []);
+    const roomStages: [string, BedRoom.Type[]][] = React.useMemo(() => {
+        const roomByStage = Object.groupBy(
+            Object.values(bedRooms),
+            room => room.stage );
+        const tab = Object.entries(roomByStage)
+            .sort(([stageA], [stageB]) => (
+                parseInt(stageA) - parseInt(stageB)));
+        return tab;
+    }, [bedRooms]);
 
     return ( <>
 
-        <PageMain topClassName="flex-1" className="gap-10">
+        <div className="flex flex-col gap-5 pb-10">
 
-            <div className="flex flex-row justify-between items-center flex-wrap gap-3 border-b-1 border-gray-400/50 py-5">
-                <h1 className="text-3xl font-bold">Rooms Page</h1>
-                <button onClick={() => switchPage("GLOBAL")}
-                    className="bg-blue-500 hover:bg-blue-700 text-white"
-                >Go to Global Page</button>
-            </div>
+            <PageTitle name="Rooms Page">
+                <button className="flex flex-row items-end bg-blue-500 hover:bg-blue-700 text-white" onClick={() => navigate("/")}>
+                    <IoMdHome size={20} />
+                    <span>Global Page</span>
+                </button>
+            </PageTitle>
 
-            <div className="flex flex-col gap-5 flex-1">
-                { floorsTabRoomsIds.map(({floor, bedrooms}) => (
-                    <div key={floor} className="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-2">
-                        { bedrooms.map((roomId) => (
-                            <RoomBox key={roomId} room={bedRooms[roomId]} />
-                        )) }
-                    </div>
-                )) }
-            </div>
-        </PageMain> 
+            <div className="flex flex-col gap-5"> { roomStages.map(([stage, rooms]) => (
+                <div key={stage} className="grid grid-cols-[repeat(auto-fit,200px)] gap-2"> { rooms.map((room) => (
+                    <RoomBox key={room.id} room={room} />
+                )) } </div>
+            )) } </div>
 
-        { bedroomModal && (
-            <PageMain topClassName="">
-                <BedRoomModal />
-            </PageMain>
-        ) }
+        </div> 
 
         { !goodIp && <NoServer /> }
 

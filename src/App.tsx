@@ -1,47 +1,26 @@
-import React from "react";
-import "./App.css";
-import { PageId } from "./datas/type";
+import { Route, Routes } from "react-router-dom";
 
+import InitComponent from "./Init";
+import LoginPage from "./pages/login";
 import GlobalPage from "./pages/global";
 import RoomsPage from "./pages/rooms";
-import { twMerge } from "tailwind-merge";
-
-import {
-  isPermissionGranted,
-  requestPermission,
-} from "@tauri-apps/plugin-notification";
+import RoomPage from "./pages/rooms/[id]";
 
 export default function App() {
-  const [page, setPage] = React.useState<PageId>("ROOMS");
+  return (<>
 
-  return (
-    <div className="flex flex-col h-screen">
-      { (page === "GLOBAL") ?
-        <GlobalPage switchPage={setPage} /> :
-      (page === "ROOMS") ?
-        <RoomsPage switchPage={setPage} /> :
-      null }
-    </div>
-  );
-}
+    <InitComponent />
 
-export async function askNotificationPermission() {
-  let permission = await isPermissionGranted();
-  if (!permission) {
-    permission = (await requestPermission()) === "granted";
-  }
-}
-
-export function PageMain({ className, topClassName, children }: {
-  topClassName?: string,
-  className?: string,
-  children: React.ReactNode,
-}) {
-  return (
-    <div className={twMerge("flex flex-col items-center w-screen max-h-screen px-5 py-2 overflow-auto", topClassName)}>
-      <div className={twMerge("flex flex-col w-full max-w-210", className)}>
-          { children }
+    <div className="flex flex-col items-center w-screen max-h-screen px-5 py-2">
+      <div className="flex flex-col w-full max-w-210">
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<GlobalPage />} />
+          <Route path="/rooms" element={<RoomsPage />} />
+          <Route path="/rooms/:roomId" element={<RoomPage />} />
+        </Routes>
       </div>
     </div>
-  );
+
+  </> );
 }
