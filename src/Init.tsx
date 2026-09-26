@@ -14,7 +14,7 @@ type EspStatus = {
 }
 
 export default function InitComponent() {
-  const { bedRooms, updateBedRoom } = useDataContext();
+  const { updateBedRoom } = useDataContext();
 
   React.useEffect(() => { // general_info and notification settings
       askPermission();

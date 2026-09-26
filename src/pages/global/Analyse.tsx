@@ -1,6 +1,7 @@
 import React from "react";
 import { bedrooms_datas } from "../../datas/room";
 import { PieChart } from '@mui/x-charts/PieChart';
+import Status from "../../types/status";
 
 export default function AnalyseSection({ infos }: {
   infos: {
@@ -18,15 +19,20 @@ export default function AnalyseSection({ infos }: {
 }) {
   const nbBedRooms = bedrooms_datas.length;
   const data = [
-    { label: 'Vendu', value: infos.sold, color: '#074507' },
-    { label: 'Réservée', value: infos.coming, color: '#aa00c4' },
-    { label: 'Néttoyage', value: infos.cleaning.check_out, color: '#28bbff' },
-    { label: 'Hors service', value: infos.hs, color: '#8997aa' },
+    { label: 'Vendu', value: infos.sold,
+        color: Status.datas.sold.color },
+    { label: 'Réservée', value: infos.coming,
+        color: Status.datas.booked.color },
+    { label: 'Néttoyage', value: infos.cleaning.check_out,
+        color: Status.datas.clean.color },
+    { label: 'Hors service', value: infos.hs,
+        color: Status.datas.hs.color },
   ];
   const nbRoomFree = React.useMemo(() => (
     data.reduce((res, {value}) => res - value, nbBedRooms)
   ), [data, nbBedRooms]);
-  data.push({ label: 'Disponible', value: nbRoomFree, color: '#8997aa30' })
+  data.push({ label: 'Disponible', value: nbRoomFree,
+      color: Status.datas.free.color })
 
   return (
     <div className="flex flex-col w-full gap-3">

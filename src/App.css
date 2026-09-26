@@ -15,7 +15,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #f3f4f6;
+    --foreground: #fff;
   }
 }
 
@@ -49,8 +49,8 @@ button {
   cursor: pointer;
   border-radius: 5px;
   padding: 6px 10px;
-  color: white;
+  /* color: white; */
   font-weight: bold;
   font-size: 12px;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
 }

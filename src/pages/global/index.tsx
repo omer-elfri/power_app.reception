@@ -1,11 +1,9 @@
 "use client"
 
-import { useNavigate } from "react-router-dom";
 import BedRoom from "../../types/bedroom";
 
 import { FaRegCalendarAlt }  from "react-icons/fa";
 import { IoMdNotificationsOutline } from "react-icons/io";
-import { IoPersonCircle }  from "react-icons/io5";
 import { TbArrowsDoubleNeSw }  from "react-icons/tb";
 import { RiServiceBellLine }  from "react-icons/ri";
 
@@ -16,15 +14,15 @@ import AnalyseSection from "./Analyse";
 import NotificationSection from "./Notifications";
 import MouvementSection from "./Mouvements";
 import RestaurationSection from "./Restauration";
+import Status from "../../types/status";
 
 export default function GlobalPage() {
-  const navigate = useNavigate();
 
   // const rooms = [
   //   {
   //     roomId: '101',
   //     status: {
-  //       type: 'SOLD',
+  //       type: 'sold',
   //       start: "",
   //       nuitee: 3,
   //     },
@@ -178,112 +176,112 @@ export default function GlobalPage() {
   const notifications: {
     'time': string,
     'roomId': BedRoom.Id,
-    'label': 'SOLD' | 'BOOKED' | 'RESTAURANT',
+    'label': Status.Id,
     'value': string,
   }[] = [{
     'time': "11:00",
     'roomId': '101',
-    'label': 'BOOKED',
+    'label': 'booked',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "13:00",
     'roomId': '101',
-    'label': 'SOLD',
+    'label': 'sold',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "12:00",
     'roomId': '101',
-    'label': 'RESTAURANT',
+    'label': 'restaurant',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "13:00",
     'roomId': '101',
-    'label': 'SOLD',
+    'label': 'sold',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "12:00",
     'roomId': '101',
-    'label': 'RESTAURANT',
+    'label': 'restaurant',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "13:00",
     'roomId': '101',
-    'label': 'SOLD',
+    'label': 'sold',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "12:00",
     'roomId': '101',
-    'label': 'RESTAURANT',
+    'label': 'restaurant',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "13:00",
     'roomId': '101',
-    'label': 'SOLD',
+    'label': 'sold',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "12:00",
     'roomId': '101',
-    'label': 'RESTAURANT',
+    'label': 'restaurant',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "13:00",
     'roomId': '101',
-    'label': 'SOLD',
+    'label': 'sold',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "12:00",
     'roomId': '101',
-    'label': 'RESTAURANT',
+    'label': 'restaurant',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "13:00",
     'roomId': '101',
-    'label': 'SOLD',
+    'label': 'sold',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "12:00",
     'roomId': '101',
-    'label': 'RESTAURANT',
+    'label': 'restaurant',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "13:00",
     'roomId': '101',
-    'label': 'SOLD',
+    'label': 'sold',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "12:00",
     'roomId': '101',
-    'label': 'RESTAURANT',
+    'label': 'restaurant',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "13:00",
     'roomId': '101',
-    'label': 'SOLD',
+    'label': 'sold',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "12:00",
     'roomId': '101',
-    'label': 'RESTAURANT',
+    'label': 'restaurant',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "13:00",
     'roomId': '101',
-    'label': 'SOLD',
+    'label': 'sold',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "12:00",
     'roomId': '101',
-    'label': 'RESTAURANT',
+    'label': 'restaurant',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "13:00",
     'roomId': '101',
-    'label': 'SOLD',
+    'label': 'sold',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }, {
     'time': "12:00",
     'roomId': '101',
-    'label': 'RESTAURANT',
+    'label': 'restaurant',
     'value': "Lorem ipsum dolor sit amet consectetur.",
   }];
 
@@ -316,9 +314,7 @@ export default function GlobalPage() {
   return (
     <div className="flex flex-col gap-3 pb-5">
 
-      <PageTitle name="Global Page" className="">
-          <IoPersonCircle className="text-[30px] text-red-600 cursor-pointer" onClick={() => navigate("/login")} />
-      </PageTitle>
+      <PageTitle />
 
       <div className="grid grid-cols-10 grid-rows-[auto_400px_220px] gap-5">
 
