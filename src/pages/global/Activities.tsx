@@ -10,6 +10,7 @@ import { FaTools, FaCalendarAlt }  from "react-icons/fa";
 import { MdCleaningServices }  from "react-icons/md";
 import { GoArrowUpRight, GoArrowDownRight }  from "react-icons/go";
 import { ImPower }  from "react-icons/im";
+import BedRoom from "../../types/bedroom";
 
 export default function ActivitySection() {
   const { analysis } = useDataContext();
@@ -40,31 +41,31 @@ export default function ActivitySection() {
         icon={<CheckinIcon />}
         value={analysis.nbSolded}
         name="Chambres" subName="vendues"
-        color="#300000"
+        color={BedRoom.Status.colors.sold}
       />
       <ActivityBox
         icon={<IoBed size={35} />}
         value={analysis.nbFree}
         name="Chambres" subName="disponibles"
-        color="#800000"
+        color={BedRoom.Status.colors.free}
       />
       <ActivityBox
         icon={<FaCalendarAlt size={30} />}
         value={analysis.nbComing}
         name="Réservations" subName="aujourd'hui"
-        color="#008000"
+        color={BedRoom.Status.colors.coming}
       />
       <ActivityBox
         icon={<MdCleaningServices size={30} />}
         value={analysis.nbCleaning.checkin + analysis.nbCleaning.checkout}
         name="Chambre" subName="en néttoyage"
-        color="#000080"
+        color={BedRoom.Status.colors.clean}
       />
       <ActivityBox bar={false}
         icon={<FaTools size={30} />}
         value={analysis.nbHs}
         name="Pannes" subName="signalées"
-        color="#aaa"
+        color={BedRoom.Status.colors.hs}
       />
     </div>
   );

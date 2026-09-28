@@ -5,9 +5,6 @@ import { room_list } from "../datas/types";
 namespace BedRoom {
     export type Id = keyof typeof room_datas;
 
-
-
-
     export namespace Category {
         export type Id = keyof typeof room_ctg_datas;
 
@@ -21,39 +18,17 @@ namespace BedRoom {
 
 
     export namespace Status {
-    
-        export type Type = {
-            label: string,
-            color: string,
-        };
-    
-        export type Id = 'sold' | 'free' | 'clean' | 'restaurant' | 'booked' | 'hs';
-    
-        export const datas: {[k in Id]: Type} = {
-            sold: {
-                label: 'Vendu',
-                color: '#074507',
-            },
-            booked: {
-                label: 'Réservée',
-                color: '#aa00c4',
-            },
-            restaurant: {
-                label: 'Restaurant',
-                color: '#c40000',
-            },
-            clean: {
-                label: 'Néttoyage',
-                color: '#28bbff',
-            },
-            hs: {
-                label: 'Hors service',
-                color: '#8997aa',
-            },
-            free: {
-                label: 'Disponible',
-                color: '#8997aa30',
-            },
+
+        export type Label = 'guest' | 'coming' | 'clean' | 'hs' | 'restaurant' | 'sold' | 'free';
+
+        export const colors: {[k in Label]: string} = {
+            guest: '#074507',
+            sold: '#074507',
+            coming: '#aa00c4',
+            restaurant: '#c40000',
+            clean: '#006a9c',
+            hs: '#8997aa',
+            free: '#4d8642',
         } as const;
     }
     
@@ -62,23 +37,19 @@ namespace BedRoom {
 
     export namespace Stage {
 
-        export type StageData = {
-            name: string,
-        };
+        export type Id = '0' | '1' | '2' | '3' | '4' | '5';
 
-        export const stages = {
+        export const stages: {[k in Id]: Type} = {
             '0': { name: "Rez de chaussée", },
             '1': { name: "Étage 1", },
             '2': { name: "Étage 2", },
             '3': { name: "Étage 3", },
             '4': { name: "Étage 4", },
             '5': { name: "Étage 5", },
-        } as const satisfies Record<string, StageData>;
-
-        export type Id = keyof typeof stages;
+        };
 
         export type Type = {
-            id: string,
+            // id: string,
             name: string,
         };
     }
@@ -90,16 +61,27 @@ namespace BedRoom {
 
     export type Type = {
         id: Id,
-        status?: Status,
         power: Power,
-        // client?: Customer.Type,
+        connected: boolean,
+
+        check_in: Object | null,
+        check_out: Object | null,
+        coming: Object[
+        ],
+        cleaning: Object | null,
+        // {
+        //     name: string,
+        //     start: Date,
+        //     end?: Date,
+        // } | null,
         stage: Stage.Type,
         categories: [
             Category.Type,
             ...Category.Type[],
         ],
-        history?: History[],
+        histories: History[],
         price: number,
+        hs: boolean,
     };
 
 
@@ -113,14 +95,7 @@ namespace BedRoom {
 
     export type Map = {[k in Id]: Type};
 
-    export type Power = 'ON' | 'OFF' | 'NONE';
-
-    export type Status = (
-        'GUEST'
-        | 'SOLD'
-        | 'CLEANING'
-        | 'FREE'
-    );
+    export type Power = 'ON' | 'OFF' | null;
 
     export type Action = (
         'GUEST_IN'

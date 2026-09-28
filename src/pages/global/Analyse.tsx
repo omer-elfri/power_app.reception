@@ -1,26 +1,18 @@
 'use client'
 
-import React from "react";
-
-import { room_list } from "../../datas/types";
-import { PieChart } from '@mui/x-charts/PieChart';
 import { useDataContext } from "../../datas/context";
 import BedRoom from "../../types/bedroom";
+import { PieChart } from '@mui/x-charts/PieChart';
 
 export default function AnalyseSection() {
   const { analysis } = useDataContext();
-  const nbBedRooms = room_list.length;
   const data = [
-    { label: 'Vendu', value: analysis.nbSolded, color: BedRoom.Status.datas.sold.color },
-    { label: 'Réservée', value: analysis.nbComing, color: BedRoom.Status.datas.booked.color },
-    { label: 'Néttoyage (check-out)', value: analysis.nbCleaning.checkout, color: BedRoom.Status.datas.clean.color },
-    { label: 'Hors service', value: analysis.nbHs, color: BedRoom.Status.datas.hs.color },
+    { label: 'Vendu', value: analysis.nbSolded, color: BedRoom.Status.colors.sold },
+    { label: 'Réservée', value: analysis.nbComing, color: BedRoom.Status.colors.coming },
+    { label: 'Néttoyage (check-out)', value: analysis.nbCleaning.checkout, color: BedRoom.Status.colors.clean },
+    { label: 'Hors service', value: analysis.nbHs, color: BedRoom.Status.colors.hs },
+    { label: 'Disponible', value: analysis.nbFree, color: '#8997aa30' },
   ];
-  const nbRoomFree = React.useMemo(() => (
-    data.reduce((res, {value}) => res - value, nbBedRooms)
-  ), [data, nbBedRooms]);
-  data.push({ label: 'Disponible', value: nbRoomFree,
-      color: BedRoom.Status.datas.free.color })
 
   return (
     <div className="flex flex-col w-full gap-3">
@@ -32,12 +24,12 @@ export default function AnalyseSection() {
         series={[{
           innerRadius: 10,
           outerRadius: 70,
-          data: data,
+          data,
           // arcLabel: 'value',
           paddingAngle: 1,
           cornerRadius: 5,
-          startAngle: 30,
-          endAngle: -360
+          startAngle: 15,
+          endAngle: -315
         }]}
       />
       <table className="">

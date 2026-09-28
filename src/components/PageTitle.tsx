@@ -9,11 +9,10 @@ export default function PageTitle({ className, children }: {
     children?: React.ReactNode,
 }) {
     const { pathname } = useLocation();
-    const navigate = useNavigate();
 
     return (
         // <div className="flex flex-row justify-between items-center flex-wrap gap-3 border-b-1 border-gray-400/50 py-5">
-        <div className={twMerge("flex flex-row justify-between items-center flex-wrap gap-3 pt-5", className)}>
+        <div className={twMerge("flex flex-row justify-between items-start flex-wrap gap-3 pt-5", className)}>
 
             <div className="flex flex-row items-center gap-2">
                 <img width={30} height={30} src="/power_icon.png" alt="" />

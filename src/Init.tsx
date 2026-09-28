@@ -16,7 +16,7 @@ type EspStatus = {
 }
 
 export default function InitComponent() {
-  const { updateBedRoom } = useDataContext();
+  const { analysis, updateBedRoom, bedRooms } = useDataContext();
 
   React.useEffect(() => { // general_info and notification settings
       askPermission();
@@ -25,6 +25,21 @@ export default function InitComponent() {
           espTab.forEach((esp) => updateBedRoom(esp.room_id, esp));
       })();
   }, []);
+
+  React.useEffect(() => {
+    updateBedRoom('101', { power: 'ON' });
+    updateBedRoom('102', { check_in: { } });
+    updateBedRoom('103', { status: 'guest' });
+    updateBedRoom('104', { power: 'ON', cleaning: { } });
+    updateBedRoom('105', { check_in: { }, power: 'OFF', cleaning: { } });
+    updateBedRoom('106', { coming: [1,1], cleaning: { } });
+    updateBedRoom('107', { check_in: { } });
+    updateBedRoom('108', { power: 'ON', check_in: { } });
+  }, []);
+
+  React.useEffect(() => {
+    console.log("dws", analysis);
+  }, [analysis]);
 
   React.useEffect(() => { // reponse du serveur
         const unlisten = listen<{
@@ -36,10 +51,9 @@ export default function InitComponent() {
             updateBedRoom(roomId, { power });
             sendNotification({
                 title: `Chambre ${roomId}`,
-                body: {
+                body: !power ? "Chambre déconnectée" : {
                     "ON": "Chambre alimentée",
                     "OFF": "Chambre éteinte",
-                    "NONE": "Chambre déconnectée"
                 }[power],
             });
         });

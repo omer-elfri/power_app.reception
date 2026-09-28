@@ -11,11 +11,14 @@ import SectionBox, { Title } from "../../components/SectionBox";
 import SoldRoom from "../../components/SoldRoom";
 import RoomLine from "../../components/RoomLine"
 
-import FilterSection from "./Filter copy";
+import FilterSection from "./Filter";
 import { Popup } from "./RoomInfos";
+import { twMerge } from "tailwind-merge";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { FiGrid } from "react-icons/fi";
 
 export default function RoomsPage() {
-    const { bedRooms } = useDataContext();
+    const { analysis, bedRooms } = useDataContext();
     const [roomPopup, setRoomPopup] = React.useState<BedRoom.Id | null>(null);
 
     const roomStages = React.useMemo(() => {
@@ -37,48 +40,59 @@ export default function RoomsPage() {
         return e;
     }
 
-    const hsRoomIds: BedRoom.Id[] = ['101', '102'];
-
     const [form, setForm] = React.useState<'line' | 'grid'>('line');
-
 
     return (
         <div className="flex flex-col gap-5 pb-10">
 
             <PageTitle />
 
-            {/* <div className="grid grid-cols-[1fr_auto] gap-x-5">
+            <SectionBox className="pb-5">
+                <Title name="Filtres" className="mb-2" notif={
+                    <div className="flex flex-row gap-x-1">
+                        <button className={twMerge("", (form==="line")?"text-white bg-green-600":"bg-gray-300/50")} onClick={() => setForm('line')}> <GiHamburgerMenu /> </button>
+                        <button className={twMerge("", (form==="grid")?"text-white bg-blue-600":"bg-gray-300/50")} onClick={() => setForm('grid')}> <FiGrid /> </button>
+                    </div>
+                } />
+                <FilterSection form={form} setForm={setForm} className="flex flex-row" />
+            </SectionBox>
+
+            <div className="grid grid-cols-[250px_1fr] items-start gap-5">
+
+                <div className="flex flex-col gap-3 sticky top-3">
+                    <SectionBox className="pb-5">
+                        <Title name="Ventes" className="mb-2" notif={analysis.nbSolded} bar />
+                        <div className="flex flex-col gap-3">
+                            { room_ctg_list.map((room_ctg) => (
+                                <SoldRoom key={room_ctg.id} name={room_ctg.name} subName={room_ctg.price.toString()} value={2} />
+                            )) }
+                        </div>
+                    </SectionBox>
+                </div>
 
 
-            </div> */}
-                <SectionBox>
-                    <GlobalSection hsRoomIds={hsRoomIds} />
-                </SectionBox>
+                <div className="flex flex-col gap-3">{ roomStages.map(({ stage, rooms }) => (
+                    <SectionBox key={stage} subClassName="min-h-30 pb-3">
+                        <Title name={stage} bar notif={`${rooms.length} chambres`} />
 
-                <SectionBox className="pb-5">
-                    <Title name="Filtres" className="mb-2" />
-                    <FilterSection form={form} setForm={setForm} />
-                </SectionBox>
+                        { (form === "line") && (
+                            <div className="flex flex-col gap-3"> { rooms.map((room) => (
+                                <RoomLine key={room.id} className={f(room.id)} room={room} onClick={() => setRoomPopup(room.id)} />
+                            )) } </div>
+                        ) }
+
+                        { (form === "grid") && (
+                            <div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-x-3 gap-y-6 mt-5"> { rooms.map((room) => (
+                                <RoomBox key={room.id} room={room} setRoomPopup={setRoomPopup}  />
+                            )) } </div>
+                        ) }
+
+                    </SectionBox>
+                )) }</div>
+
+            </div>
 
                 
-            { roomStages.map(({ stage, rooms }) => (
-                <SectionBox key={stage} subClassName="min-h-30 pb-3">
-                    <Title name={stage} bar notif={`${rooms.length} chambres`} />
-
-                    { (form === "line") && (
-                        <div className="flex flex-col gap-3"> { rooms.map((room) => (
-                            <RoomLine key={room.id} className={f(room.id)} room={room} onClick={() => setRoomPopup(room.id)} />
-                        )) } </div>
-                    ) }
-
-                    { (form === "grid") && (
-                        <div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-x-3 gap-y-6 mt-5"> { rooms.map((room) => (
-                            <RoomBox key={room.id} room={room} setRoomPopup={setRoomPopup}  />
-                        )) } </div>
-                    ) }
-
-                </SectionBox>
-            )) }
 
             { roomPopup && <Popup roomId={roomPopup} setRoomPopup={setRoomPopup} /> }
 

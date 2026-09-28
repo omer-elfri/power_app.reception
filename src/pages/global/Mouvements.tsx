@@ -1,17 +1,12 @@
+'use client'
+
 import React from "react";
 
 import { IoArrowDownOutline, IoArrowUpOutline }  from "react-icons/io5";
-import BedRoom from "../../types/bedroom";
+import { useDataContext } from "../../datas/context";
 
-export default function MouvementSection({ datas }: {
-  datas: {
-    'sens': 'arrivée' | 'départ',
-    'roomId': BedRoom.Id,
-    'client': string,
-    'come_at': string,
-    'go_at': string,
-  }[],
-}) {
+export default function MouvementSection() {
+  const { moves } = useDataContext();
   return (
     <div className="grid grid-cols-[auto_auto_auto_1fr_auto] items-center gap-y-2 gap-x-3 text-left">
 
@@ -23,7 +18,7 @@ export default function MouvementSection({ datas }: {
 
       <hr className="col-span-full text-gray-400/40" />
 
-      { datas.map((data, i) => <React.Fragment key={i}>
+      { moves.map((data, i) => <React.Fragment key={i}>
         <p className="text-[11px] font-bold text-gray-600">{data.come_at}</p>
         <p className="text-[11px] font-bold text-gray-600">{data.roomId}</p>
         <div className="flex flex-row items-center text-[11px] font-bold text-gray-600">
