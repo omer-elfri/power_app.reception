@@ -1,5 +1,3 @@
-"use client"
-
 import BedRoom from "../../types/bedroom";
 
 import { FaRegCalendarAlt }  from "react-icons/fa";
@@ -8,54 +6,15 @@ import { TbArrowsDoubleNeSw }  from "react-icons/tb";
 import { RiServiceBellLine }  from "react-icons/ri";
 
 import PageTitle from "../../components/PageTitle";
-import SectionBox from "../../components/SectionBox";
+import SectionBox, { Title } from "../../components/SectionBox";
+
 import ActivitySection from "./Activities";
 import AnalyseSection from "./Analyse";
 import NotificationSection from "./Notifications";
 import MouvementSection from "./Mouvements";
 import RestaurationSection from "./Restauration";
-import Status from "../../types/status";
 
 export default function GlobalPage() {
-
-  // const rooms = [
-  //   {
-  //     roomId: '101',
-  //     status: {
-  //       type: 'sold',
-  //       start: "",
-  //       nuitee: 3,
-  //     },
-  //     cleaning: {
-  //       vallet: 'Alberick',
-  //     },
-  //     booked: [
-  //       {
-  //         client: "",
-  //         start: "",
-  //         end: "",
-  //       }
-  //     ],
-  //     comment: "",
-  //     hs: true,
-
-  //     powered: true,
-  //     breakfast: true,
-  //   }
-  // ]
-
-  const room_infos = {
-    'sold': 8,
-    'coming': 7,
-    'hs': 2,
-    'cleaning': {
-      'check_out': 1,
-      'check_in': 2,
-    },
-    'powered': 0,
-    'breakfast': 40,
-    'going': 5,
-  };
 
   const moves: {
     'come_at': string,
@@ -176,7 +135,7 @@ export default function GlobalPage() {
   const notifications: {
     'time': string,
     'roomId': BedRoom.Id,
-    'label': Status.Id,
+    'label': BedRoom.Status.Id,
     'value': string,
   }[] = [{
     'time': "11:00",
@@ -318,29 +277,28 @@ export default function GlobalPage() {
 
       <div className="grid grid-cols-10 grid-rows-[auto_400px_220px] gap-5">
 
-        <SectionBox title="Activités du jour" icon={<FaRegCalendarAlt size={20} className="" />} className="col-span-10">
-          <ActivitySection infos={room_infos} />
+        <SectionBox className="col-span-10">
+          <Title name="Activités du jour" icon={<FaRegCalendarAlt size={20} className="" />} />
+          <ActivitySection />
         </SectionBox>
 
-        <SectionBox title="Analyse" className="col-span-3"
-          more={{link:"", value:"Voir toutes les notifications"}}>
-          <AnalyseSection infos={room_infos} />
+        <SectionBox className="col-span-3" more={{link:"", value:"Plus de détails"}}>
+          <Title name="Analyse" />
+          <AnalyseSection />
         </SectionBox>
 
-        <SectionBox icon={<TbArrowsDoubleNeSw size={20} />} title="Mouvements du jour" className="col-span-4" notif="1"
-          more={{link:"", value:"Voir toutes les notifications"}}>
+        <SectionBox className="col-span-4" more={{link:"", value:"Voir plus"}}>
+          <Title name="Mouvements du jour" icon={<TbArrowsDoubleNeSw size={20} />} className="mb-3" />
           <MouvementSection datas={moves} />
         </SectionBox>
 
-        <SectionBox icon={<IoMdNotificationsOutline size={20} className="" />}
-          title="Notifications" className="col-span-3 row-span-2" notif="1"
-          more={{link:"", value:"Voir tout"}}>
+        <SectionBox className="col-span-3 row-span-2" more={{link:"", value:"Voir tout"}}>
+          <Title name="Notifications" icon={<IoMdNotificationsOutline size={20} className="" />} notif="1" />
           <NotificationSection datas={notifications} />
         </SectionBox>
 
-        <SectionBox icon={<RiServiceBellLine size={22} className="" />}
-          title="Restauration" className="col-span-7" notif="1"
-          more={{link:"", value:"Voir tout"}}>
+        <SectionBox className="col-span-7" more={{link:"", value:"Voir tout"}}>
+          <Title name="Restauration" icon={<RiServiceBellLine size={22} className="" />} notif="1" />
           <RestaurationSection datas={restaurant} />
         </SectionBox>
 

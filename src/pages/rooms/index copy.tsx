@@ -11,7 +11,7 @@ import SectionBox, { Title } from "../../components/SectionBox";
 import SoldRoom from "../../components/SoldRoom";
 import RoomLine from "../../components/RoomLine"
 
-import FilterSection from "./Filter copy";
+import FilterSection from "./Filter";
 import { Popup } from "./RoomInfos";
 
 export default function RoomsPage() {
@@ -47,19 +47,14 @@ export default function RoomsPage() {
 
             <PageTitle />
 
-            {/* <div className="grid grid-cols-[1fr_auto] gap-x-5">
+            <SectionBox>
+                <GlobalSection hsRoomIds={hsRoomIds} />
+            </SectionBox>
 
-
-            </div> */}
-                <SectionBox>
-                    <GlobalSection hsRoomIds={hsRoomIds} />
-                </SectionBox>
-
-                <SectionBox className="pb-5">
-                    <Title name="Filtres" className="mb-2" />
-                    <FilterSection form={form} setForm={setForm} />
-                </SectionBox>
-
+            <SectionBox className="pb-5">
+                <Title name="Filtres" className="mb-2" />
+                <FilterSection form={form} setForm={setForm} />
+            </SectionBox>
                 
             { roomStages.map(({ stage, rooms }) => (
                 <SectionBox key={stage} subClassName="min-h-30 pb-3">

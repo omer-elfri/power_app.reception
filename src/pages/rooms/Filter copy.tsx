@@ -24,21 +24,11 @@ export default function FilterSection({ form, setForm, className }: {
     const floorList = [...new Set(floorTab)];
 
     return (
-        <div className={twMerge("flex flex-col gap-3", className)}>
+        <div className={twMerge("flex flex-row gap-3", className)}>
 
-            <div className="flex flex-row gap-3">
+            <input type="search" placeholder="Rechercher" className="flex-1 border-1 text-[11px] font-bold flex-1 rounded-md py-2 px-3" /> 
 
-                <input type="search" placeholder="Rechercher" className="flex-1 border-1 text-[11px] font-bold flex-1 rounded py-1 px-3" /> 
-
-                <div className="flex flex-row gap-x-1">
-                    <button className={twMerge("", (form==="line")?"text-white bg-green-600":"bg-gray-300/50")} onClick={() => setForm('line')}> <GiHamburgerMenu /> </button>
-                    <button className={twMerge("", (form==="grid")?"text-white bg-blue-600":"bg-gray-300/50")} onClick={() => setForm('grid')}> <FiGrid /> </button>
-                </div>
-
-            </div>
-
-
-            <select name="stage" className="border-1 text-[11px] font-bold py-2 h-7">
+            <select name="stage" className="border-1 text-[11px] font-bold py-2">
                 <option value="all">Tous les étages</option>
                 { floorList.map((stageId) => (
                     <option key={stageId} value={stageId}>
@@ -47,16 +37,21 @@ export default function FilterSection({ form, setForm, className }: {
                 )) }
             </select>
 
-            <select name="category" className="border-1 text-[11px] font-bold py-2 h-7">
+            <select name="category" className="border-1 text-[11px] font-bold py-2">
                 <option value="all">Tous les catégories</option>
                 { room_ctg_list.map((roomCtg) => (
                     <option key={roomCtg.id} value={roomCtg.id}>{roomCtg.name}</option>
                 )) }
             </select>
 
-            <select name="status" className="border-1 text-[11px] font-bold py-2 h-7">
+            <select name="status" className="border-1 text-[11px] font-bold py-2">
                 <option value="all">Tous les états</option>
             </select>
+
+            <div className="flex flex-row gap-x-1">
+                <button className={twMerge("", (form==="line")?"text-white bg-green-600":"bg-gray-300/50")} onClick={() => setForm('line')}> <GiHamburgerMenu /> </button>
+                <button className={twMerge("", (form==="grid")?"text-white bg-blue-600":"bg-gray-300/50")} onClick={() => setForm('grid')}> <FiGrid /> </button>
+            </div>
 
 
         </div>

@@ -1,7 +1,6 @@
-"use client"
+import React from "react";
 
 import { IoArrowDownOutline, IoArrowUpOutline }  from "react-icons/io5";
-import React from "react";
 import BedRoom from "../../types/bedroom";
 
 export default function MouvementSection({ datas }: {

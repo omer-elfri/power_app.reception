@@ -1,3 +1,5 @@
+'use client'
+
 import React from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +17,7 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col gap-5">
 
-      <PageTitle name="Login Page" />
+      <PageTitle />
 
       <form className="flex flex-col gap-1" onSubmit={async (e) => {
         e.preventDefault();

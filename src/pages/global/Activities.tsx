@@ -1,26 +1,18 @@
+'use client'
+
 import React from "react";
 
+import { useDataContext } from "../../datas/context";
 import ActivityBox from "../../components/ActivityBox";
-import { FaCoffee }  from "react-icons/fa";
-import { IoPersonSharp }  from "react-icons/io5";
-import { FaTools }  from "react-icons/fa";
+
+import { IoBed, IoPersonSharp }  from "react-icons/io5";
+import { FaTools, FaCalendarAlt }  from "react-icons/fa";
 import { MdCleaningServices }  from "react-icons/md";
 import { GoArrowUpRight, GoArrowDownRight }  from "react-icons/go";
 import { ImPower }  from "react-icons/im";
 
-export default function ActivitySection({ infos }: {
-  infos: {
-    'powered': number,
-    'coming': number,
-    'going': number,
-    'cleaning': {
-      'check_in': number,
-      'check_out': number,
-    },
-    'breakfast': number,
-    'hs': number,
-  },
-}) {
+export default function ActivitySection() {
+  const { analysis } = useDataContext();
 
   const CheckinIcon = React.useCallback(() => (
     <div className="flex flex-row">
@@ -38,12 +30,42 @@ export default function ActivitySection({ infos }: {
 
   return (
     <div className="flex flex-row items-center gap-1">
-      <ActivityBox icon={<ImPower size={30} />} value={infos.powered} text="Chambres alimentées" color="#300000" />
-      <ActivityBox icon={<CheckinIcon />} value={infos.coming} text="Arrivées prévues" color="#800000" />
-      <ActivityBox icon={<CheckoutIcon />} value={infos.going} text="Départ prévues" color="#008000" />
-      <ActivityBox icon={<MdCleaningServices size={30} />} value={infos.cleaning.check_in + infos.cleaning.check_out} text="Chambre en néttoyage" color="#800000" />
-      <ActivityBox icon={<FaCoffee size={32} />} value={infos.breakfast} text="Petit-déjeuner inclus" color="#000080" />
-      <ActivityBox icon={<FaTools size={30} />} value={infos.hs} text="Pannes signalées" bar={false} color="#800000" />
+      <ActivityBox
+        icon={<ImPower size={30} />}
+        value={analysis.nbPowered}
+        name="Chambres" subName="alimentées"
+        color="#cf0037"
+      />
+      <ActivityBox
+        icon={<CheckinIcon />}
+        value={analysis.nbSolded}
+        name="Chambres" subName="vendues"
+        color="#300000"
+      />
+      <ActivityBox
+        icon={<IoBed size={35} />}
+        value={analysis.nbFree}
+        name="Chambres" subName="disponibles"
+        color="#800000"
+      />
+      <ActivityBox
+        icon={<FaCalendarAlt size={30} />}
+        value={analysis.nbComing}
+        name="Réservations" subName="aujourd'hui"
+        color="#008000"
+      />
+      <ActivityBox
+        icon={<MdCleaningServices size={30} />}
+        value={analysis.nbCleaning.checkin + analysis.nbCleaning.checkout}
+        name="Chambre" subName="en néttoyage"
+        color="#000080"
+      />
+      <ActivityBox bar={false}
+        icon={<FaTools size={30} />}
+        value={analysis.nbHs}
+        name="Pannes" subName="signalées"
+        color="#aaa"
+      />
     </div>
   );
 }

@@ -13,7 +13,7 @@ export default function PageTitle({ className, children }: {
 
     return (
         // <div className="flex flex-row justify-between items-center flex-wrap gap-3 border-b-1 border-gray-400/50 py-5">
-        <div className={twMerge("flex flex-row justify-between items-center flex-wrap gap-3", className)}>
+        <div className={twMerge("flex flex-row justify-between items-center flex-wrap gap-3 pt-5", className)}>
 
             <div className="flex flex-row items-center gap-2">
                 <img width={30} height={30} src="/power_icon.png" alt="" />
@@ -28,11 +28,18 @@ export default function PageTitle({ className, children }: {
 
             {/* <input type="search" width={20} height={3} placeholder="Rechercher" className="border-1 py-1/2 px-2 rounded" /> */}
             {/* <input type="search" placeholder="Rechercher..." className="w-50 rounded-lg border border-gray-200 bg-gray-50 py-[5px] pl-3 pr-3 text-sm text-gray-700 outline-none transition focus:border-gray-400 focus:bg-white" /> */}
+
             <button className="bg-blue-500 text-white">
-                <FaPlus />
-                <span>Réservation</span>
+                <FaPlus /> <span>Réservation</span>
             </button>
-            <IoPersonCircle className="text-[30px] text-red-600 cursor-pointer" onClick={() => navigate("/login")} />
+
+            <a href="/login">
+                <div className="flex flex-row items-center gap-2 pl-1 pr-3 py-1 rounded-md bg-blue-500/20">
+                    <IoPersonCircle size={20} className="text-blue-600 cursor-pointer" />
+                    <span className="font-bold text-[13px] uppercase">Hillary</span>
+                </div>
+            </a>
+
             { children }
 
         </div>

@@ -54,3 +54,7 @@ button {
   font-size: 12px;
   /* text-transform: uppercase; */
 }
+
+input, select {
+  outline: none;
+}

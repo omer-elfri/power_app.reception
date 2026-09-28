@@ -1,12 +1,10 @@
-"use client"
-
+import BedRoom from "../../types/bedroom";
 import { twMerge } from "tailwind-merge";
-import Status from "../../types/status";
 
 export default function NotificationSection({ datas }: {
   datas: {
     'time': string,
-    'label': Status.Id,
+    'label': BedRoom.Status.Id,
     'value': string,
   }[],
 }) {
@@ -17,7 +15,11 @@ export default function NotificationSection({ datas }: {
       <tbody>{ datas.map((data, i) => (
         <tr key={i} className={twMerge("flex flex-row gap-3 items-start py-2", (i!==tab.length-1)?"border-b-1 border-gray-400/20":"")}>
           <td className="text-[11px] font-bold">{data.time}</td>
-          <td><div className="w-2 rounded-full aspect-square mt-[5px]" style={{backgroundColor: Status.datas[data.label].color}} /></td>
+          <td>
+            <div className="w-2 rounded-full aspect-square mt-[5px]"
+              style={{ backgroundColor: BedRoom.Status.datas[data.label].color }}
+            />
+          </td>
           <td className="text-[12px] line-clamp-2">{data.value}</td>
         </tr>
       )) }</tbody>
