@@ -8,3 +8,22 @@ export function uniqueId<T extends Record<string, any>>(
         throw Error("Double id");
     return tab;
 }
+
+export function getTime(date: Date) {
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+    const isOlderThanDay = now - date.getTime() >= day;
+    return isOlderThanDay ? getHour(date) : getDate(date);
+}
+
+export function getDate(date: Date) {
+    const res = date.toLocaleDateString()
+        .slice(0, 5);
+    return res;
+}
+
+export function getHour(date: Date) {
+    const res = date.toLocaleTimeString()
+        .slice(0, 5);
+    return res;
+}

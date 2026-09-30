@@ -3,48 +3,47 @@
 import React from "react";
 
 import { invoke } from "@tauri-apps/api/core";
-import { sendNotification } from "@tauri-apps/plugin-notification";
+import { sendNotification, isPermissionGranted, requestPermission } from "@tauri-apps/plugin-notification";
 import { listen } from "@tauri-apps/api/event";
 
+import { EspStatus, Power } from "./types";
 import BedRoom from "./types/bedroom";
-import { askPermission } from "./tools/notifications";
 import { useDataContext } from "./datas/context";
 
-type EspStatus = {
-    room_id: BedRoom.Id,
-    power: BedRoom.Power,
-}
 
 export default function InitComponent() {
-  const { analysis, updateBedRoom, bedRooms } = useDataContext();
+  const { updateBedRoom } = useDataContext();
 
   React.useEffect(() => { // general_info and notification settings
-      askPermission();
-      (async () => {
-          const espTab = await invoke<EspStatus[]>("general_status");
-          espTab.forEach((esp) => updateBedRoom(esp.room_id, esp));
-      })();
+        (async () => {
+            let permission = await isPermissionGranted();
+            if (!permission) {
+                permission = (await requestPermission()) === "granted";
+            }
+            const espTab = await invoke<EspStatus[]>("general_status");
+            espTab.forEach((esp) => updateBedRoom(esp.room_id, esp));
+        })();
   }, []);
 
   React.useEffect(() => {
+    updateBedRoom('003', { power: 'ON', check_in: { name: "Mr Smith ADJALLALA", sexe: 'Mr', price: 10000 } });
     updateBedRoom('101', { power: 'ON' });
-    updateBedRoom('102', { check_in: { } });
-    updateBedRoom('103', { status: 'guest' });
-    updateBedRoom('104', { power: 'ON', cleaning: { } });
-    updateBedRoom('105', { check_in: { }, power: 'OFF', cleaning: { } });
-    updateBedRoom('106', { coming: [1,1], cleaning: { } });
-    updateBedRoom('107', { check_in: { } });
-    updateBedRoom('108', { power: 'ON', check_in: { } });
+    updateBedRoom('102', { check_in: { name: "Mr Smith ADJALLALA", sexe: 'Mr', price: 10000 } });
+    updateBedRoom('103', { coming: { client: "Mr Teazer", name: "Foast", id: '003', start: new Date(Date.now()),nuitee: 3, } });
+    updateBedRoom('104', { power: 'ON', cleaning: 'vallet1'});
+    updateBedRoom('105', { check_in: { name: "Fabrice ADJALLALA", price: 10000 }, power: 'OFF', cleaning: 'vallet1' });
+    updateBedRoom('106', { cleaning: 'vallet3' });
+    updateBedRoom('107', { check_in: { name: "Mrs Flore", sexe: 'Mme', price: 10000 } });
+    updateBedRoom('108', { power: 'ON' });
+    updateBedRoom('108', { issues: [{ priority: "high", message: "we", }] });
+    updateBedRoom('109', { issues: [{ priority: "low", message: "fre fenlj", }] });
+    updateBedRoom('111', { issues: [{ priority: "medium", message: "fre fre feru", }] });
   }, []);
-
-  React.useEffect(() => {
-    console.log("dws", analysis);
-  }, [analysis]);
 
   React.useEffect(() => { // reponse du serveur
         const unlisten = listen<{
             room_id: BedRoom.Id;
-            power: BedRoom.Power;
+            power: Power;
         }>("power-status", (event) => {
             const { room_id:roomId, power } = event.payload;
 
@@ -57,9 +56,7 @@ export default function InitComponent() {
                 }[power],
             });
         });
-        return () => {
-            unlisten.then((fn) => fn());
-        }
+        return () => { unlisten.then((fn) => fn()); }
   }, []);
 
   return null;

@@ -4,7 +4,6 @@ import BedRoom from "../../types/bedroom";
 import SectionBox, { Title } from "../../components/SectionBox";
 
 import { HiLockClosed } from "react-icons/hi";
-import { FaChevronRight } from "react-icons/fa";
 import { IconType } from "react-icons/lib";
 import { useDataContext } from "../../datas/context";
 import { twMerge } from "tailwind-merge";
@@ -14,6 +13,7 @@ import { FaPowerOff } from "react-icons/fa"
 import { IoPersonOutline } from "react-icons/io5"
 import { FaStairs } from "react-icons/fa6"
 import { BiCategoryAlt } from "react-icons/bi"
+import { room_ctg_datas } from "../../configs/room_ctg";
 
 export default function InfosSection({ roomId }: {
     roomId: BedRoom.Id,
@@ -33,8 +33,8 @@ export default function InfosSection({ roomId }: {
 
             <div className="grid grid-cols-2 grid-rows-2 gap-x-1 gap-y-2 rounded-md">
                 <InfoBox Icon={FaStairs} name="Étage" value="1er étage" />
-                <InfoBox Icon={BiCategoryAlt} name="Catégorie" value={<p>{bedRoom.categories.map((ctg) => <>
-                    <p>{ctg.name}</p>
+                <InfoBox Icon={BiCategoryAlt} name="Catégorie" value={<p>{bedRoom.categories.map((ctgId) => <>
+                    <p>{room_ctg_datas[ctgId].name}</p>
                 </>)}</p>} />
                 <InfoBox Icon={HiLockClosed} name="Étage" value="1er étage" />
                 <InfoBox Icon={HiLockClosed} name="Étage" value="1er étage" />
@@ -125,3 +125,13 @@ export function Popup({ roomId, setRoomPopup }: {
         </div>
     );
 }
+
+export type RoomInfos = {
+    powered: string,
+    isSolded: boolean,
+    cleaning: string,
+    coming: BedRoom.ReservationType | null,
+    clientName: string | null,
+    issueIcon: React.ReactNode | null,
+    categoryNames: string,
+};

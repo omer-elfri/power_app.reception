@@ -1,51 +1,57 @@
-import React from "react";
 import { twMerge } from "tailwind-merge";
 
 import BedRoom from "../types/bedroom";
-import { TbCategoryMinus } from "react-icons/tb";
+import { RoomInfos } from "../pages/rooms/Infos";
 
-export default function RoomLine({ room: bedRoom, className, onClick }: {
+import { HiLightningBolt } from "react-icons/hi";
+import { GiBroom } from "react-icons/gi";
+import { FaCalendarAlt } from "react-icons/fa";
+import { MdPerson, MdPerson3 } from "react-icons/md";
+import { colors } from "../types";
+
+export default function RoomLine({ room:bedRoom, getInfos, className, onClick }: {
     room: BedRoom.Type,
-    onClick: () => void,
+    getInfos: (room: BedRoom.Type) => RoomInfos,
     className?: string,
+    onClick: () => void,
 }) {
-    const [power, setPower] = React.useState(bedRoom.power);
-
-    React.useEffect(() => {
-        if (bedRoom.power !== 'NONE')
-            setPower(bedRoom.power);
-    }, [bedRoom.power]);
-
-    const g = [
-        "border-green-700",
-        // "border-purple-700",
-        "border-red-700",
-        // "border-yellow-700",
-        "border-blue-700",
-    ];
-    const e = g[parseInt(bedRoom.id) % g.length];
+    const infos = getInfos(bedRoom);
 
     return (
-        <div className={twMerge("grid grid-cols-[35px_1fr_1fr_1fr_auto] [&>div]:pl-3 items-center gap-x-2 shadow py-2 pl-3 relative cursor-pointer " + e + " border-l-3 rounded-l text-[12px] font-bold", className)} onClick={onClick}>
+        <div className={twMerge("grid grid-cols-[35px_70px_1fr_80px_100px_70px] items-center gap-x-3 py-2 \
+            shadow relative cursor-pointer text-[11px] font-bold [&>div]:bg-red-40", className)}
+            onClick={onClick}>
 
-            <div className="font-bold text-[14px] text-center">{bedRoom.id}</div>
+            <div className="text-[14px]"> {bedRoom.id} </div>
 
-            <div className="font-bold text-[11px]">{bedRoom.categories.map((category) => (
-                <p key={category.id}>{category.name}</p>
-            ))}</div>
+            <div> {infos.categoryNames} </div>
 
-            <div className="flex flex-row items-center gap-1">
-                <TbCategoryMinus />
-                <span className="">Réservé</span>
+            <div className="flex flex-row items-center gap-2 text-gray-500">
+                { bedRoom.coming
+                ? <FaCalendarAlt size={12} style={{color: colors.coming}} />
+                : bedRoom.check_in ?
+                    (bedRoom.check_in.sexe === 'Mme')
+                    ? <MdPerson3 size={15} style={{color: colors.sold}} />
+                    : <MdPerson size={15} style={{color: colors.sold}} />
+                : <MdPerson size={15} /> }
+                <span className="flex-1 text-center">{infos.clientName ?? "libre"}</span>
             </div>
 
-            <div className="flex flex-row items-center gap-1">
-                <TbCategoryMinus />
-                <span className="">Alimenté</span>
+            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.power ? "text-black" : "text-gray-400")}>
+                <HiLightningBolt size={14} className={bedRoom.power ? "text-red-600" : ""} />
+                <span className="">{infos.powered}</span>
             </div>
 
-            <div className="flex flex-row justify-center font-bold">
-                <p className="px-2 py-1 text-[9px] text-green-700 bg-green-700/15 rounded-md">VENDU</p>
+            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.cleaning ? "text-black" : "text-gray-400")}>
+                <GiBroom size={14} className={bedRoom.cleaning ? "text-blue-600" : ""} />
+                <span className="">{infos.cleaning}</span>
+            </div>
+
+            <div className="flex flex-row justify-end items-center flex-wrap gap-x-2 gap-y-1 font-bold">
+                { infos.issueIcon }
+                { infos.isSolded ?
+                    <p className="px-2 py-1 uppercase text-[9px] text-green-700 bg-green-700/15 rounded-md">Vendu</p> :
+                    <p className="px-2 py-1 uppercase text-[9px] text-blue-700 bg-blue-700/15 rounded-md">Libre</p> }
             </div>
 
         </div>

@@ -1,36 +1,29 @@
-import { FaArrowRight }  from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
+import { FaArrowRight }  from "react-icons/fa";
 
-export default function SectionBox({ className, subClassName, children, more }: {
+export default function SectionBox({ className, subClassName, children, bottom }: {
   className?: string,
   subClassName?: string,
   children?: React.ReactNode,
-  more?: { link: string, value?: string, },
+  bottom?: React.ReactNode,
 }) {
   return (
-    <div className={twMerge("flex flex-col flex-1 gap-2 border-1 border-gray-400/50 shadow-md px-5 py-3 rounded-sm overflow-hidden bg-gray-100/30", more?"pb-0":"", className)}>
-
-      <div className={twMerge("flex flex-col gap-1 flex-1 overflow-hidden", subClassName)}>
+    <div className={twMerge("flex flex-col gap-2 border-1 border-gray-400/50 shadow-md px-5 py-3 rounded-sm bg-gray-100/30", className)}>
+      <div className={twMerge("flex flex-col gap-2 overflow-hidden flex-1", subClassName)}>
         { children }
       </div>
-
-      { more && <a href="" className="flex flex-row justify-between text-blue-600 font-bold text-[12px] border-t-1 border-gray-500/30 py-3">
-        <p>{ more.value ?? "Tout voir" }</p> <FaArrowRight />
-      </a> }
-
+      { bottom }
     </div>
   );
 }
 
-type TitleProps = {
+export function Title({ icon, name, className, notif, bar }: {
   icon?: React.ReactNode,
   name: string | React.ReactNode,
   notif?: string | React.ReactNode,
   className?: string,
   bar?: boolean,
-};
-
-export function Title({ icon, name, className, notif, bar }: TitleProps) {
+}) {
   return (
     <div className={twMerge("flex flex-col gap-2", className)}>
 
@@ -42,6 +35,17 @@ export function Title({ icon, name, className, notif, bar }: TitleProps) {
   
       { bar && <hr className="text-gray-400/50" /> }
 
+    </div>
+  );
+}
+
+export function SeeMore({ onClick, value }: {
+  onClick?: () => void,
+  value?: string,
+}) {
+  return (
+    <div className="flex flex-row justify-between text-blue-600 font-bold text-[12px] border-t-1 border-gray-500/30 pt-3 cursor-pointer" onClick={onClick}>
+      <p>{ value ?? "Tout voir" }</p> <FaArrowRight />
     </div>
   );
 }

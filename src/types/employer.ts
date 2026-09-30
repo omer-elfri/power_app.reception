@@ -1,4 +1,7 @@
+import { employers_datas } from "../configs/employer";
+
 namespace Employer {
+    export type Id = keyof typeof employers_datas;
 
     export type Type = {
         name: string,

@@ -1,6 +1,6 @@
 import { RoomCtgData } from "../datas/types";
 
-export const room_ctg_datas = {
+export const room_ctg_datas: Record<string, RoomCtgData> = {
     'economic': {
         'name': "Économique",
         'price': 10500,

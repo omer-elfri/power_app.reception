@@ -1,19 +1,33 @@
 'use client'
 
 import { useDataContext } from "../../datas/context";
-import BedRoom from "../../types/bedroom";
 import { PieChart } from '@mui/x-charts/PieChart';
+import { colors } from "../../types";
 
 export default function AnalyseSection() {
   const { analysis } = useDataContext();
   const data = [
-    { label: 'Vendu', value: analysis.nbSolded, color: BedRoom.Status.colors.sold },
-    { label: 'Réservée', value: analysis.nbComing, color: BedRoom.Status.colors.coming },
-    { label: 'Néttoyage (check-out)', value: analysis.nbCleaning.checkout, color: BedRoom.Status.colors.clean },
-    { label: 'Hors service', value: analysis.nbHs, color: BedRoom.Status.colors.hs },
-    { label: 'Disponible', value: analysis.nbFree, color: '#8997aa30' },
+    { label: 'Vendu',
+      value: analysis.solded.length,
+      color: colors.sold
+    },
+    { label: 'Réservée',
+      value: analysis.coming.length,
+      color: colors.coming
+    },
+    { label: 'Néttoyage (check-out)',
+      value: analysis.cleaning.check_out.length,
+      color: colors.cleaning
+    },
+    { label: 'Hors service',
+      value: analysis.issues.length,
+      color: colors.issue
+    },
+    { label: 'Disponible',
+      value: analysis.free.length,
+      color: '#8997aa30'
+    },
   ];
-
   return (
     <div className="flex flex-col w-full gap-3">
       <PieChart
@@ -22,14 +36,14 @@ export default function AnalyseSection() {
         height={140}
         hideLegend={true}
         series={[{
-          innerRadius: 10,
+          innerRadius: 20,
           outerRadius: 70,
           data,
           // arcLabel: 'value',
           paddingAngle: 1,
           cornerRadius: 5,
-          startAngle: 15,
-          endAngle: -315
+          startAngle: 25,
+          endAngle: -325,
         }]}
       />
       <table className="">

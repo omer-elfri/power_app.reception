@@ -1,6 +1,6 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { IoPersonCircle } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa";
 

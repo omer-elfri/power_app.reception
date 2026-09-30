@@ -3,14 +3,14 @@
 import React from "react";
 
 import { useDataContext } from "../../datas/context";
+import { colors } from "../../types";
 import ActivityBox from "../../components/ActivityBox";
 
+import { GoArrowUpRight }  from "react-icons/go";
 import { IoBed, IoPersonSharp }  from "react-icons/io5";
 import { FaTools, FaCalendarAlt }  from "react-icons/fa";
 import { MdCleaningServices }  from "react-icons/md";
-import { GoArrowUpRight, GoArrowDownRight }  from "react-icons/go";
 import { ImPower }  from "react-icons/im";
-import BedRoom from "../../types/bedroom";
 
 export default function ActivitySection() {
   const { analysis } = useDataContext();
@@ -22,50 +22,43 @@ export default function ActivitySection() {
     </div>
   ), []);
 
-  const CheckoutIcon = React.useCallback(() => (
-    <div className="flex flex-row">
-      <IoPersonSharp size={30} />
-      <GoArrowDownRight className="ml-[-8px] " />
-    </div>
-  ), []);
-
   return (
     <div className="flex flex-row items-center gap-1">
       <ActivityBox
         icon={<ImPower size={30} />}
-        value={analysis.nbPowered}
+        value={analysis.powered.length}
         name="Chambres" subName="alimentées"
-        color="#cf0037"
+        color={colors.powered}
       />
       <ActivityBox
         icon={<CheckinIcon />}
-        value={analysis.nbSolded}
+        value={analysis.solded.length}
         name="Chambres" subName="vendues"
-        color={BedRoom.Status.colors.sold}
+        color={colors.sold}
       />
       <ActivityBox
         icon={<IoBed size={35} />}
-        value={analysis.nbFree}
+        value={analysis.free.length}
         name="Chambres" subName="disponibles"
-        color={BedRoom.Status.colors.free}
+        color={colors.free}
       />
       <ActivityBox
         icon={<FaCalendarAlt size={30} />}
-        value={analysis.nbComing}
+        value={analysis.coming.length}
         name="Réservations" subName="aujourd'hui"
-        color={BedRoom.Status.colors.coming}
+        color={colors.coming}
       />
       <ActivityBox
         icon={<MdCleaningServices size={30} />}
-        value={analysis.nbCleaning.checkin + analysis.nbCleaning.checkout}
+        value={analysis.cleaning.total.length}
         name="Chambre" subName="en néttoyage"
-        color={BedRoom.Status.colors.clean}
+        color={colors.cleaning}
       />
       <ActivityBox bar={false}
         icon={<FaTools size={30} />}
-        value={analysis.nbHs}
+        value={analysis.issues.length}
         name="Pannes" subName="signalées"
-        color={BedRoom.Status.colors.hs}
+        color={colors.issue}
       />
     </div>
   );

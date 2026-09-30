@@ -1,42 +1,41 @@
-import { uniqueId } from "../tools/tools";
 import Employer from "../types/employer";
 
-export const employers_datas: Employer.Type[] = uniqueId([
-    {
+export const employers_datas: Record<string, Employer.Type> = {
+    'receptionist1': {
         name: "Hilary",
         rules: [
             Employer.Rule.RECEPTIONIST,
         ],
     },
-    {
+    'receptionist2': {
         name: "Romuald",
         rules: [
             Employer.Rule.RECEPTIONIST,
         ],
     },
-    {
+    'vallet1': {
         name: "Théophane",
         rules: [
             Employer.Rule.CLEANER,
         ],
     },
-    {
+    'vallet2': {
         name: "Albérique",
         rules: [
             Employer.Rule.CLEANER,
         ],
     },
-    {
+    'vallet3': {
         name: "Alexis",
         rules: [
             Employer.Rule.CLEANER,
             Employer.Rule.SECURITY,
         ],
     },
-    {
+    'security': {
         name: "Le vieux",
         rules: [
             Employer.Rule.SECURITY,
         ],
     },
-] as const, 'name');
+ } as const satisfies Record<string, Employer.Type>;

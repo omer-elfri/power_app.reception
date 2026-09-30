@@ -4,6 +4,7 @@ import React from "react";
 
 import { IoArrowDownOutline, IoArrowUpOutline }  from "react-icons/io5";
 import { useDataContext } from "../../datas/context";
+import { getTime } from "../../tools/tools";
 
 export default function MouvementSection() {
   const { moves } = useDataContext();
@@ -19,7 +20,7 @@ export default function MouvementSection() {
       <hr className="col-span-full text-gray-400/40" />
 
       { moves.map((data, i) => <React.Fragment key={i}>
-        <p className="text-[11px] font-bold text-gray-600">{data.come_at}</p>
+        <p className="text-[11px] font-bold text-gray-600">{getTime(data.come_at)}</p>
         <p className="text-[11px] font-bold text-gray-600">{data.roomId}</p>
         <div className="flex flex-row items-center text-[11px] font-bold text-gray-600">
           { (data.sens === 'arrivée') ?
@@ -29,7 +30,7 @@ export default function MouvementSection() {
           <span className="capitalize ml-1">{data.sens}</span>
         </div>
         <p className="text-[12px] truncate flex-1 text-gray-600">{data.client}</p>
-        <p className="text-[12px] font-bold text-center text-gray-600">{data.go_at}</p>
+        <p className="text-[12px] font-bold text-center text-gray-600">{getTime(data.go_at)}</p>
       </React.Fragment> ) }
 
     </div>

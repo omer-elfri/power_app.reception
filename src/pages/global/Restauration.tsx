@@ -2,6 +2,7 @@
 
 import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../datas/context";
+import { getTime } from "../../tools/tools";
 
 export default function RestaurationSection() {
   const { restauration } = useDataContext();
@@ -25,10 +26,10 @@ export default function RestaurationSection() {
         </td></tr>
 
         { restauration.map((data, i) => (
-          <tr key={i} className={twMerge("text-center py-2 text-gray-600 text-[12px]",
+          <tr key={i} className={twMerge("text-center py-2 text-gray-600 text-[11px] font-bold",
             (i!==restauration.length-1)?"border-b-1 border-gray-400/50":"")}>
-            <td className="">{data.time}</td>
-            <td className="font-bold text-[11px]">{data.roomId}</td>
+            <td className="">{getTime(data.time)}</td>
+            <td className="text-[12px]">{data.roomId}</td>
             <td className="">{data.client}</td>
             <td className="">{data.article}</td>
             <td className="">{data.price}</td>
