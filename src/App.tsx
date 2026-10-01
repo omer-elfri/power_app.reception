@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/login";
 import GlobalPage from "./pages/global";
 import RoomsPage from "./pages/rooms";
+import RoomPage from "./pages/rooms/[id]";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<GlobalPage />} />
           <Route path="/rooms" element={<RoomsPage />} />
+          <Route path="/rooms/:id" element={<RoomPage />} />
         </Routes>
       </div>
     </div>

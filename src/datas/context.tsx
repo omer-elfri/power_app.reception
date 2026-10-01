@@ -21,6 +21,8 @@ type DataContextType = {
     setAuthSession: React.Dispatch<React.SetStateAction<AuthSession | null>>,
     bedRooms: BedRoom.Map,
     updateBedRoom: (roomId: BedRoom.Id, datas: UpdateBedRoomValues) => void,
+    roomPopup: BedRoom.Id | null,
+    setRoomPopup: React.Dispatch<React.SetStateAction<BedRoom.Id | null>>,
 
     moves: MoveType[],
     notifications: NotificationType[],
@@ -79,10 +81,10 @@ function updateBedRoom1( room: BedRoom.Type,
                 start: new Date(Date.now()),
                 end: null,
             };
+            room.cleaning = null;
         } else check_in = null;
     }
     if (cleaning !== undefined) {
-        console.log("a", cleaning)
         room.cleaning = (cleaning) ? {
             vallet: cleaning,
             name: employers_datas[cleaning].name,
@@ -147,7 +149,7 @@ function getAnalysis(bedRoomTab: BedRoom.Type[]): AnalysisType {
         } ];
     });
     return {
-        powered: bedRoomTab.filter(room => room.power === 'ON'),
+        powered: bedRoomTab.filter(room => room.power),
         solded: bedRoomTab.filter(room => !!room.check_in),
         free: bedRoomTab.filter(room => !room.check_in),
         coming: bedRoomTab.filter(room => room.coming),
@@ -174,6 +176,8 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
     const [authSession, setAuthSession] = React.useState<AuthSession | null>(null);
     const [bedRooms, setBedRooms] = React.useState( Object.fromEntries(
         room_list.map((room) => [room.id, createNewRoom(room)]) ) as BedRoom.Map);
+    const [roomPopup, setRoomPopup] = React.useState<BedRoom.Id | null>(null);
+
 
     const analysis: AnalysisType = React.useMemo(() => {
         const bedRoomTab = Object.values(bedRooms);
@@ -197,6 +201,7 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
             notifications, restauration,
             authSession, setAuthSession,
             bedRooms, updateBedRoom,
+            roomPopup, setRoomPopup,
         }}> { children }
         </dataContext.Provider>
     );

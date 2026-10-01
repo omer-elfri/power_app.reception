@@ -42,6 +42,13 @@ namespace BedRoom {
         price: number,
         start: Date,
         end: Date | null,
+
+        mail?: string,
+        enterprise?: string,
+        ifu?: string,
+        option?: string,
+        nuitee?: string,
+        sc?: string,
     };
 
     export type ReservationType = {

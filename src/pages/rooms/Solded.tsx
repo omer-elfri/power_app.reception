@@ -13,7 +13,7 @@ export default function SoldedAside() {
     return (
         <SectionBox className="pb-5">
 
-            <Title name="Ventes" className="mb-2" notif={analysis.solded.length} bar />
+            <Title bar className="mb-2" right={analysis.solded.length}>Ventes</Title>
 
             <div className="flex flex-col gap-3"> { room_ctg_list.map((room_ctg) => {
                 const room_ctg_id = room_ctg.id as BedRoom.Category.Id;

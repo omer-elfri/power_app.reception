@@ -4,7 +4,7 @@ export const notifications: NotificationType[] = [{
     'time': new Date(Date.now()),
     'roomId': '101',
     'label': 'coming',
-    'value': "Lorem ipsum dolor sit amet consectetur.",
+    'value': "Lorem ipsum dolor sit amet consectetur. frku ekdhub ehu edwhu",
 }, {
     'time': new Date(Date.now()),
     'roomId': '101',

@@ -4,7 +4,7 @@ import React from "react";
 
 import { IoArrowDownOutline, IoArrowUpOutline }  from "react-icons/io5";
 import { useDataContext } from "../../datas/context";
-import { getTime } from "../../tools/tools";
+import { getTime } from "../../tools";
 
 export default function MouvementSection() {
   const { moves } = useDataContext();

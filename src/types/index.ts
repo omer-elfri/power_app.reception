@@ -21,7 +21,9 @@ export type EspStatus = {
 
 export type FormType = 'line' | 'grid';
 
-export type Power = 'ON' | 'OFF' | null;
+export type Power = boolean | null;
+
+export type Sex = 'Mr' | 'Mme';
 
 export type StageId = '0'|'1'|'2'|'3'|'4'|'5';
 
@@ -69,6 +71,23 @@ export const colors: {[k in StatusId]: string} = {
     // receptionnist
     // heure
 
+// reservation
+// connexion
+// notification
+// restauration
+// mouvements
+// activités (more)
+
+// check in
+    // check out
+// nettoyer
+// problem
+// ch dernieres activitées
+
+// popup
+    // filtre
+    // 1 / 3 navigation
+// activation des cartes
 
 
 

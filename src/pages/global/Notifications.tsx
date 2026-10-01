@@ -2,7 +2,7 @@
 
 import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../datas/context";
-import { getTime } from "../../tools/tools";
+import { getTime } from "../../tools";
 import { colors } from "../../types";
 
 export default function NotificationSection() {

@@ -26,15 +26,15 @@ export default function InitComponent() {
   }, []);
 
   React.useEffect(() => {
-    updateBedRoom('003', { power: 'ON', check_in: { name: "Mr Smith ADJALLALA", sexe: 'Mr', price: 10000 } });
-    updateBedRoom('101', { power: 'ON' });
+    updateBedRoom('003', { power: true, check_in: { name: "Mr Smith ADJALLALA", sexe: 'Mr', price: 10000 } });
+    updateBedRoom('101', { power: true });
     updateBedRoom('102', { check_in: { name: "Mr Smith ADJALLALA", sexe: 'Mr', price: 10000 } });
     updateBedRoom('103', { coming: { client: "Mr Teazer", name: "Foast", id: '003', start: new Date(Date.now()),nuitee: 3, } });
-    updateBedRoom('104', { power: 'ON', cleaning: 'vallet1'});
-    updateBedRoom('105', { check_in: { name: "Fabrice ADJALLALA", price: 10000 }, power: 'OFF', cleaning: 'vallet1' });
+    updateBedRoom('104', { power: true, cleaning: 'vallet1'});
+    updateBedRoom('105', { power: false, check_in: { name: "Fabrice ADJALLALA", price: 10000 }, cleaning: 'vallet1' });
     updateBedRoom('106', { cleaning: 'vallet3' });
     updateBedRoom('107', { check_in: { name: "Mrs Flore", sexe: 'Mme', price: 10000 } });
-    updateBedRoom('108', { power: 'ON' });
+    updateBedRoom('108', { power: true });
     updateBedRoom('108', { issues: [{ priority: "high", message: "we", }] });
     updateBedRoom('109', { issues: [{ priority: "low", message: "fre fenlj", }] });
     updateBedRoom('111', { issues: [{ priority: "medium", message: "fre fre feru", }] });
@@ -50,10 +50,9 @@ export default function InitComponent() {
             updateBedRoom(roomId, { power });
             sendNotification({
                 title: `Chambre ${roomId}`,
-                body: !power ? "Chambre déconnectée" : {
-                    "ON": "Chambre alimentée",
-                    "OFF": "Chambre éteinte",
-                }[power],
+                body: (power) ? "Chambre alimentée"
+                : (power === false) ? "Chambre éteinte"
+                : "Chambre déconnectée",
             });
         });
         return () => { unlisten.then((fn) => fn()); }

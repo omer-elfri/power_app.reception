@@ -10,13 +10,12 @@ import SectionBox, { Title } from "../../components/SectionBox";
 import RoomLine from "../../components/RoomLine"
 import RoomBox from "../../components/RoomBox";
 import { MdError, MdWarning } from "react-icons/md";
-import { RoomInfos } from "./Infos";
 import { employers_datas } from "../../configs/employer";
+import { useDataContext } from "../../datas/context";
 
-export default function RoomSection({ form, rooms, setRoomPopup }: {
+export default function RoomSection({ form, rooms }: {
     form: FormType,
     rooms: BedRoom.Type[],
-    setRoomPopup: React.Dispatch<React.SetStateAction<BedRoom.Id | null>>,
 }) {
     const roomStages = React.useMemo(() => {
         const d = Object.groupBy(rooms, (room) => room.stage);
@@ -33,26 +32,28 @@ export default function RoomSection({ form, rooms, setRoomPopup }: {
                 <div className="min-h-100 flex justify-center items-center px-2 border-t-1 border-gray-500/50">
                     <p className="font-bold text-gray-400">Aucune correspondance</p>
                 </div>
-            ) : roomStages.map(([stage, rooms]) => (
-                <SectionBox key={stage} className="flex-1" subClassName="min-h-30 pb-3">
-                    <Title name={stages[stage as StageId].name} bar notif={`${rooms.length} chambres`} />
-                    <StageAside key={stage} form={form} rooms={rooms} setRoomPopup={setRoomPopup} />
-                </SectionBox>
+            ) : roomStages.map(([stage, rooms], i) => (
+                <StageAside key={stage}
+                    form={form} stage={stage as StageId} rooms={rooms}
+                    className={ (i===roomStages.length-1) ?"flex-1" :""}
+                />
             )) }
         </div>
     );
 }
 
-function StageAside({ form, rooms:stageRooms, setRoomPopup }: {
+function StageAside({ form, stage, rooms, className }: {
     form: FormType,
+    stage: StageId,
     rooms: BedRoom.Type[],
-    setRoomPopup: React.Dispatch<React.SetStateAction<BedRoom.Id | null>>,
+    className?: string,
 }) {
+    const { setRoomPopup } = useDataContext();
+
     const getInfos = React.useCallback((room: BedRoom.Type): RoomInfos => {
-        const powered = (room.power === 'ON') ? "Allumée" : "Éteinte";
+        const powered = (room.power) ? "Allumée" : (room.power === false) ? "Éteinte" : "...";
         const isSolded = !!room.check_in;
 
-        console.log("b")
         const valletName = employers_datas[room.cleaning?.vallet ?? ""]?.name;
         const cleaning = !room.cleaning ? "Non" : !room.cleaning.end ? valletName : "Propre";
         const coming = room.coming;
@@ -72,15 +73,33 @@ function StageAside({ form, rooms:stageRooms, setRoomPopup }: {
         
     }, [room_ctg_datas]);
 
-    if (form === "line") return (
-        <div className="flex flex-col gap-2"> { stageRooms.map((room) => (
-            <RoomLine key={room.id} room={room} getInfos={getInfos} onClick={() => setRoomPopup(room.id)} /> )) }
-        </div>
-    );
-    if (form === "grid") return (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-x-3 gap-y-6 mt-5"> { stageRooms.map((room) => (
-            <RoomBox key={room.id} room={room} getInfos={getInfos} onClick={() => setRoomPopup(room.id)} /> )) }
-        </div>
+    return (
+        <SectionBox className={className} subClassName="min-h-30 pb-3">
+            <Title bar right={`${rooms.length} chambres`}>{stages[stage as StageId].name}</Title>
+
+            { (form === "line")
+            ?   <div className="flex flex-col gap-2"> { rooms.map((room) =>
+                    <div key={room.id} className="cursor-pointer" onClick={()=>setRoomPopup(room.id)}>
+                        <RoomLine room={room} getInfos={getInfos} />
+                    </div> ) }
+                </div>
+            :   <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-x-3 gap-y-6 mt-5">
+                    { rooms.map((room) => <div key={room.id} className="cursor-pointer" onClick={()=>setRoomPopup(room.id)}>
+                        <RoomBox room={room} getInfos={getInfos} />
+                    </div> ) }
+                </div>
+            }
+        </SectionBox>
     );
 }
 
+
+export type RoomInfos = {
+    powered: string,
+    isSolded: boolean,
+    cleaning: string,
+    coming: BedRoom.ReservationType | null,
+    clientName: string | null,
+    issueIcon: React.ReactNode | null,
+    categoryNames: string,
+};

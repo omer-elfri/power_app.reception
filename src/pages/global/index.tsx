@@ -22,35 +22,31 @@ export default function GlobalPage() {
       <div className="grid grid-cols-10 grid-rows-[auto_400px_auto] gap-5">
 
         <SectionBox className="col-span-10">
-          <Title name="Activités du jour"
-            icon={<FaRegCalendarAlt size={20} className="" />} />
+          <Title icon={<FaRegCalendarAlt size={20} className="" />}>Activités du jour</Title>
           <ActivitySection />
         </SectionBox>
 
-        <SectionBox className="col-span-3"
-            bottom={<SeeMore value="Plus de détails" />}>
-          <Title name="Analyse" />
+        <SectionBox className="col-span-3" bottom={<SeeMore value="Plus de détails" />}>
+          <Title>Analyse</Title>
           <AnalyseSection />
         </SectionBox>
 
         <SectionBox className="col-span-4"
             bottom={<SeeMore value="Voir plus" />}>
-          <Title name="Mouvements du jour" className="mb-3"
-            icon={<TbArrowsDoubleNeSw size={20} />} />
+          <Title className="mb-3" icon={<TbArrowsDoubleNeSw size={20} />}>Mouvements du jour</Title>
           <MouvementSection />
         </SectionBox>
 
         <SectionBox className="col-span-3 row-span-2"
             bottom={<SeeMore value="Voir tout" />}>
-          <Title name="Notifications" notif="1"
-            icon={<IoMdNotificationsOutline size={20} className="" />} />
+          <Title right="1"
+            icon={<IoMdNotificationsOutline size={20} className="" />}>Notifications</Title>
           <NotificationSection />
         </SectionBox>
 
         <SectionBox className="col-span-7"
             bottom={<SeeMore value="Voir tout" />}>
-          <Title name="Restauration" notif="1"
-            icon={<RiServiceBellLine size={22} className="" />} />
+          <Title right="1" icon={<RiServiceBellLine size={22} className="" />}>Restauration</Title>
           <RestaurationSection />
         </SectionBox>
 

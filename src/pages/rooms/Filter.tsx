@@ -4,14 +4,18 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 
 import { room_ctg_datas } from "../../configs/room_ctg";
-import { FormType, StageId, stages, StatusId } from "../../types";
+import { colors, FormType, StageId, stages, StatusId } from "../../types";
 import BedRoom from "../../types/bedroom";
 import { useDataContext } from "../../datas/context";
 import { room_ctg_list, room_list } from "../../datas/types";
 
 import SectionBox, { SeeMore, Title } from "../../components/SectionBox";
-import { GiHamburgerMenu } from "react-icons/gi";
+import { GiBroom, GiHamburgerMenu } from "react-icons/gi";
 import { FiGrid } from "react-icons/fi";
+import { FaCalendarAlt, FaTools } from "react-icons/fa";
+import { HiLightningBolt } from "react-icons/hi";
+import { MdPerson } from "react-icons/md";
+import { IoBed } from "react-icons/io5";
 
 export default function FilterSection({ form, setForm, datas, setDatas, className }: {
     form: FormType,
@@ -24,7 +28,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
     const [search, setSearch] = React.useState("");
     const [stage, setStage] = React.useState<StageId | 'all'>('all');
     const [category, setCategory] = React.useState<BedRoom.Category.Id | 'all'>('all');
-    const [status, setStatus] = React.useState<StatusId | 'all'>('all');
+    const [status, setStatus] = React.useState<StatusId[]>([]);
 
     const floorList: StageId[] = React.useMemo(() => {
         const floorTab = room_list
@@ -57,35 +61,62 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
                 return ( room.categories.includes(category) );
             })
             .filter((room) => { // status
-                if (status === 'powered') return analysis.powered.some((rm) => (rm.id === room.id));
-                if (status === 'sold') return analysis.solded.some((rm) => (rm.id === room.id));
-                if (status === 'free') return analysis.free.some((rm) => (rm.id === room.id));
-                if (status === 'cleaning') return analysis.cleaning.total.some((rm) => (rm.id === room.id));
-                if (status === 'coming') return analysis.coming.some((rm) => (rm.id === room.id));
-                if (status === 'issue') return analysis.issues.some((rm) => (rm.id === room.id));
-                return room;
+                if (status.includes('powered') && !room.power
+                    || status.includes('sold') && !room.check_in
+                    || status.includes('free') && room.check_in
+                    || status.includes('cleaning') && !room.cleaning
+                    || status.includes('coming') && !room.coming
+                    || status.includes('issue') && room.issues.length === 0)
+                    return false;
+                return true;
             });
         setDatas(res);
     }, [ analysis, datas, setDatas,
-        search, stage, category, status
+        search, stage, category, status, status
     ]);
 
     const restoreFilter = React.useCallback(() => {
         setSearch("");
         setStage('all');
         setCategory('all');
-        setStatus('all');
+        setStatus([]);
     }, []);
+
+    const FilterOption = React.useCallback(({ value, children, color }: {
+        value: StatusId,
+        children: React.ReactNode,
+        color: string,
+    }) => {
+        const switchFilter = () => {
+            setStatus((status) => {
+                let res = status.includes(value)
+                    ? status.filter(stat => stat !== value)
+                    : [...status, value];
+                if (value === 'sold') res = res
+                    .filter(stat => stat !== 'free');
+                if (value === 'free') res = res
+                    .filter(stat => stat !== 'sold');
+                return res;
+            });
+        }
+        return (
+            <div className="flex justify-center items-center aspect-square p-3 rounded \
+                bg-gray-400/10 text-gray-600 cursor-pointer" onClick={switchFilter}
+                style={status.includes(value) ? { backgroundColor: color+"20", color } : {}}>
+                { children }
+            </div>
+        );
+    }, [status, setStatus]);
 
     return (
         <SectionBox bottom={<SeeMore onClick={restoreFilter} value="Réinitialiser" />}>
 
-            <Title name="Filtres" className="mb-2" notif={ <div className="flex flex-row gap-x-1">
+            <Title className="mb-2" right={ <div className="flex flex-row gap-x-1">
                 <button className={twMerge("", (form==="line")?"text-white bg-green-600":"bg-gray-300/50")}
                     onClick={() => setForm('line')}> <GiHamburgerMenu /> </button>
                 <button className={twMerge("", (form==="grid")?"text-white bg-blue-600":"bg-gray-300/50")}
                     onClick={() => setForm('grid')}> <FiGrid /> </button>
-            </div> } />
+            </div> }>Filtres</Title>
 
             <div className={twMerge("flex flex-col gap-3", className)}>
 
@@ -113,17 +144,14 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
                     )) }
                 </select>
 
-                <select name="status" value={status} onChange={e => {
-                    setStatus(e.target.value as StatusId);
-                }} className="border-1 text-[11px] font-bold py-2 h-7">
-                    <option value="all">Tous les états</option>
-                    <option value="powered">Alimentée</option>
-                    <option value="sold">Vendues</option>
-                    <option value="free">Disponibles</option>
-                    <option value="cleaning">En néttoyage</option>
-                    <option value="coming">Réservées</option>
-                    <option value="issue">Problèmes</option>
-                </select>
+                <div className="flex flex-row flex-wrap gap-1">
+                    <FilterOption value='powered' color={colors.powered}> <HiLightningBolt size={14} /> </FilterOption>
+                    <FilterOption value='sold' color={colors.sold}> <MdPerson size={16} /> </FilterOption>
+                    <FilterOption value='free' color={colors.free}> <IoBed size={14} /> </FilterOption>
+                    <FilterOption value='cleaning' color={colors.cleaning}> <GiBroom size={14} /> </FilterOption>
+                    <FilterOption value='coming' color={colors.coming}> <FaCalendarAlt size={14} /> </FilterOption>
+                    <FilterOption value='issue' color={colors.issue}> <FaTools size={14} /> </FilterOption>
+                </div>
 
             </div>
 

@@ -2,7 +2,7 @@
 
 import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../datas/context";
-import { getTime } from "../../tools/tools";
+import { formatPrice, getTime } from "../../tools";
 
 export default function RestaurationSection() {
   const { restauration } = useDataContext();
@@ -32,7 +32,7 @@ export default function RestaurationSection() {
             <td className="text-[12px]">{data.roomId}</td>
             <td className="">{data.client}</td>
             <td className="">{data.article}</td>
-            <td className="">{data.price}</td>
+            <td className="">{formatPrice(data.price)}</td>
           </tr>
         )) }
       </thead>

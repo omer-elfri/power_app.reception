@@ -4,20 +4,18 @@ import React from "react";
 
 import { useDataContext } from "../../datas/context";
 import { FormType } from "../../types";
-import BedRoom from "../../types/bedroom";
 
 import PageTitle from "../../components/PageTitle";
 import FilterSection from "./Filter";
 import SoldedAside from "./Solded";
 import RoomSection from "./Rooms";
-import { Popup } from "./Infos";
+import RoomInfos from "./Infoss";
 
 export default function RoomsPage() {
-    const { bedRooms } = useDataContext();
+    const { bedRooms, roomPopup } = useDataContext();
     const bedRoomTab = React.useMemo(() => Object.values(bedRooms), [bedRooms]) ;
     const [form, setForm] = React.useState<FormType>('line');
     const [filteredRooms, setFilteredRooms] = React.useState(bedRoomTab);
-    const [roomPopup, setRoomPopup] = React.useState<BedRoom.Id | null>(null);
 
     return (
         <div className="flex flex-col gap-5 pb-10">
@@ -27,16 +25,17 @@ export default function RoomsPage() {
             <div className="grid grid-cols-[250px_1fr] gap-5">
 
                 <div className="flex flex-col gap-3 sticky top-3 self-start">
+                    { roomPopup &&
+                        <RoomInfos room={bedRooms[roomPopup]} />
+                    }
                     <FilterSection form={form} setForm={setForm}
                         datas={bedRoomTab} setDatas={setFilteredRooms}
                     />
                     <SoldedAside />
                 </div>
 
-                <RoomSection form={form} rooms={filteredRooms} setRoomPopup={setRoomPopup} />
+                <RoomSection form={form} rooms={filteredRooms} />
             </div>
-
-            { roomPopup && <Popup roomId={roomPopup} setRoomPopup={setRoomPopup} /> }
 
         </div>
     );

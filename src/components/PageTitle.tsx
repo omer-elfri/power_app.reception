@@ -1,18 +1,19 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IoPersonCircle } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa";
+import MyLink from "./MyLink";
 
 export default function PageTitle({ className, children }: {
     className?: string,
     children?: React.ReactNode,
 }) {
     const { pathname } = useLocation();
+    const navigate = useNavigate();
 
     return (
-        // <div className="flex flex-row justify-between items-center flex-wrap gap-3 border-b-1 border-gray-400/50 py-5">
-        <div className={twMerge("flex flex-row justify-between items-start flex-wrap gap-3 pt-5", className)}>
+        <div className={twMerge("flex flex-row justify-between items-center flex-wrap gap-3 pt-5", className)}>
 
             <div className="flex flex-row items-center gap-2">
                 <img width={30} height={30} src="/power_icon.png" alt="" />
@@ -27,17 +28,26 @@ export default function PageTitle({ className, children }: {
 
             {/* <input type="search" width={20} height={3} placeholder="Rechercher" className="border-1 py-1/2 px-2 rounded" /> */}
             {/* <input type="search" placeholder="Rechercher..." className="w-50 rounded-lg border border-gray-200 bg-gray-50 py-[5px] pl-3 pr-3 text-sm text-gray-700 outline-none transition focus:border-gray-400 focus:bg-white" /> */}
+{/* 
+            <input type="search" placeholder="rechercher" className="border-1 px-2 py-1 font-bold text-[12px] rounded" /> */}
 
-            <button className="bg-blue-500 text-white">
+            <button className="bg-blue-500 text-white" onClick={() => navigate('/rooms/001')}>
                 <FaPlus /> <span>Réservation</span>
             </button>
 
+            {/* <div className="h-30" /> */}
+
+            <MyLink href="/login" className="flex justify-center items-center gap-1 p-1 pr-3 rounded-full bg-blue-500/30">
+                <IoPersonCircle size={23} className="text-blue-600 cursor-pointer" />
+                <span className="font-bold text-[13px] uppercase">Hillary</span>
+            </MyLink>
+{/* 
             <a href="/login">
                 <div className="flex flex-row items-center gap-2 pl-1 pr-3 py-1 rounded-md bg-blue-500/20">
                     <IoPersonCircle size={20} className="text-blue-600 cursor-pointer" />
                     <span className="font-bold text-[13px] uppercase">Hillary</span>
                 </div>
-            </a>
+            </a> */}
 
             { children }
 

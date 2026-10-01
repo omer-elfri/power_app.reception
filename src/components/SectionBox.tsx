@@ -17,10 +17,10 @@ export default function SectionBox({ className, subClassName, children, bottom }
   );
 }
 
-export function Title({ icon, name, className, notif, bar }: {
+export function Title({ icon, children, className, right, bar }: {
   icon?: React.ReactNode,
-  name: string | React.ReactNode,
-  notif?: string | React.ReactNode,
+  children: string | React.ReactNode,
+  right?: string | React.ReactNode,
   className?: string,
   bar?: boolean,
 }) {
@@ -29,8 +29,8 @@ export function Title({ icon, name, className, notif, bar }: {
 
       <div className="flex flex-row gap-2 items-center">
         { icon }
-        <div className="font-bold text-[12px] uppercase flex-1">{name}</div>
-        <div className="flex flex-row gap-2 text-[12px] font-bold">{notif}</div>
+        <div className="font-bold text-[12px] uppercase flex-1">{children}</div>
+        <div className="flex flex-row gap-2 text-[12px] font-bold">{right}</div>
       </div>
   
       { bar && <hr className="text-gray-400/50" /> }
