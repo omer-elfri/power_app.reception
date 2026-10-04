@@ -1,0 +1,126 @@
+'use client'
+
+import React from "react";
+import { twMerge } from "tailwind-merge";
+import { room_ctg_datas } from "../../configs/room_ctg";
+import { useDataContext } from "../../hooks";
+import BedRoom from "../../types/bedroom";
+
+import SectionBox, { Bar, Title } from "../../components/SectionBox";
+import LabelInput from "../../components/LabelInput";
+import MyButton from "../../components/MyButton";
+
+import { ImCross } from "react-icons/im"
+import { FaCheck } from "react-icons/fa";
+import { GiBroom } from "react-icons/gi";
+import { TbCancel } from "react-icons/tb";
+import { FaExchangeAlt } from "react-icons/fa";
+import { RoomState } from "../../hooks/room";
+
+export default function RoomInfos({ room:bedRoom }: {
+    room: RoomState,
+}) {
+    const { setRoomPopup } = useDataContext();
+
+    return (
+        <SectionBox subClassName="gap-4">
+
+            <Title bar right={<ImCross size={13} className="text-red-700 cursor-pointer" onClick={() => setRoomPopup(null)} />} >
+                <h1 className="font-bold text-[18px]">CH {bedRoom.id}</h1>
+            </Title>
+
+            <form className="flex flex-col gap-y-4 rounded-md font-bold" onSubmit={(e) => {
+                e.preventDefault();
+            }}>
+                <CheckInBox room={bedRoom} />
+                <Bar />
+                <ActionBox room={bedRoom} />
+            </form>
+
+        </SectionBox>
+    );
+}
+
+function CheckInBox({ room:bedRoom }: {
+    room: RoomState,
+}) {
+    const [sexe, setSexe] = React.useState(bedRoom.client?.sexe);
+    const [name, setName] = React.useState(bedRoom.infos.clientName );
+    const [description, setDescription] = React.useState(bedRoom.client?.description);
+    const realPrice = React.useMemo(() => (
+        bedRoom.client?.start.price
+        ?? room_ctg_datas[ bedRoom.categories[0] ].price
+    ), [room_ctg_datas, bedRoom]);
+    const [price, setPrice] = React.useState(realPrice);
+
+    React.useEffect(() => {
+        setSexe(bedRoom.client?.sexe);
+        setName(bedRoom.infos.clientName );
+        setPrice(realPrice);
+        setDescription(bedRoom.client?.description);
+    }, [bedRoom, realPrice]);
+
+    return (
+        <div className="flex flex-col gap-y-2">
+
+            { bedRoom.issue && <p className={twMerge("rounded px-2 py-1 text-[11px]", bedRoom.issue.priority === "high" ? "bg-red-500/10 text-red-700" :  "bg-yellow-500/10 text-yellow-700")}>{bedRoom.issue?.message}</p> }
+
+            <h2 className="font-bold text-[13px]">Informations client</h2>
+
+            <LabelInput label="Nom complet" required
+                subClassName="grid grid-cols-[35px_1fr] grid-rows-[30px] border-1 px-2 rounded">
+                <select name="sexe" className="text-[12px] appearance-none !border-0 text-[12px]" value={sexe} onChange={(e) => setSexe(e.target.value as 'Mr' | 'Mme') }>
+                    <option value='Mr'>Mr</option>
+                    <option value='Mme'>Mme</option>
+                </select>
+                <input name="fullname" placeholder="Client X" className="!border-0 text-[12px]" required value={name ?? ""} onChange={(e) => setName(e.target.value)} />
+            </LabelInput>
+
+            <LabelInput label="Prix unitaire" required>
+                <input name="price" type="number" className="text-[13px] text-center px-3 w-full h-7" value={price || ""} onChange={(e) => setPrice(Number(e.target.value))} />
+            </LabelInput>
+
+            <LabelInput label="Infos supplémentaires">
+                <textarea className="w-full h-25 p-2 text-[11px]" value={ description || "IFU / entreprise / autre description" } onChange={(e) => setDescription(e.target.value)} />
+            </LabelInput>
+
+            <div className="grid grid-cols-2 gap-2"> { !bedRoom.client
+                ? <>
+                    <MyButton name="check_in" icon={<FaCheck className="order-1" />} className="col-span-2 self-end bg-green-700/20 text-green-700">Check in</MyButton>
+                </> : <>
+                    <MyButton name='change_room' icon={<FaExchangeAlt />} className="bg-yellow-700/20 text-yellow-700 border-yellow-700">Déplacer</MyButton>
+                    <MyButton name="modify" icon={<FaCheck className="order-1" />} className="bg-green-700/20 text-green-700 border-1 border-green-700">Modifier</MyButton>
+                </> }
+            </div>
+
+        </div>
+    );
+}
+
+function ActionBox({ room:bedRoom }: {
+    room: RoomState,
+}) {
+    return (
+        <div className="flex flex-col gap-2">
+
+            <h2 className="font-bold text-[13px] mb-2">Actions</h2>
+
+            <MyButton name="check_out" icon={<ImCross />}
+                disabled={!bedRoom.client} className={twMerge("border-1", 
+                bedRoom.client
+                ? "bg-red-700/10 border-red-700 text-red-700"
+                : "bg-gray-700/10 border-gray-700 text-gray-700"
+            )}>Check out</MyButton>
+
+            { !bedRoom.cleaning ? (
+                <MyButton name="clean" icon={<GiBroom />} className="bg-blue-700/20 text-blue-700">Néttoyer</MyButton>
+            ) : <div className="grid grid-cols-[1fr_auto_auto] gap-1">
+                <MyButton name="cleaner" icon={<GiBroom />} className="border-1 border-blue-700 text-blue-700">{bedRoom.cleaning.vallet.name}</MyButton>
+                <MyButton name="clean_cancel" icon={<ImCross />}  className="bg-red-700/20 text-red-700" />
+            </div> }
+
+            <MyButton name="problem" icon={<TbCancel />} className="border-1 border-red-700 text-red-700">Signaler un problème</MyButton>
+
+        </div>
+    );
+}

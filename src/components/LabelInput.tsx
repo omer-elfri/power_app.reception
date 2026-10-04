@@ -1,12 +1,13 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
-export default function LabelInput({ label, type="text", name, options, className, children, required, defaultVal }: {
+export default function LabelInput({ label, type="text", name, options, className, subClassName, children, required, defaultVal }: {
     label: string,
-    name: string,
-    options?: { k: string, value: string }[],
+    name?: string,
+    options?: { k: string, value: string, disabled?: boolean }[],
     required?: boolean,
     className?: string,
+    subClassName?: string,
     children?: React.ReactNode,
     type?: string,
     defaultVal?: string,
@@ -14,15 +15,17 @@ export default function LabelInput({ label, type="text", name, options, classNam
     let res: React.ReactNode = children;
 
     if (options) res = (
-        <select name={name} className="text-[11px] font-bold h-7" defaultValue={defaultVal}>
+        <select name={name} className="w-full font-bold text-[11px] h-7" defaultValue={defaultVal}>
             { options.map((option) => (
-                <option key={option.k} value={option.k}>{option.value}</option>
+                <option key={option.k} value={option.k} disabled={option.disabled}>
+                    {option.value}
+                </option>
             )) }
         </select>
     );
 
     if (!res) res = (
-        <input name={name} type={type} className="text-[11px] px-3 h-7" defaultValue={defaultVal} />
+        <input name={name} type={type} className="w-full font-bold text-[11px] h-7 px-3" defaultValue={defaultVal} />
     );
 
     return (
@@ -31,7 +34,7 @@ export default function LabelInput({ label, type="text", name, options, classNam
                 <span className="text-[11px]">{label} </span>
                 { required && <span className="text-red-700">*</span> }
             </label>
-            { res }
+            <div className={twMerge("", subClassName)}>{ res }</div>
         </div>
     );
 }

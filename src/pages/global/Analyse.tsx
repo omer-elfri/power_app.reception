@@ -1,6 +1,6 @@
 'use client'
 
-import { useDataContext } from "../../datas/context";
+import { useDataContext } from "../../hooks";
 import { PieChart } from '@mui/x-charts/PieChart';
 import { colors } from "../../types";
 

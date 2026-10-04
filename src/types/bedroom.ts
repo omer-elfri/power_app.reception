@@ -1,7 +1,8 @@
 import { room_ctg_datas } from "../configs/room_ctg";
 import { room_datas } from "../configs/room";
+import { StageId } from ".";
+import { RoomState } from "../hooks/room";
 import Employer from "./employer";
-import { IssueType, Power, StageId } from ".";
 
 namespace BedRoom {
     export type Id = keyof typeof room_datas;
@@ -20,36 +21,23 @@ namespace BedRoom {
     export type Type = {
         id: Id,
         stage: StageId,
-        price: number,
         categories: [
             Category.Id,
             ...Category.Id[],
         ],
+        description: string,
 
         connected: boolean,
-        power: Power,
+        power?: Power,
 
-        check_in: CheckInType | null,
-        cleaning: CleaningType | null,
-        coming: ReservationType | null,
-        issues: IssueType[],
+        client: CheckInType | null,
+        cleaning: CleanType | null,
+        issue: IssueType | null,
     }
-    export type Map = {[k in Id]: Type};
 
-    export type CheckInType = {
-        name: string,
-        sexe?: 'Mr' | 'Mme',
-        price: number,
-        start: Date,
-        end: Date | null,
+    export type Map = {[k in Id]: RoomState};
 
-        mail?: string,
-        enterprise?: string,
-        ifu?: string,
-        option?: string,
-        nuitee?: string,
-        sc?: string,
-    };
+    export type Power = boolean | null;
 
     export type ReservationType = {
         client: string,
@@ -59,12 +47,42 @@ namespace BedRoom {
         nuitee: number,
     }
 
-    export type CleaningType = {
-        vallet: Employer.Id,
-        name: string,
-        start: Date,
-        end: Date | null,
+    export type IssueType = {
+        priority: 'low' | 'medium' | 'high',
+        message: string,
     }
+
+    export type CheckInType = {
+        sexe: 'Mr' | 'Mme',
+        name: string,
+        description: string,
+    
+        start: {
+            date: Date,
+            price: number,
+            receptionnist: Employer.Type,
+        },
+        end: {
+            date: Date,
+            price: number,
+            employer: Employer.Type,
+        } | null,
+    };
+
+    export type CleanType = {
+        vallet: Employer.Type,
+        description: string,
+        start: {
+            date: Date,
+            receptionnist: Employer.Type | 'admin',
+        },
+        end: {
+            date: Date,
+            employer: Employer.Type,
+        } | null,
+    };
+
+    
 }
 
 export default BedRoom;

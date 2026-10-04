@@ -18,8 +18,4 @@ namespace Employer {
     export type AuthSession = string
 }
 
-export type AuthSession = {
-    name: string,
-}
-
 export default Employer;

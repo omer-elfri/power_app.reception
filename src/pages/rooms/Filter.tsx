@@ -4,10 +4,10 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 
 import { room_ctg_datas } from "../../configs/room_ctg";
-import { colors, FormType, StageId, stages, StatusId } from "../../types";
+import { colors, FormType, StageId, stages, State, StatusId } from "../../types";
 import BedRoom from "../../types/bedroom";
-import { useDataContext } from "../../datas/context";
-import { room_ctg_list, room_list } from "../../datas/types";
+import { useDataContext } from "../../hooks";
+import { room_ctg_list, room_list } from "../../configs/types";
 
 import SectionBox, { SeeMore, Title } from "../../components/SectionBox";
 import { GiBroom, GiHamburgerMenu } from "react-icons/gi";
@@ -16,19 +16,20 @@ import { FaCalendarAlt, FaTools } from "react-icons/fa";
 import { HiLightningBolt } from "react-icons/hi";
 import { MdPerson } from "react-icons/md";
 import { IoBed } from "react-icons/io5";
+import { RoomState } from "../../hooks/room";
 
-export default function FilterSection({ form, setForm, datas, setDatas, className }: {
+export default function FilterSection({ form, setForm, datas, setDatas, className, horizontal = false }: {
     form: FormType,
-    setForm: React.Dispatch<React.SetStateAction<FormType>>,
-    datas: BedRoom.Type[],
-    setDatas: React.Dispatch<React.SetStateAction<BedRoom.Type[]>>,
+    setForm: State<FormType>,
+    datas: RoomState[],
+    setDatas: State<RoomState[]>,
     className?: string,
+    horizontal?: boolean,
 }) {
-    const { analysis } = useDataContext();
+    const { analysis, status, setStatus } = useDataContext();
     const [search, setSearch] = React.useState("");
     const [stage, setStage] = React.useState<StageId | 'all'>('all');
     const [category, setCategory] = React.useState<BedRoom.Category.Id | 'all'>('all');
-    const [status, setStatus] = React.useState<StatusId[]>([]);
 
     const floorList: StageId[] = React.useMemo(() => {
         const floorTab = room_list
@@ -44,7 +45,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
                 const categoryNames = room.categories
                     .map(ctgId => room_ctg_datas[ctgId].name);
                 const textToSearch = room.id + " " +
-                    (room.check_in?.name ?? "") + " " +
+                    (room.client?.name ?? "") + " " +
                     categoryNames.join(" ");
                 const textToSearchFormated = textToSearch.toLowerCase()
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -62,17 +63,17 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
             })
             .filter((room) => { // status
                 if (status.includes('powered') && !room.power
-                    || status.includes('sold') && !room.check_in
-                    || status.includes('free') && room.check_in
+                    || status.includes('sold') && !room.client
+                    || status.includes('free') && room.client
                     || status.includes('cleaning') && !room.cleaning
                     || status.includes('coming') && !room.coming
-                    || status.includes('issue') && room.issues.length === 0)
+                    || status.includes('issue') && !room.issue)
                     return false;
                 return true;
             });
         setDatas(res);
     }, [ analysis, datas, setDatas,
-        search, stage, category, status, status
+        search, stage, category, status
     ]);
 
     const restoreFilter = React.useCallback(() => {
@@ -82,10 +83,11 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
         setStatus([]);
     }, []);
 
-    const FilterOption = React.useCallback(({ value, children, color }: {
+    const FilterOption = React.useCallback(({ value, children, color, title }: {
         value: StatusId,
         children: React.ReactNode,
         color: string,
+        title?: string,
     }) => {
         const switchFilter = () => {
             setStatus((status) => {
@@ -100,7 +102,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
             });
         }
         return (
-            <div className="flex justify-center items-center aspect-square p-3 rounded \
+            <div title={title} className="flex justify-center items-center aspect-square p-3 rounded \
                 bg-gray-400/10 text-gray-600 cursor-pointer" onClick={switchFilter}
                 style={status.includes(value) ? { backgroundColor: color+"20", color } : {}}>
                 { children }
@@ -109,7 +111,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
     }, [status, setStatus]);
 
     return (
-        <SectionBox bottom={<SeeMore onClick={restoreFilter} value="Réinitialiser" />}>
+        <SectionBox className={twMerge("", className)} bottom={<SeeMore onClick={restoreFilter} value="Réinitialiser" />}>
 
             <Title className="mb-2" right={ <div className="flex flex-row gap-x-1">
                 <button className={twMerge("", (form==="line")?"text-white bg-green-600":"bg-gray-300/50")}
@@ -118,7 +120,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
                     onClick={() => setForm('grid')}> <FiGrid /> </button>
             </div> }>Filtres</Title>
 
-            <div className={twMerge("flex flex-col gap-3", className)}>
+            <div className="flex flex-col gap-3">
 
                 <input type="search" placeholder="Rechercher" value={search} onChange={e => setSearch(e.target.value)}
                     className="flex-1 border-1 text-[11px] font-bold flex-1 rounded py-1 px-3"
@@ -145,12 +147,12 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
                 </select>
 
                 <div className="flex flex-row flex-wrap gap-1">
-                    <FilterOption value='powered' color={colors.powered}> <HiLightningBolt size={14} /> </FilterOption>
-                    <FilterOption value='sold' color={colors.sold}> <MdPerson size={16} /> </FilterOption>
-                    <FilterOption value='free' color={colors.free}> <IoBed size={14} /> </FilterOption>
-                    <FilterOption value='cleaning' color={colors.cleaning}> <GiBroom size={14} /> </FilterOption>
-                    <FilterOption value='coming' color={colors.coming}> <FaCalendarAlt size={14} /> </FilterOption>
-                    <FilterOption value='issue' color={colors.issue}> <FaTools size={14} /> </FilterOption>
+                    <FilterOption value='powered' color={colors.powered} title="Alimentées"> <HiLightningBolt size={14} /> </FilterOption>
+                    <FilterOption value='sold' color={colors.sold} title="Vendues"> <MdPerson size={16} /> </FilterOption>
+                    <FilterOption value='free' color={colors.free} title="Libre"> <IoBed size={14} /> </FilterOption>
+                    <FilterOption value='cleaning' color={colors.cleaning} title="En néttoyage"> <GiBroom size={14} /> </FilterOption>
+                    <FilterOption value='coming' color={colors.coming} title="Réservées"> <FaCalendarAlt size={14} /> </FilterOption>
+                    <FilterOption value='issue' color={colors.issue} title="Problème"> <FaTools size={14} /> </FilterOption>
                 </div>
 
             </div>

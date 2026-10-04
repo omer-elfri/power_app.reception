@@ -17,11 +17,13 @@ export default function GlobalPage() {
   return (
     <div className="flex flex-col gap-3 pb-5">
 
-      <PageTitle />
+      {/* <PageTitle /> */}
+
+      <p>ferk. frdl erfjn</p>
 
       <div className="grid grid-cols-10 grid-rows-[auto_400px_auto] gap-5">
 
-        <SectionBox className="col-span-10">
+        {/* <SectionBox className="col-span-10">
           <Title icon={<FaRegCalendarAlt size={20} className="" />}>Activités du jour</Title>
           <ActivitySection />
         </SectionBox>
@@ -48,7 +50,7 @@ export default function GlobalPage() {
             bottom={<SeeMore value="Voir tout" />}>
           <Title right="1" icon={<RiServiceBellLine size={22} className="" />}>Restauration</Title>
           <RestaurationSection />
-        </SectionBox>
+        </SectionBox> */}
 
       </div>
 

@@ -32,11 +32,16 @@ export function Title({ icon, children, className, right, bar }: {
         <div className="font-bold text-[12px] uppercase flex-1">{children}</div>
         <div className="flex flex-row gap-2 text-[12px] font-bold">{right}</div>
       </div>
-  
-      { bar && <hr className="text-gray-400/50" /> }
+      { bar && <Bar /> }
 
     </div>
   );
+}
+
+export function Bar({ className }: {
+  className?: string,
+}) {
+  return <hr className={twMerge("text-gray-400/50", className)} />;
 }
 
 export function SeeMore({ onClick, value }: {

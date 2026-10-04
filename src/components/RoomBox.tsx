@@ -1,17 +1,15 @@
 import { twMerge } from "tailwind-merge";
 
-import BedRoom from "../types/bedroom";
 import { HiLightningBolt } from "react-icons/hi";
 import { GiBroom } from "react-icons/gi";
 import { FaWifi } from "react-icons/fa";
-import { RoomInfos } from "../pages/rooms/Rooms";
+import { RoomState } from "../hooks/room";
 
-export default function RoomBox({ room:bedRoom, className, getInfos }: {
-    room: BedRoom.Type,
-    getInfos: (room: BedRoom.Type) => RoomInfos,
+export default function RoomBox({ room:bedRoom, className }: {
+    room: RoomState,
     className?: string,
 }) {
-    const infos = getInfos(bedRoom);
+    const { infos } = bedRoom;
 
     return (
         <div className={twMerge("flex flex-col gap-x-2 gap-y-2 bg-white p-2 px-5 rounded-md relative pt-7 border-1", className)}>

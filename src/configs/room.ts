@@ -1,6 +1,6 @@
-import { RoomData } from "../datas/types";
+import { RoomData } from "./types";
 
-export const room_datas: Record<string, RoomData> = {
+export const room_datas = {
     '001': {
         'categories': ["economic", "standard"],
         'stage': '0',
@@ -61,7 +61,6 @@ export const room_datas: Record<string, RoomData> = {
     '110': {
         'categories': ["executive"],
         'stage': '1',
-        'price': 10500,
     },
     '111': {
         'categories': ["executive"],

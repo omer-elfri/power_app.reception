@@ -1,6 +1,6 @@
 import { MoveType, NotificationType, RestaurantType } from "../types";
 
-export const notifications: NotificationType[] = [{
+export const notifications_datas: NotificationType[] = [{
     'time': new Date(Date.now()),
     'roomId': '101',
     'label': 'coming',
@@ -107,7 +107,7 @@ export const notifications: NotificationType[] = [{
     'value': "Lorem ipsum dolor sit amet consectetur.",
 }];
 
-export const restauration: RestaurantType[] = [{
+export const restauration_datas: RestaurantType[] = [{
     'time': new Date(Date.now()),
     'roomId': '101',
     'client': "Client 1",
@@ -127,10 +127,10 @@ export const restauration: RestaurantType[] = [{
     'price': 20300,
 }];
 
-export const moves: MoveType[] = [{
+export const moves_datas: MoveType[] = [{
     'sens': "arrivée",
     'roomId': '101',
-    'client': "Mr Smith",
+    'client': "Smith",
     'come_at': new Date(Date.now()),
     'go_at': new Date(Date.now()),
 }, {
@@ -142,7 +142,7 @@ export const moves: MoveType[] = [{
 }, {
     'sens': "arrivée",
     'roomId': '101',
-    'client': "Mr Smith",
+    'client': "Smith",
     'come_at': new Date(Date.now()),
     'go_at': new Date(Date.now()),
 }, {
@@ -154,7 +154,7 @@ export const moves: MoveType[] = [{
 }, {
     'sens': "arrivée",
     'roomId': '101',
-    'client': "Mr Smith",
+    'client': "Smith",
     'come_at': new Date(Date.now()),
     'go_at': new Date(Date.now()),
 }, {
@@ -166,7 +166,7 @@ export const moves: MoveType[] = [{
 }, {
     'sens': "arrivée",
     'roomId': '101',
-    'client': "Mr Smith",
+    'client': "Smith",
     'come_at': new Date(Date.now()),
     'go_at': new Date(Date.now()),
 }, {
@@ -178,7 +178,7 @@ export const moves: MoveType[] = [{
 }, {
     'sens': "arrivée",
     'roomId': '101',
-    'client': "Mr Smith",
+    'client': "Smith",
     'come_at': new Date(Date.now()),
     'go_at': new Date(Date.now()),
 }, {
@@ -190,7 +190,7 @@ export const moves: MoveType[] = [{
 }, {
     'sens': "arrivée",
     'roomId': '101',
-    'client': "Mr Smith",
+    'client': "Smith",
     'come_at': new Date(Date.now()),
     'go_at': new Date(Date.now()),
 }, {
@@ -202,7 +202,7 @@ export const moves: MoveType[] = [{
 }, {
     'sens': "arrivée",
     'roomId': '101',
-    'client': "Mr Smith",
+    'client': "Smith",
     'come_at': new Date(Date.now()),
     'go_at': new Date(Date.now()),
 }, {
@@ -214,7 +214,7 @@ export const moves: MoveType[] = [{
 }, {
     'sens': "arrivée",
     'roomId': '101',
-    'client': "Mr Smith",
+    'client': "Smith",
     'come_at': new Date(Date.now()),
     'go_at': new Date(Date.now()),
 }, {
@@ -226,7 +226,7 @@ export const moves: MoveType[] = [{
 }, {
     'sens': "arrivée",
     'roomId': '101',
-    'client': "Mr Smith",
+    'client': "Smith",
     'come_at': new Date(Date.now()),
     'go_at': new Date(Date.now()),
 }, {

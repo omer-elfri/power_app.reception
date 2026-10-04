@@ -1,8 +1,8 @@
 'use client'
 
 import BedRoom from "../../types/bedroom";
-import { useDataContext } from "../../datas/context";
-import { room_ctg_list } from "../../datas/types";
+import { useDataContext } from "../../hooks";
+import { room_ctg_list } from "../../configs/types";
 
 import SectionBox, { Title } from "../../components/SectionBox";
 import SoldRoom from "../../components/SoldRoom";

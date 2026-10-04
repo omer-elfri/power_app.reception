@@ -1,7 +1,7 @@
 'use client'
 
 import { twMerge } from "tailwind-merge";
-import { useDataContext } from "../../datas/context";
+import { useDataContext } from "../../hooks";
 import { getTime } from "../../tools";
 import { colors } from "../../types";
 

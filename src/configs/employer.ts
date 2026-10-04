@@ -1,6 +1,6 @@
 import Employer from "../types/employer";
 
-export const employers_datas: Record<string, Employer.Type> = {
+export const employers_datas = {
     'receptionist1': {
         name: "Hilary",
         rules: [
@@ -38,4 +38,4 @@ export const employers_datas: Record<string, Employer.Type> = {
             Employer.Rule.SECURITY,
         ],
     },
- } as const satisfies Record<string, Employer.Type>;
+} as const satisfies Record<string, Employer.Type>;
