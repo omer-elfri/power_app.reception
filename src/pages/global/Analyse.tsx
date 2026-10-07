@@ -1,18 +1,18 @@
 'use client'
 
-import { useDataContext } from "../../hooks";
+import { useBedRoom } from "../../hooks/bedroom";
 import { PieChart } from '@mui/x-charts/PieChart';
 import { colors } from "../../types";
 
 export default function AnalyseSection() {
-  const { analysis } = useDataContext();
+  const { analysis } = useBedRoom();
   const data = [
     { label: 'Vendu',
       value: analysis.solded.length,
       color: colors.sold
     },
-    { label: 'Réservée',
-      value: analysis.coming.length,
+    { label: 'Libre et réservée',
+      value: analysis.coming.free.length,
       color: colors.coming
     },
     { label: 'Néttoyage (check-out)',

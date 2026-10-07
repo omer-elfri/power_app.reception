@@ -1,4 +1,6 @@
+import { Action } from "@tauri-apps/plugin-notification";
 import BedRoom from "./bedroom";
+import { ActionId } from "../hooks";
 
 export type State<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -34,7 +36,7 @@ export const stages: {[k in StageId]: {
     '5': { name: "Étage 5", },
 };
 
-export const colors: {[k in StatusId]: string} = {
+export const colors: {[k in (StatusId | ActionId)]: string} = {
     powered: '#cf0037',
     guest: '#074507',
     sold: '#074507',
@@ -43,6 +45,16 @@ export const colors: {[k in StatusId]: string} = {
     cleaning: '#006a9c',
     issue: '#8997aa',
     free: '#4d8642',
+
+    "POWER_ON": '#cf0037',
+    "POWER_OFF": '#074507',
+    "CHECK_IN": '#074507',
+    "CHECK_OUT": '#aa00c4',
+    "CLEANING_START": '#c40000',
+    "CLEANING_CANCELED": '#006a9c',
+    "CLEANING_DONE": '#8997aa',
+    "BOOKED": '#aa00c4',
+    "BOOKED_CANCELED": '#4d8642',
 } as const;
 
 

@@ -7,6 +7,7 @@ import { room_ctg_datas } from "../../configs/room_ctg";
 import { colors, FormType, StageId, stages, State, StatusId } from "../../types";
 import BedRoom from "../../types/bedroom";
 import { useDataContext } from "../../hooks";
+import { useBedRoom } from "../../hooks/bedroom";
 import { room_ctg_list, room_list } from "../../configs/types";
 
 import SectionBox, { SeeMore, Title } from "../../components/SectionBox";
@@ -16,24 +17,23 @@ import { FaCalendarAlt, FaTools } from "react-icons/fa";
 import { HiLightningBolt } from "react-icons/hi";
 import { MdPerson } from "react-icons/md";
 import { IoBed } from "react-icons/io5";
-import { RoomState } from "../../hooks/room";
 
-export default function FilterSection({ form, setForm, datas, setDatas, className, horizontal = false }: {
+export default function FilterSection({ form, setForm, datas, setDatas, className }: {
     form: FormType,
     setForm: State<FormType>,
-    datas: RoomState[],
-    setDatas: State<RoomState[]>,
+    datas: BedRoom.Type[],
+    setDatas: State<BedRoom.Type[]>,
     className?: string,
-    horizontal?: boolean,
 }) {
-    const { analysis, status, setStatus } = useDataContext();
+    const { status, setStatus } = useDataContext();
+    const { analysis } = useBedRoom();
     const [search, setSearch] = React.useState("");
     const [stage, setStage] = React.useState<StageId | 'all'>('all');
     const [category, setCategory] = React.useState<BedRoom.Category.Id | 'all'>('all');
 
     const floorList: StageId[] = React.useMemo(() => {
         const floorTab = room_list
-           .map((room) => (room.stage))
+           .map(room => (room.stage))
            .sort((stageA, stageB) => (
                 parseInt(stageA) - parseInt(stageB)));
         return [...new Set(floorTab)];

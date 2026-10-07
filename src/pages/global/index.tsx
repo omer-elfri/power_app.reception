@@ -11,19 +11,19 @@ import { FaRegCalendarAlt }  from "react-icons/fa";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { TbArrowsDoubleNeSw }  from "react-icons/tb";
 import { RiServiceBellLine }  from "react-icons/ri";
+import { useDataContext } from "../../hooks";
 
 export default function GlobalPage() {
+  const { moves, notifications, restaurations } = useDataContext();
 
   return (
     <div className="flex flex-col gap-3 pb-5">
 
-      {/* <PageTitle /> */}
+      <PageTitle />
 
-      <p>ferk. frdl erfjn</p>
+      <div className="grid grid-cols-10 grid-rows-[auto_370px_250px] gap-5">
 
-      <div className="grid grid-cols-10 grid-rows-[auto_400px_auto] gap-5">
-
-        {/* <SectionBox className="col-span-10">
+        <SectionBox className="col-span-10">
           <Title icon={<FaRegCalendarAlt size={20} className="" />}>Activités du jour</Title>
           <ActivitySection />
         </SectionBox>
@@ -41,16 +41,16 @@ export default function GlobalPage() {
 
         <SectionBox className="col-span-3 row-span-2"
             bottom={<SeeMore value="Voir tout" />}>
-          <Title right="1"
+          <Title right={notifications.length}
             icon={<IoMdNotificationsOutline size={20} className="" />}>Notifications</Title>
           <NotificationSection />
         </SectionBox>
 
         <SectionBox className="col-span-7"
             bottom={<SeeMore value="Voir tout" />}>
-          <Title right="1" icon={<RiServiceBellLine size={22} className="" />}>Restauration</Title>
+          <Title right={restaurations.length} icon={<RiServiceBellLine size={22} className="" />}>Restauration</Title>
           <RestaurationSection />
-        </SectionBox> */}
+        </SectionBox>
 
       </div>
 

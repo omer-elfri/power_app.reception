@@ -4,21 +4,21 @@ import React from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useNavigate } from "react-router-dom";
 
-import { AuthSession } from "../../types/employer";
+import { AuthSession, useAuth } from "../../hooks/auth";
 import { useDataContext } from "../../hooks";
 import PageTitle from "../../components/PageTitle";
 import { FaCheck, FaUser } from "react-icons/fa";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { setAuthSession } = useDataContext();
+  const { setAuthSession } = useAuth();
   const [userName, setUserName] = React.useState("");
   const [password, setPassword] = React.useState("");
 
   return (
     <div style={{ backgroundImage: "url('/rue marina.jpg')" }} className="bg-no-repeat bg-center bg-cover bg-white absolute inset-0">
       <div className="grid grid-cols-[3fr_7fr] gap-5 justify-center w-full h-full bg-black/70 backdrop-blur-sm">
-{/* 
+
         <form className="flex flex-col gap-1 bg-gray-200 px-10 py-5 rounded-md shadow" onSubmit={async (e) => {
           e.preventDefault();
           const username = e.target.username.value;
@@ -45,9 +45,9 @@ export default function LoginPage() {
             <span>Valider</span> <FaCheck />
           </button>
 
-        </form> */}
+        </form>
         
-        {/* <div className="flex flex-row items-center gap-5">
+        <div className="flex flex-row items-center gap-5">
 
           <form className="flex flex-col gap-1 bg-gray-200 px-10 py-5 rounded-md shadow" onSubmit={async (e) => {
             e.preventDefault();
@@ -79,7 +79,7 @@ export default function LoginPage() {
 
           <img src="/Secure login-pana.png" className="w-60" alt="" />
 
-        </div> */}
+        </div>
 
         <div className="bg-white/10 bg-backdrop min-h-30">
 

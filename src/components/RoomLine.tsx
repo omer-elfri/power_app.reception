@@ -1,21 +1,22 @@
 import { twMerge } from "tailwind-merge";
 
 import { colors } from "../types";
-import { RoomState } from "../hooks/room";
 
 import { HiLightningBolt } from "react-icons/hi";
 import { GiBroom } from "react-icons/gi";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdPerson, MdPerson3 } from "react-icons/md";
+import { getInfos } from "../tools";
+import BedRoom from "../types/bedroom";
 
 export default function RoomLine({ room:bedRoom, className }: {
-    room: RoomState,
+    room: BedRoom.Type,
     className?: string,
 }) {
-    const { infos } = bedRoom;
+    const infos = getInfos(bedRoom);
 
     return (
-        <div className={twMerge("grid grid-cols-[35px_70px_1fr_80px_100px_30px] items-center gap-x-3 py-2 \
+        <div className={twMerge("grid grid-cols-[auto_70px_2fr_1fr_1fr_auto] items-center gap-x-5 py-2 \
             shadow relative text-[11px] font-bold [&>div]:bg-red-40", className)} >
 
             <div className="flex flex-col">
@@ -30,7 +31,7 @@ export default function RoomLine({ room:bedRoom, className }: {
                     (bedRoom.client.sexe === 'Mme')
                     ? <MdPerson3 size={15} style={{color: colors.sold}} />
                     : <MdPerson size={15} style={{color: colors.sold}} />
-                : null }
+                : <MdPerson size={15} /> }
                 { bedRoom.coming && <FaCalendarAlt size={12} style={{color: colors.coming}} /> }
                 <span className="flex-1 text-center">{infos.clientName ?? "libre"}</span>
             </div>

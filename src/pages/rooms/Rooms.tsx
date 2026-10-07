@@ -8,11 +8,11 @@ import { useDataContext } from "../../hooks";
 import SectionBox, { Title } from "../../components/SectionBox";
 import RoomLine from "../../components/RoomLine"
 import RoomBox from "../../components/RoomBox";
-import { RoomState } from "../../hooks/room";
+import BedRoom from "../../types/bedroom";
 
 export default function RoomSection({ form, rooms }: {
     form: FormType,
-    rooms: RoomState[],
+    rooms: BedRoom.Type[],
 }) {
     const roomStages = React.useMemo(() => {
         const d = Object.groupBy(rooms, (room) => room.stage);
@@ -42,7 +42,7 @@ export default function RoomSection({ form, rooms }: {
 function StageAside({ form, stage, rooms, className }: {
     form: FormType,
     stage: StageId,
-    rooms: RoomState[],
+    rooms: BedRoom.Type[],
     className?: string,
 }) {
     const { setRoomPopup } = useDataContext();
@@ -53,7 +53,7 @@ function StageAside({ form, stage, rooms, className }: {
 
             { (form === "line")
             ?   <div className="flex flex-col gap-2">
-                    { rooms.map((room, i) => <div key={room.id} className="cursor-pointer" onClick={()=>setRoomPopup(room.id)}>
+                    { rooms.map((room) => <div key={room.id} className="cursor-pointer" onClick={()=>setRoomPopup(room.id)}>
                         <RoomLine room={room} />
                     </div> ) }
                 </div>

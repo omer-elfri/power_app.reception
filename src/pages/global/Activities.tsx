@@ -4,6 +4,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useDataContext } from "../../hooks";
+import { useBedRoom } from "../../hooks/bedroom";
 import { colors } from "../../types";
 import ActivityBox from "../../components/ActivityBox";
 
@@ -14,7 +15,8 @@ import { MdCleaningServices }  from "react-icons/md";
 import { ImPower }  from "react-icons/im";
 
 export default function ActivitySection() {
-  const { analysis, setStatus, setBookingPopup, setCleaningPopup } = useDataContext();
+  const { setStatus, setBookingPopup, setCleaningPopup } = useDataContext();
+  const { analysis } = useBedRoom();
   const navigate = useNavigate();
 
   const CheckinIcon = React.useCallback(() => (
@@ -58,7 +60,7 @@ export default function ActivitySection() {
       />
       <ActivityBox
         icon={<FaCalendarAlt size={30} />}
-        value={analysis.coming.length}
+        value={analysis.coming.total.length}
         name="Réservations" subName="aujourd'hui"
         color={colors.coming}
         onClick={() => {

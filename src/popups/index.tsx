@@ -12,16 +12,19 @@ export default function Popup({ className, children, onClose } : {
   );
 }
 
-export function PopupBody({ top, className, children } : {
+export function PopupBody({ top, className, subClassName, children } : {
   className?: string,
+  subClassName?: string,
   top?: React.ReactNode,
   children?: React.ReactNode,
 }) {
   return (
-    <div className={twMerge("flex flex-col bg-gray-200 rounded-lg w-full max-w-150 p-5 min-h-80 max-h-[calc(100vh-200px)]", className)}
+    <div className={twMerge("flex flex-col gap-3 bg-gray-200 rounded-lg w-full max-w-150 p-5 min-h-80 max-h-[calc(100vh-200px)]", className)}
       onClick={(e) => e.stopPropagation()}>
       { top }
-      { children }
+      <div className={twMerge("flex flex-col gap-3 overflow-auto", subClassName)}>
+        { children }
+      </div>
     </div>
   );
 }

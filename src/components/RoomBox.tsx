@@ -3,13 +3,14 @@ import { twMerge } from "tailwind-merge";
 import { HiLightningBolt } from "react-icons/hi";
 import { GiBroom } from "react-icons/gi";
 import { FaWifi } from "react-icons/fa";
-import { RoomState } from "../hooks/room";
+import BedRoom from "../types/bedroom";
+import { getInfos } from "../tools";
 
 export default function RoomBox({ room:bedRoom, className }: {
-    room: RoomState,
+    room: BedRoom.Type,
     className?: string,
 }) {
-    const { infos } = bedRoom;
+    const infos = getInfos(bedRoom);
 
     return (
         <div className={twMerge("flex flex-col gap-x-2 gap-y-2 bg-white p-2 px-5 rounded-md relative pt-7 border-1", className)}>
@@ -38,7 +39,7 @@ export default function RoomBox({ room:bedRoom, className }: {
                 ? <div className="aspect-square w-2 bg-red-600 rounded-full" />
                 : <div className="aspect-square w-2 bg-green-600 rounded-full" /> }
                 <p className="flex flex-row gap-2 text-[10px] font-bold">
-                    { bedRoom.check_in?.name ?? "Disponible" }
+                    { bedRoom.client?.name ?? "Disponible" }
                 </p>
             </div>
 

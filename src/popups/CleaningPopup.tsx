@@ -3,6 +3,7 @@
 import React from "react";
 import Popup, { PopupBody } from ".";
 import { useDataContext } from "../hooks";
+import { useBedRoom } from "../hooks/bedroom";
 
 import { employers_datas } from "../configs/employer";
 import Employer from "../types/employer";
@@ -41,7 +42,7 @@ export default function CleaningPopup() {
 function Form({ className }: {
   className?: string,
 }) {
-  const { bedRoomTab } = useDataContext();
+  const { bedRoomTab } = useBedRoom();
 
   return (
     <form className={twMerge("grid grid-cols-[80px_1fr_auto] gap-2 rounded-md bg-gray-100/50 p-3", className)}>
@@ -52,7 +53,10 @@ function Form({ className }: {
 
       <LabelInput label="Vallet" name="vallet" options={
           Object.entries(employers_datas)
-          .filter(([_, employer]) => employer.rules.includes(Employer.Rule.CLEANER))
+          .filter(([_, employer]) => {
+            const rules = employer.rules as Employer.Rule[];
+            return rules.includes(Employer.Rule.CLEANER)
+          })
           .map(([id, employer]) => ({ k: id, value: employer.name }))
       } required />
 
@@ -65,7 +69,7 @@ function Form({ className }: {
 function Table({ className }: {
   className?: string,
 }) {
-  const { analysis } = useDataContext();
+  const { analysis } = useBedRoom();
 
   const TableTr = React.useCallback(({ className, children, index=-1 }: {
     children: React.ReactNode[];
@@ -89,20 +93,16 @@ function Table({ className }: {
 
       <div className="flex flex-col overflow-auto">
         { analysis.cleaning.total
-          .sort(({cleaning:a}, {cleaning:b}) => (a!.start.getTime() - b!.start.getTime()))
+          // .sort(({cleaning:a}, {cleaning:b}) => (a!.start.date.getTime() - b!.start.date.getTime()))
           .map((room, i) =>
             <TableTr index={i}>
-              <p className="text-gray-600">{getTime(room.cleaning!.start)}</p>
+              {/* <p className="text-gray-600">{getTime(room.cleaning!.start.date)}</p> */}
+              <p className="text-gray-600"></p>
               <p className="">{room.id}</p>
-              <p className="">{room.cleaning?.name}</p>
+              <p className="">{room.cleaning?.vallet.name}</p>
               <p className="flex flex-row justify-center items-center gap-2">
-                { room.cleaning?.end
-                  ? <>
-                  <span className="text-gray-600">{getTime(room.cleaning!.end)}</span>
-                  <FaCheck size={9} title="Fait" className="absolute bottom-1 right-2 text-green-700" />
-                </>
-                // : room.cleaning?.end
-                //   ? <ImCross size={9} title="Annulé" className="text-gray-400" />
+                { !room.cleaning
+                  ? <FaCheck size={9} title="Fait" className="absolute bottom-1 right-2 text-green-700" />
                   : <ImCross size={9} title="Annuler" className="text-red-400" /> }
               </p>
             </TableTr>

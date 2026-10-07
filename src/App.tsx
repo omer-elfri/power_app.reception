@@ -8,9 +8,10 @@ import GlobalPage from "./pages/global";
 import RoomsPage from "./pages/rooms";
 import BookingPopup from "./popups/BookingPopup";
 import CleaningPopup from "./popups/CleaningPopup";
+import RoomPopup from "./popups/RoomPopup";
 
 export default function App() {
-  const { bookingPopup, cleaningPopup } = useDataContext();
+  const { roomPopup, bookingPopup, cleaningPopup } = useDataContext();
 
   return (
     <div className="flex flex-col items-center w-screen max-h-screen px-5 py-2">
@@ -23,6 +24,7 @@ export default function App() {
         </Routes>
       </div>
 
+      { roomPopup && <RoomPopup /> }
       { bookingPopup && <BookingPopup /> }
       { cleaningPopup && <CleaningPopup /> }
 

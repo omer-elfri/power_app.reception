@@ -1,14 +1,14 @@
 'use client'
 
 import BedRoom from "../../types/bedroom";
-import { useDataContext } from "../../hooks";
+import { useBedRoom } from "../../hooks/bedroom";
 import { room_ctg_list } from "../../configs/types";
 
 import SectionBox, { Title } from "../../components/SectionBox";
 import SoldRoom from "../../components/SoldRoom";
 
 export default function SoldedAside() {
-    const { analysis } = useDataContext();
+    const { analysis } = useBedRoom();
 
     return (
         <SectionBox className="pb-5">

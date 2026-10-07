@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-// import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { State } from "../types";
 import Employer from "../types/employer";
 import { employers_datas } from "../configs/employer";
@@ -33,13 +34,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: 'receptionist1',
         name: employers_datas['receptionist1'].name,
     });
-    // const { pathname } = useLocation();
-    // const navigate = useNavigate();
+    const { pathname } = useLocation();
+    const navigate = useNavigate();
 
-    // React.useEffect(() => {
-    //     if (!authSession && pathname !== '/login')
-    //         navigate("/login");
-    // }, [authSession, pathname]);
+    React.useEffect(() => {
+        if (!authSession && pathname !== '/login')
+            navigate("/login");
+    }, [authSession, pathname]);
 
     const isAuth = React.useCallback(() => {
         if (!authSession)

@@ -1,8 +1,8 @@
 import { room_ctg_datas } from "../configs/room_ctg";
 import { room_datas } from "../configs/room";
 import { StageId } from ".";
-import { RoomState } from "../hooks/room";
 import Employer from "./employer";
+import { ReservationRoom } from "../hooks/reservation";
 
 namespace BedRoom {
     export type Id = keyof typeof room_datas;
@@ -28,16 +28,15 @@ namespace BedRoom {
         description: string,
 
         connected: boolean,
-        power?: Power,
+        power: boolean | null,
 
         client: CheckInType | null,
+        coming: ReservationRoom | null,
         cleaning: CleanType | null,
         issue: IssueType | null,
     }
 
-    export type Map = {[k in Id]: RoomState};
-
-    export type Power = boolean | null;
+    export type Map = {[k in Id]: BedRoom.Type};
 
     export type ReservationType = {
         client: string,
@@ -53,33 +52,18 @@ namespace BedRoom {
     }
 
     export type CheckInType = {
+        date: Date,
         sexe: 'Mr' | 'Mme',
         name: string,
         description: string,
-    
-        start: {
-            date: Date,
-            price: number,
-            receptionnist: Employer.Type,
-        },
-        end: {
-            date: Date,
-            price: number,
-            employer: Employer.Type,
-        } | null,
+        price: number,
     };
 
     export type CleanType = {
+        start: Date,
         vallet: Employer.Type,
         description: string,
-        start: {
-            date: Date,
-            receptionnist: Employer.Type | 'admin',
-        },
-        end: {
-            date: Date,
-            employer: Employer.Type,
-        } | null,
+        end: Date | null,
     };
 
     
