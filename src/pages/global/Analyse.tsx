@@ -1,22 +1,32 @@
 'use client'
+import React from 'react'
 
-import { useBedRoom } from "../../hooks/bedroom";
+import { useBedroom } from "../../hooks/useBedroom";
 import { PieChart } from '@mui/x-charts/PieChart';
 import { colors } from "../../types";
 
 export default function AnalyseSection() {
-  const { analysis } = useBedRoom();
+  const { bedRoomTab } = useBedroom();
+
+  const analysis = React.useMemo(() => ({
+    solded: bedRoomTab.filter(room => !!room.checkIn),
+    free: bedRoomTab.filter(room => !room.checkIn),
+    issues: bedRoomTab.filter(room => room.issue),
+    coming_free: bedRoomTab.filter(room => room.booked && !room.checkIn),
+    cleaning_check_out: bedRoomTab.filter(room => room.cleaner && room.checkIn),
+  }), [bedRoomTab]);
+
   const data = [
     { label: 'Vendu',
       value: analysis.solded.length,
       color: colors.sold
     },
     { label: 'Libre et réservée',
-      value: analysis.coming.free.length,
+      value: analysis.coming_free.length,
       color: colors.coming
     },
     { label: 'Néttoyage (check-out)',
-      value: analysis.cleaning.check_out.length,
+      value: analysis.cleaning_check_out.length,
       color: colors.cleaning
     },
     { label: 'Hors service',

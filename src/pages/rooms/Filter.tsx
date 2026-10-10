@@ -7,7 +7,6 @@ import { room_ctg_datas } from "../../configs/room_ctg";
 import { colors, FormType, StageId, stages, State, StatusId } from "../../types";
 import BedRoom from "../../types/bedroom";
 import { useDataContext } from "../../hooks";
-import { useBedRoom } from "../../hooks/bedroom";
 import { room_ctg_list, room_list } from "../../configs/types";
 
 import SectionBox, { SeeMore, Title } from "../../components/SectionBox";
@@ -26,7 +25,6 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
     className?: string,
 }) {
     const { status, setStatus } = useDataContext();
-    const { analysis } = useBedRoom();
     const [search, setSearch] = React.useState("");
     const [stage, setStage] = React.useState<StageId | 'all'>('all');
     const [category, setCategory] = React.useState<BedRoom.Category.Id | 'all'>('all');
@@ -45,7 +43,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
                 const categoryNames = room.categories
                     .map(ctgId => room_ctg_datas[ctgId].name);
                 const textToSearch = room.id + " " +
-                    (room.client?.name ?? "") + " " +
+                    (room.checkIn?.clientName ?? "") + " " +
                     categoryNames.join(" ");
                 const textToSearchFormated = textToSearch.toLowerCase()
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -63,16 +61,16 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
             })
             .filter((room) => { // status
                 if (status.includes('powered') && !room.power
-                    || status.includes('sold') && !room.client
-                    || status.includes('free') && room.client
-                    || status.includes('cleaning') && !room.cleaning
-                    || status.includes('coming') && !room.coming
+                    || status.includes('sold') && !room.checkIn
+                    || status.includes('free') && room.checkIn
+                    || status.includes('cleaning') && !room.cleaner
+                    || status.includes('coming') && !room.booked
                     || status.includes('issue') && !room.issue)
                     return false;
                 return true;
             });
         setDatas(res);
-    }, [ analysis, datas, setDatas,
+    }, [ datas, setDatas,
         search, stage, category, status
     ]);
 
@@ -128,7 +126,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
 
                 <select name="stage" value={stage} onChange={e => {
                     setStage(e.target.value as StageId);
-                }} className="border-1 text-[11px] font-bold py-2 h-7">
+                }} className="border-1 !border-gray-600 text-gray-600 text-[11px] font-bold py-2 h-7">
                     <option value="all">Tous les étages</option>
                     { floorList.map((stageId) => (
                         <option key={stageId} value={stageId}>
@@ -139,7 +137,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
 
                 <select name="category" value={category} onChange={e => {
                     setCategory(e.target.value as BedRoom.Category.Id);
-                }} className="border-1 text-[11px] font-bold py-2 h-7">
+                }} className="border-1 !border-gray-600 text-gray-600 text-[11px] font-bold py-2 h-7">
                     <option value="all">Tous les catégories</option>
                     { room_ctg_list.map((roomCtg) => (
                         <option key={roomCtg.id} value={roomCtg.id}>{roomCtg.name}</option>

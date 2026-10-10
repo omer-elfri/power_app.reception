@@ -1,8 +1,11 @@
-import { StageId, toTab } from "../types";
+import { StageId } from "../types";
+import { toTab } from "../tools";
 import BedRoom from "../types/bedroom"
 
-import { room_datas } from "./room";
+import { room_datas, roomIds } from "./room";
 import { room_ctg_datas } from "./room_ctg";
+
+export type RoomId = typeof roomIds[number];
 
 export type RoomData = {
     readonly categories: [
@@ -10,6 +13,7 @@ export type RoomData = {
         ...BedRoom.Category.Id[],
     ],
     stage: StageId,
+    description?: string,
 }
 
 export type RoomCtgData = {

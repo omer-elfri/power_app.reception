@@ -6,7 +6,8 @@ export default function Popup({ className, children, onClose } : {
   onClose: () => void,
 }) {
   return (
-    <div className={twMerge("fixed inset-0 flex justify-center items-center bg-black/50 z-50 backdrop-blur-sm px-10 py-10", className)} onClick={onClose}>
+    <div className={twMerge("fixed inset-0 flex justify-center items-center \
+      bg-black/50 z-50 backdrop-blur-sm px-10 py-10", className)} onClick={onClose}>
       { children }
     </div>
   );
@@ -19,8 +20,9 @@ export function PopupBody({ top, className, subClassName, children } : {
   children?: React.ReactNode,
 }) {
   return (
-    <div className={twMerge("flex flex-col gap-3 bg-gray-200 rounded-lg w-full max-w-150 p-5 min-h-80 max-h-[calc(100vh-200px)]", className)}
-      onClick={(e) => e.stopPropagation()}>
+    <div className={twMerge("flex flex-col gap-3 bg-gray-200 rounded-lg \
+      w-full max-w-150 p-5 min-h-80 max-h-[calc(100vh-200px)]", className)}
+      onClick={e => e.stopPropagation()}>
       { top }
       <div className={twMerge("flex flex-col gap-3 overflow-auto", subClassName)}>
         { children }
@@ -28,3 +30,15 @@ export function PopupBody({ top, className, subClassName, children } : {
     </div>
   );
 }
+
+
+
+    // reservation
+    // nettoyage
+    // pannes
+    // client
+    // analyse
+    // moves
+    // notification
+    // restauration
+    // power ON & OFF

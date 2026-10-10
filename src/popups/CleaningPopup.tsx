@@ -1,9 +1,10 @@
 'use client';
 
 import React from "react";
+import { twMerge } from "tailwind-merge";
 import Popup, { PopupBody } from ".";
 import { useDataContext } from "../hooks";
-import { useBedRoom } from "../hooks/bedroom";
+import { useBedroom } from "../hooks/useBedroom";
 
 import { employers_datas } from "../configs/employer";
 import Employer from "../types/employer";
@@ -11,8 +12,6 @@ import Employer from "../types/employer";
 import MyButton from "../components/MyButton";
 import { Bar, Title } from "../components/SectionBox";
 import LabelInput from "../components/LabelInput";
-import { getTime } from "../tools";
-import { twMerge } from "tailwind-merge";
 import { FaCheck } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 
@@ -42,13 +41,13 @@ export default function CleaningPopup() {
 function Form({ className }: {
   className?: string,
 }) {
-  const { bedRoomTab } = useBedRoom();
+  const { bedRoomTab } = useBedroom();
 
   return (
     <form className={twMerge("grid grid-cols-[80px_1fr_auto] gap-2 rounded-md bg-gray-100/50 p-3", className)}>
 
       <LabelInput label="Chambre" name="roomId" options={
-          bedRoomTab.map(room => ({ k: room.id, value: room.id, disabled: !!room.cleaning }))
+          bedRoomTab.map(room => ({ k: room.id, value: room.id, disabled: !!room.cleaner }))
       } required />
 
       <LabelInput label="Vallet" name="vallet" options={
@@ -69,7 +68,7 @@ function Form({ className }: {
 function Table({ className }: {
   className?: string,
 }) {
-  const { analysis } = useBedRoom();
+  const { bedRoomTab } = useBedroom();
 
   const TableTr = React.useCallback(({ className, children, index=-1 }: {
     children: React.ReactNode[];
@@ -92,16 +91,16 @@ function Table({ className }: {
       </TableTr> <Bar />
 
       <div className="flex flex-col overflow-auto">
-        { analysis.cleaning.total
-          // .sort(({cleaning:a}, {cleaning:b}) => (a!.start.date.getTime() - b!.start.date.getTime()))
+        { bedRoomTab.filter(room => room.cleaner)
+          .sort((a, b) => (a.cleaner!.date.getTime() - b.cleaner!.date.getTime()))
           .map((room, i) =>
             <TableTr index={i}>
-              {/* <p className="text-gray-600">{getTime(room.cleaning!.start.date)}</p> */}
+              {/* <p className="text-gray-600">{getTime(room.cleaner!.start.date)}</p> */}
               <p className="text-gray-600"></p>
               <p className="">{room.id}</p>
-              <p className="">{room.cleaning?.vallet.name}</p>
+              <p className="">{room.cleaner?.valletName}</p>
               <p className="flex flex-row justify-center items-center gap-2">
-                { !room.cleaning
+                { !room.cleaner
                   ? <FaCheck size={9} title="Fait" className="absolute bottom-1 right-2 text-green-700" />
                   : <ImCross size={9} title="Annuler" className="text-red-400" /> }
               </p>

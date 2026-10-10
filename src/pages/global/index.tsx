@@ -14,7 +14,7 @@ import { RiServiceBellLine }  from "react-icons/ri";
 import { useDataContext } from "../../hooks";
 
 export default function GlobalPage() {
-  const { moves, notifications, restaurations } = useDataContext();
+  const { notificationBook, restaurant } = useDataContext();
 
   return (
     <div className="flex flex-col gap-3 pb-5">
@@ -41,14 +41,14 @@ export default function GlobalPage() {
 
         <SectionBox className="col-span-3 row-span-2"
             bottom={<SeeMore value="Voir tout" />}>
-          <Title right={notifications.length}
+          <Title right={notificationBook.length}
             icon={<IoMdNotificationsOutline size={20} className="" />}>Notifications</Title>
           <NotificationSection />
         </SectionBox>
 
         <SectionBox className="col-span-7"
             bottom={<SeeMore value="Voir tout" />}>
-          <Title right={restaurations.length} icon={<RiServiceBellLine size={22} className="" />}>Restauration</Title>
+          <Title right={restaurant.length} icon={<RiServiceBellLine size={22} className="" />}>Restauration</Title>
           <RestaurationSection />
         </SectionBox>
 

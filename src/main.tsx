@@ -1,11 +1,9 @@
-import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom/client";
 
-import { AuthProvider } from "./hooks/auth";
 import { DataProvider } from "./hooks";
-import { BedRoomProvider } from "./hooks/bedroom";
-import { ReservationProvider } from "./hooks/reservation";
+import { AuthProvider } from "./hooks/useAuth";
+import { BedRoomProvider } from "./hooks/useBedroom";
 
 import InitComponent from "./Init";
 import App from "./App";
@@ -17,13 +15,12 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <AuthProvider>
         <DataProvider>
           <BedRoomProvider>
-            <ReservationProvider>
-                <InitComponent />
-                <App />
-            </ReservationProvider>
+            <InitComponent />
+            <App />
           </BedRoomProvider>
         </DataProvider>
       </AuthProvider>
     </BrowserRouter>
   // {/* </React.StrictMode>, */}
 );
+

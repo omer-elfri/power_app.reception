@@ -5,6 +5,7 @@ namespace Employer {
 
     export type Type = {
         name: string,
+        pass: string,
         rules: [Rule, ...Rule[]],
     }
 

@@ -4,7 +4,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useDataContext } from "../../hooks";
-import { useBedRoom } from "../../hooks/bedroom";
+import { useBedroom } from "../../hooks/useBedroom";
 import { colors } from "../../types";
 import ActivityBox from "../../components/ActivityBox";
 
@@ -16,15 +16,17 @@ import { ImPower }  from "react-icons/im";
 
 export default function ActivitySection() {
   const { setStatus, setBookingPopup, setCleaningPopup } = useDataContext();
-  const { analysis } = useBedRoom();
+  const { bedRoomTab } = useBedroom();
   const navigate = useNavigate();
 
-  const CheckinIcon = React.useCallback(() => (
-    <div className="flex flex-row">
-      <IoPersonSharp size={30} />
-      <GoArrowUpRight className="ml-[-8px] " />
-    </div>
-  ), []);
+  const analysis = React.useMemo(() => ({
+    powered: bedRoomTab.filter(room => room.power),
+    solded: bedRoomTab.filter(room => !!room.checkIn),
+    free: bedRoomTab.filter(room => !room.checkIn),
+    coming_total: bedRoomTab.filter(room => room.booked),
+    issues: bedRoomTab.filter(room => room.issue),
+    cleaning_total: bedRoomTab.filter(room => room.cleaner),
+  }), [bedRoomTab]);
 
   return (
     <div className="flex flex-row items-center gap-1">
@@ -39,7 +41,12 @@ export default function ActivitySection() {
         }}
       />
       <ActivityBox
-        icon={<CheckinIcon />}
+        icon={(
+          <div className="flex flex-row">
+            <IoPersonSharp size={30} />
+            <GoArrowUpRight className="ml-[-8px] " />
+          </div>
+        )}
         value={analysis.solded.length}
         name="Chambres" subName="vendues"
         color={colors.sold}
@@ -60,7 +67,7 @@ export default function ActivitySection() {
       />
       <ActivityBox
         icon={<FaCalendarAlt size={30} />}
-        value={analysis.coming.total.length}
+        value={analysis.coming_total.length}
         name="Réservations" subName="aujourd'hui"
         color={colors.coming}
         onClick={() => {
@@ -69,7 +76,7 @@ export default function ActivitySection() {
       />
       <ActivityBox
         icon={<MdCleaningServices size={30} />}
-        value={analysis.cleaning.total.length}
+        value={analysis.cleaning_total.length}
         name="Chambre" subName="en néttoyage"
         color={colors.cleaning}
         onClick={() => {

@@ -1,11 +1,12 @@
 'use client'
 
 import { twMerge } from "tailwind-merge";
-import { useDataContext } from "../../hooks";
+
 import { formatPrice, getTime } from "../../tools";
+import { useDataContext } from "../../hooks";
 
 export default function RestaurationSection() {
-  const { restaurations } = useDataContext();
+  const { restaurant } = useDataContext();
 
   return (
     <table className="w-full border-separate border-spacing-y-2 border-spacing-x-3">
@@ -25,9 +26,9 @@ export default function RestaurationSection() {
           <hr className="text-gray-400/40" />
         </td></tr>
 
-        { restaurations.map((data, i) => (
+        { restaurant.map((data, i) => (
           <tr key={i} className={twMerge("text-center py-2 text-gray-600 text-[11px] font-bold",
-            (i!==restaurations.length-1)?"border-b-1 border-gray-400/50":"")}>
+            (i!==restaurant.length-1)?"border-b-1 border-gray-400/50":"")}>
             <td className="">{getTime(data.time)}</td>
             <td className="text-[12px]">{data.roomId}</td>
             <td className="">{data.client}</td>

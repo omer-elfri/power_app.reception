@@ -1,7 +1,6 @@
-import { MdError, MdWarning } from "react-icons/md";
-import { InfosType } from "../hooks/bedroom";
-import BedRoom from "../types/bedroom";
-import { room_ctg_datas } from "../configs/room_ctg";
+'use client'
+
+import { TypeWithId } from "../types";
 
 export function uniqueId<T extends Record<string, any>>(
     tab: T[],
@@ -43,6 +42,27 @@ export function formatPrice(price: number) {
     return res;
 }
 
+export function toTab<T extends Record<string, object>>(d: T)
+    : TypeWithId<T[keyof T]>[]
+{
+    return Object.entries(d).map(([id, data]) => (
+        { id, ...data, }  as TypeWithId<T[keyof T]>
+    ));
+}
+
+export function updateTab<T>(tab: T[], id: number, data: T): T[]
+{
+    tab = [...tab];
+    tab[id] = data;
+    return tab;
+}
+
+export function addTab<T>(tab: T[], data: T): T[]
+{
+    return [data, ...tab];
+}
+
+
 
 
 
@@ -51,43 +71,11 @@ export function string_object<T>(key: string) {
     const stocked = localStorage.getItem(key);
     if (!stocked) return;
 
-    const jsonDatas: T = JSON.parse(stocked, (key, value) => {
+    const jsonDatas: T = JSON.parse(stocked, (_, value) => {
         if (typeof value === "string" &&
             /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(value) )
             return new Date(value);
         return value;
     });
     return jsonDatas;
-}
-
-
-export function getInfos(datas: BedRoom.Type): InfosType {
-    const powered = (datas.power) ? "Allumée" : (datas.power === false) ? "Éteinte" : "...";
-    const isSolded = !!datas.client;
-
-    const isDurt = (() => {
-        if (datas.cleaning?.end) {
-            const now = new Date(Date.now());
-            const endDate = datas.cleaning.end;
-            const oneDay = 60 * 60 * 24 * 1000;
-            const res = endDate.getTime() - now.getTime() > oneDay * 3;
-            return !res ? "Propre" : "Non";
-        }
-        return "...";
-    })();
-    const cleaning = datas.cleaning?.vallet.name ?? isDurt;
-
-    const clientName = datas.client?.name ?? datas.coming?.rsv.client ?? null;
-    const issueIcon =
-        (datas.issue?.priority === 'high') ? 
-            <MdError size={15} className="text-red-600" /> :
-        (datas.issue?.priority === 'medium') ?
-            <MdWarning size={15} className="text-yellow-600" /> :
-        (datas.issue?.priority === 'low') ?
-            <MdWarning size={15} className="text-yellow-600" /> :
-        null;
-    const categoryNames = datas.categories
-        .map((ctgId) => ({ id: ctgId, ...room_ctg_datas[ctgId] }) )
-        .map(({ name }) => name ).join(", ");
-    return ({ powered, isSolded, cleaning, clientName, issueIcon, categoryNames });
 }

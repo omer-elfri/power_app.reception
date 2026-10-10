@@ -1,6 +1,13 @@
+import BedRoom from "../types/bedroom";
 import { RoomData } from "./types";
 
-export const room_datas = {
+export const roomIds = [
+    '001', '002', '003', '004', '005',
+    '101', '102', '103', '104', '105', '106', '107', '108', '109', '110', '111',
+    '201', '202', '203', '204', '205', '206', '207', '208', '209', '210', '211',
+] as const;
+
+export const room_datas: {[k in BedRoom.Id]: RoomData} = {
     '001': {
         'categories': ["economic", "standard"],
         'stage': '0',
@@ -111,4 +118,4 @@ export const room_datas = {
         'categories': ["executive"],
         'stage': '2',
     },
-} as const satisfies Record<string, RoomData>;
+}

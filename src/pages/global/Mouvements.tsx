@@ -1,36 +1,15 @@
 'use client'
 
 import React from "react";
-
-import { IoArrowDownOutline, IoArrowUpOutline }  from "react-icons/io5";
-import { ActionId, useDataContext } from "../../hooks";
-import { getTime } from "../../tools";
-import BedRoom from "../../types/bedroom";
-import { CheckInProps } from "../../hooks/bedroom";
 import { twMerge } from "tailwind-merge";
 
+import { IoArrowDownOutline, IoArrowUpOutline }  from "react-icons/io5";
+import { useDataContext } from "../../hooks";
+import { getTime } from "../../tools";
+import { FiArrowDownRight, FiArrowUpRight } from "react-icons/fi";
+
 export default function MouvementSection() {
-  // const { moves } = useDataContext();
-  const { histories } = useDataContext();
-  
-  const moves = React.useMemo(() => {
-    const includedLabels: ActionId[] = [ 'CHECK_IN', 'CHECK_OUT' ];
-    const res = histories
-      .filter(history => includedLabels
-        .includes(history.label))
-      .map(history => {
-        const datas = history.datas as BedRoom.CheckInType;
-        return ({
-          status: history.label,
-          roomId: history.roomId,
-          sens: history.label === 'CHECK_IN' ? "arrivée" : "départ",
-          client: datas.name,
-          come_at: history.label === 'CHECK_IN' ? getTime(history.date) : getTime(datas.date),
-          go_at: history.label === 'CHECK_OUT' ? getTime(history.date) : null,
-        })
-      })
-    return res;
-  }, [histories]);
+  const { customerBook } = useDataContext();
 
   return (
     <div className="grid grid-cols-[auto_auto_auto_1fr_auto] items-center gap-y-3 gap-x-3 text-left text-[11px] font-bold">
@@ -43,29 +22,38 @@ export default function MouvementSection() {
 
       <hr className="col-span-full text-gray-400/40" />
 
-      { moves.map((data, i) => <React.Fragment key={i}>
+      { customerBook.map((move, i) => <React.Fragment key={i}>
 
-        <div className="text-gray-600">
-          { data.come_at ?
-            <p className="">{data.come_at}</p> :
-            <p className="text-center">-</p> }
+        <div className="text-gray-600">{getTime(move.date)}</div>
+
+        <p className="text-black text-[12px]">{move.roomId}</p>
+
+        <div className="flex flex-row items-center text-gray-600">
+          { move.status === 'CHECK_IN' ?
+            <FiArrowUpRight className="text-green-800" />
+          : move.status === 'UPDATE' ?
+            <FiArrowUpRight className="text-purple-800" />
+          : move.status === 'MOVE_IN' ?
+            <IoArrowUpOutline className="text-blue-800" />
+          : move.status === 'MOVE_OUT' ?
+            <IoArrowDownOutline className="text-blue-800" />
+          : move.status === 'CHECK_OUT' ?
+            <FiArrowDownRight className="text-red-800" />
+          : null }
+          <span className="capitalize ml-1 text-gray-600">{
+            move.status === 'MOVE_IN' ? "Déplacée" :
+            move.status === 'MOVE_OUT' ? "Changée" :
+            move.status === 'UPDATE' ? "Mise à jour" :
+            move.status === 'CHECK_IN' ? "Arrivée" :
+            move.status === 'CHECK_OUT' ? "Départ" : null }
+          </span>
         </div>
 
-        <p className="text-[12px] text-black ">{data.roomId}</p>
-
-        <div className={twMerge("flex flex-row items-center text-gray-600",
-            (data.sens === 'arrivée') ? "text-green-800" : "text-red-800")}>
-          { (data.sens === 'arrivée') ? <IoArrowUpOutline /> :
-            (data.sens === 'départ') ? <IoArrowDownOutline /> : null }
-          <span className="capitalize ml-1 text-gray-600">{data.sens}</span>
+        <div className={twMerge("text-gray-600 truncate", move.end ? "":"col-span-2" )}>
+          { move.clientName }
         </div>
 
-        <div className={twMerge("text-gray-600 truncate",
-            (data.sens === 'départ') ? "" : "col-span-2")}>
-          { data.client }
-        </div>
-
-        { (data.sens === 'départ') && <p className="text-center text-black">{data.go_at}</p> }
+        { move.end && <p className="text-center text-black">{getTime(move.end)}</p> }
 
       </React.Fragment> ) }
 

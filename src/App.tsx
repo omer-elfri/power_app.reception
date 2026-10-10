@@ -18,8 +18,8 @@ export default function App() {
 
       <div className="flex flex-col w-full max-w-210">
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<GlobalPage />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/preview" element={<GlobalPage />} />
           <Route path="/rooms" element={<RoomsPage />} />
         </Routes>
       </div>

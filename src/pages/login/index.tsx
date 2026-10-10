@@ -1,111 +1,117 @@
 'use client'
 
 import React from "react";
-import { invoke } from "@tauri-apps/api/core";
-import { useNavigate } from "react-router-dom";
 
-import { AuthSession, useAuth } from "../../hooks/auth";
-import { useDataContext } from "../../hooks";
-import PageTitle from "../../components/PageTitle";
-import { FaCheck, FaUser } from "react-icons/fa";
+import { useAuth } from "../../hooks/useAuth";
+import { FaCheck, FaRegUser, FaUser } from "react-icons/fa";
+import { Bar } from "../../components/SectionBox";
+import { employers_datas } from "../../configs/employer";
+import { TbLockPassword } from "react-icons/tb";
+import { LuEyeClosed } from "react-icons/lu";
+import { MdOutlineRemoveRedEye } from "react-icons/md";
+import Employer from "../../types/employer";
+import { IoKeyOutline } from "react-icons/io5";
+import { RiUser6Line } from "react-icons/ri";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
-  const { setAuthSession } = useAuth();
+  const { connect } = useAuth();
   const [userName, setUserName] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [failed, setFailed] = React.useState("");
+  const [showPass, setShowPass] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+
+  const receptionnists = Object.entries(employers_datas)
+    .filter(([_, employer]) => {
+      const rules = employer.rules as Employer.Rule[];
+      return rules.includes(Employer.Rule.RECEPTIONIST);
+    })
+    .map(([id, employer]) => ({ ...employer, id }));
+
+  const loginHandler = React.useCallback(async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const username = e.target.username.value;
+    const password = e.target.password.value;
+
+    setFailed("");
+    setLoading(true);
+    setTimeout(() => {
+      try {
+        connect(username, password);
+      } catch(e) {
+        setFailed("Le mot de passe est incorrect");
+      }
+      setPassword("");
+      setLoading(false);
+    }, 1000);
+  }, []);
 
   return (
     <div style={{ backgroundImage: "url('/rue marina.jpg')" }} className="bg-no-repeat bg-center bg-cover bg-white absolute inset-0">
-      <div className="grid grid-cols-[3fr_7fr] gap-5 justify-center w-full h-full bg-black/70 backdrop-blur-sm">
+      <div className="flex justify-center items-center gap-5 w-full h-full bg-black/70 backdrop-blur-sm">
 
-        <form className="flex flex-col gap-1 bg-gray-200 px-10 py-5 rounded-md shadow" onSubmit={async (e) => {
-          e.preventDefault();
-          const username = e.target.username.value;
-          const password = e.target.password.value;
-          const user = await invoke<AuthSession>("auth", { username, password });
-          setPassword("");
-          setAuthSession(user);
-          navigate(user ? "/" : "/auth");
-        }}>
+        <form className="flex flex-col gap-3 bg-gray-200 px-10 py-5 rounded-md shadow min-w-[400px]" onSubmit={loginHandler}>
+
           <div className="p-10 mt-[-100px] shadow rounded-full bg-gray-200 self-center">
             <FaUser size={50} />
           </div>
 
-          <label className="font-bold text-[12px]">Username</label>
-          <select name="username" value={userName} onChange={(e) => setUserName(e.target.value)} className="border-1 mb-3 px-20 py-10 w-60 h-8 text-[14px]">
-            <option value="Hillary">Hillary</option>
-            <option value="Romuald">Romuald</option>
-          </select>
+          <MyInput label="Utilisateur" icon={<RiUser6Line />}>
+              <select id="username" name="username" required
+                value={userName} onChange={e => setUserName(e.target.value)}
+                className="!border-none h-8 text-[14px] flex-1 uppercase font-bold text-gray-600">
+                { receptionnists.map(employer => (
+                  <option key={employer.id} value={employer.id}>{employer.name}</option>
+                )) }
+              </select>
+          </MyInput>
 
-          <label className="font-bold text-[12px]">Mot de passe</label>
-          <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} className="border-1 mb-3 px-2 py-1 w-60 text-[14px] rounded" />
+          <MyInput label="Mot de passe" icon={<IoKeyOutline />}>
+              <input type={ showPass ? "text" : "password"} id="password" name="password" required autoFocus
+                className="!border-none pl-2 h-8 text-[14px] tracking-wide flex-1" placeholder="X X X X"
+                value={password} onChange={(e) => setPassword(e.target.value)} />
+              { showPass
+                ? <MdOutlineRemoveRedEye className="" onClick={() => setShowPass(false)} />
+                : <LuEyeClosed className="" onClick={() => setShowPass(true)} /> }
+          </MyInput>
 
-          <button type="submit" className="border-1 self-end px-3 py-1 rounded text-[12px] font-bold bg-green-600 text-white">
-            <span>Valider</span> <FaCheck />
+          <p className="text-[12px] text-center text-red-800 font-bold my-2">{failed}</p>
+
+          <Bar className="mb-1" />
+
+          <button type="submit" disabled={loading} className="border-none self-end px-3 py-1 rounded bg-green-600 text-white">
+            <span className="text-[14px] font-bold">Valider</span> <FaCheck />
           </button>
-
-        </form>
-        
-        <div className="flex flex-row items-center gap-5">
-
-          <form className="flex flex-col gap-1 bg-gray-200 px-10 py-5 rounded-md shadow" onSubmit={async (e) => {
-            e.preventDefault();
-            const username = e.target.username.value;
-            const password = e.target.password.value;
-            const user = await invoke<AuthSession>("auth", { username, password });
-            setPassword("");
-            setAuthSession(user);
-            navigate(user ? "/" : "/auth");
-          }}>
-            <div className="p-10 mt-[-100px] shadow rounded-full bg-gray-200 self-center">
-              <FaUser size={50} />
-            </div>
-
-            <label className="font-bold text-[12px]">Username</label>
-            <select name="username" value={userName} onChange={(e) => setUserName(e.target.value)} className="border-1 mb-3 px-20 py-10 w-60 h-8 text-[14px]">
-              <option value="Hillary">Hillary</option>
-              <option value="Romuald">Romuald</option>
-            </select>
-
-            <label className="font-bold text-[12px]">Mot de passe</label>
-            <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} className="border-1 mb-3 px-2 py-1 w-60 text-[14px] rounded" />
-
-            <button type="submit" className="border-1 self-end px-3 py-1 rounded text-[12px] font-bold bg-green-600 text-white">
-              <span>Valider</span> <FaCheck />
-            </button>
-
-          </form>
-
-          <img src="/Secure login-pana.png" className="w-60" alt="" />
-
-        </div>
-
-        <div className="bg-white/10 bg-backdrop min-h-30">
-
-        </div>
-
-        <form className="flex flex-col gap-3 px-15 py-5 font-bold text-[12px] text-white self-center">
-
-
-            <label className="font-bold text-[12px]">Username</label>
-            <select name="username" value={userName} onChange={(e) => setUserName(e.target.value)}
-              className="border-1 mb-3 px-20 w-70 h-10 text-[14px] bg-white/10">
-              <option value="Hillary">Hillary</option>
-              <option value="Romuald">Romuald</option>
-            </select>
-
-            <label className="font-bold text-[12px]">Mot de passe</label>
-            <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)}
-              className="border-1 mb-5 w-70 h-10 px-3 text-[14px] bg-white/10 rounded" />
-
-            <button type="submit" className="self-end text-center rounded text-[12px] font-bold bg-green-600 text-white">
-              <span>Valider</span> <FaCheck />
-            </button>
 
         </form>
 
       </div>
+    </div>
+  );
+}
+
+function MyInput({ label, name, icon, children }: {
+  label: string,
+  name?: string,
+  icon: React.ReactNode,
+  children: React.ReactNode,
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+
+      <label htmlFor={name}>{label}</label>
+
+      <div className="grid grid-cols-[16px_auto_1fr] items-center gap-3 border-1 !border-gray-400 \
+        shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)] px-2 py-1 rounded">
+
+        {icon} <div className="border-l-1 border-gray-400 h-4" />
+
+        <div className="flex flex-row items-center gap-3">
+          { children }
+        </div>
+
+      </div>
+
     </div>
   );
 }

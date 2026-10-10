@@ -1,11 +1,12 @@
 import { room_ctg_datas } from "../configs/room_ctg";
-import { room_datas } from "../configs/room";
-import { StageId } from ".";
-import Employer from "./employer";
-import { ReservationRoom } from "../hooks/reservation";
+import { roomIds } from "../configs/room";
+import { RoomData } from "../configs/types";
+import { CheckInType, CleanType, ReservationType, RestaurantType, StageId, TypeWithId, TypeWithTrace } from ".";
 
 namespace BedRoom {
-    export type Id = keyof typeof room_datas;
+    export type Id = typeof roomIds[number];
+
+    export type Map = {[k in Id]: BedRoom.Type};
 
     export namespace Category {
         export type Id = keyof typeof room_ctg_datas;
@@ -25,25 +26,16 @@ namespace BedRoom {
             Category.Id,
             ...Category.Id[],
         ],
-        description: string,
+        description?: string,
 
         connected: boolean,
         power: boolean | null,
 
-        client: CheckInType | null,
-        coming: ReservationRoom | null,
-        cleaning: CleanType | null,
+        checkIn: TypeWithTrace<CheckInType> | null,
+        booked: TypeWithTrace<ReservationType> | null,
+        cleaner: TypeWithTrace<CleanType> | null,
+        restauration: TypeWithTrace<RestaurantType>[],
         issue: IssueType | null,
-    }
-
-    export type Map = {[k in Id]: BedRoom.Type};
-
-    export type ReservationType = {
-        client: string,
-        id: BedRoom.Id,
-        name?: string,
-        start: Date,
-        nuitee: number,
     }
 
     export type IssueType = {
@@ -51,21 +43,23 @@ namespace BedRoom {
         message: string,
     }
 
-    export type CheckInType = {
-        date: Date,
-        sexe: 'Mr' | 'Mme',
-        name: string,
-        description: string,
-        price: number,
-    };
+    export function create(room: TypeWithId<RoomData>): BedRoom.Type {
+        return ({
+            id: room.id as BedRoom.Id,
+            stage: room.stage,
+            categories: room.categories,
+            description: "",
+    
+            connected: false,
+            power: null,
 
-    export type CleanType = {
-        start: Date,
-        vallet: Employer.Type,
-        description: string,
-        end: Date | null,
-    };
-
+            checkIn: null,
+            booked: null,
+            cleaner: null,
+            issue: null,
+            restauration: [],
+        });
+    }
     
 }
 
