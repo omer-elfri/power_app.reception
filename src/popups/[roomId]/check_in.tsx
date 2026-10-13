@@ -132,15 +132,22 @@ export default function CheckInTab({ room:bedRoom }: {
                 { bedRoom.checkIn && <Aside title="Changer de chambre" onSubmit={e => {
                     e.preventDefault();
                     const roomId = e.target.roomId.value as BedRoom.Id;
+                    const description = e.target.description.value as BedRoom.Id;
                     if (bedRooms[roomId].checkIn) throw Error(`La chambre ${roomId} est déjà occupée`);
-                    check_move(bedRoom.id, roomId);
-                }} subClassName="grid grid-cols-[1fr_auto] items-end gap-2">
-                    <LabelInput label="Chambre" name="roomId"
+                    check_move(bedRoom.id, roomId, description);
+                }} subClassName="flex flex-col gap-2"
+                    right={<>
+                    <LabelInput name="roomId" className="w-20"
                         options={ bedRoomTab.map(room => ({
                             k: room.id, disabled: !!room.checkIn })) }
                     />
-                    <MyButton name='change_room' icon={<FaExchangeAlt />} className="bg-yellow-700/10 text-yellow-700 border-yellow-700">Déplacer</MyButton>
+                        <MyButton name='change_room' icon={<FaExchangeAlt />} className="bg-yellow-700/10 text-yellow-700 border-yellow-700">Déplacer</MyButton>
+                    </>
+                    }>
 
+                    <LabelInput label="Pourquoi ?" name="description" required>
+                        <textarea className="h-20" name="description" />
+                    </LabelInput>
                 </Aside> }
 
             </div>
@@ -149,8 +156,9 @@ export default function CheckInTab({ room:bedRoom }: {
     );
 }
 
-function Aside({ title, className, subClassName, children, onSubmit }: {
+function Aside({ title, right, className, subClassName, children, onSubmit }: {
     title: string,
+    right?: React.ReactNode,
     className?: string,
     subClassName?: string,
     children?: React.ReactNode,
@@ -158,7 +166,11 @@ function Aside({ title, className, subClassName, children, onSubmit }: {
 }) {
     return (
         <form className={twMerge("flex flex-col gap-y-2 bg-white/60 px-3 py-3 rounded", className)} onSubmit={onSubmit}>
-            <h2 className="text-[15px]">{title}</h2>
+            <div className="flex flex-row gap-2 justify-between items-center">
+                <h2 className="text-[15px]">{title}</h2>
+                <div className="flex-1" />
+                { right }
+            </div>
             <div className={twMerge("", subClassName)}>
                 { children }
             </div>

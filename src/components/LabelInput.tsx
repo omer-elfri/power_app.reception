@@ -2,7 +2,7 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 
 export default function LabelInput({ onChangeText, label, type="text", name, value, options, className, inputClassName, children, required, defaultVal, ...props }: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & {
-    label: string,
+    label?: string,
     name?: string,
     options?: { k: string, value?: string, disabled?: boolean }[],
     required?: boolean,
@@ -38,10 +38,10 @@ export default function LabelInput({ onChangeText, label, type="text", name, val
 
     return (
         <div className={twMerge("flex flex-col gap-1", className)}>
-            <label htmlFor={name} className="font-bold">
+            { label && <label htmlFor={name} className="font-bold">
                 <span className="text-[11px]">{label} </span>
                 { required && <span className="text-red-700">*</span> }
-            </label>
+            </label> }
             { res }
             {/* <div className={twMerge("[&>*]:w-full [&>*]:h-full flex-1 bg-green-400", subClassName)}>{ res }</div> */}
         </div>

@@ -22,7 +22,7 @@ export type BedRoomContext = {
     switch_power: (roomId: BedRoom.Id, power: boolean | null) => void,
     check_in: (roomId: BedRoom.Id, props: CheckInProps) => void,
     check_update: (roomId: BedRoom.Id, props: CheckInProps) => void,
-    check_move: (roomIdA: BedRoom.Id, roomIdB: BedRoom.Id) => void,
+    check_move: (roomIdA: BedRoom.Id, roomIdB: BedRoom.Id, description?: string) => void,
     check_out: (roomId: BedRoom.Id, description?: string) => void,
 
     clean_room: (roomId: BedRoom.Id, valletId: Employer.Id, description?: string) => void,
@@ -163,7 +163,7 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
         addToBook(roomId, checkIn, setCustomerBook);
     }, [bedRooms, addToBook, addNotification]);
 
-    const check_move = React.useCallback((roomId: BedRoom.Id, roomIdB: BedRoom.Id) => {
+    const check_move = React.useCallback((roomId: BedRoom.Id, roomIdB: BedRoom.Id, description?: string) => {
         const checkIn = bedRooms[roomId].checkIn;
         const checkInB = bedRooms[roomIdB].checkIn;
         console.log("move", roomId);
@@ -176,7 +176,7 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
         check_out(roomId, 'MOVE');
 
         const checkIn1: CheckInType = { ...checkIn, status: 'MOVE_IN', end: null };
-        const checkIn2: CheckInType = { ...checkIn, status: 'MOVE_OUT', end: new Date(Date.now()) };
+        const checkIn2: CheckInType = { ...checkIn, status: 'MOVE_OUT', description, end: new Date(Date.now()) };
         addToBook(roomId, checkIn2, setCustomerBook);
         addToBook(roomIdB, checkIn1, setCustomerBook);
         addNotification(roomId, { label: 'CHECK_MOVE', datas: { clientName: checkIn.clientName, toRoomId: roomIdB } });
