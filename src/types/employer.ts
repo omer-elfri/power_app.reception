@@ -4,6 +4,7 @@ namespace Employer {
     export type Id = keyof typeof employers_datas;
 
     export type Type = {
+        sexe: 'Mr' | 'Mme',
         name: string,
         pass: string,
         rules: [Rule, ...Rule[]],

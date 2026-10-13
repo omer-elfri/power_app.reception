@@ -70,3 +70,39 @@ input, select, textarea {
   border: 1px solid;
   border-radius: 3px;
 }
+
+.my-calendar {
+  --rdp-day-width: 30px;
+  --rdp-day-height: 30px;
+  --rdp-day_button-width: 30px;
+  --rdp-day_button-height: 30px;
+  font-size: 12px;
+}
+.my-calendar .rdp-day_button {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+  padding: 0;
+  border-radius: 6px;
+}
+
+
+.my-calendar .rdp-caption_label {
+  font-size: 12px;
+}
+
+.my-calendar .rdp-button_previous,
+.my-calendar .rdp-button_next {
+  width: 24px;
+  height: 24px;
+}
+
+.my-calendar .rdp-button_previous svg,
+.my-calendar .rdp-button_next svg {
+  width: 14px;
+  height: 14px;
+}
+
+.my-calendar .rdp-weekday {
+  font-size: 11px;
+}

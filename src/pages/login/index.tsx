@@ -3,10 +3,9 @@
 import React from "react";
 
 import { useAuth } from "../../hooks/useAuth";
-import { FaCheck, FaRegUser, FaUser } from "react-icons/fa";
+import { FaCheck, FaUser } from "react-icons/fa";
 import { Bar } from "../../components/SectionBox";
 import { employers_datas } from "../../configs/employer";
-import { TbLockPassword } from "react-icons/tb";
 import { LuEyeClosed } from "react-icons/lu";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import Employer from "../../types/employer";

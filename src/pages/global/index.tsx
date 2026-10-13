@@ -17,7 +17,7 @@ export default function GlobalPage() {
   const { notificationBook, restaurant } = useDataContext();
 
   return (
-    <div className="flex flex-col gap-3 pb-5">
+    <div className="flex flex-col gap-1 pb-5">
 
       <PageTitle />
 

@@ -1,4 +1,5 @@
 import { twMerge } from "tailwind-merge";
+import { getString } from "../tools";
 
 export default function ActivityBox({ icon, label, name, subName, value, onClick, bar=true, color="#000" } : {
   icon?: React.ReactNode,
@@ -18,7 +19,7 @@ export default function ActivityBox({ icon, label, name, subName, value, onClick
 
       <div className="flex flex-row gap-2 h-12 mt-2 text-[#bbb]" style={ value ? {color} : {}}>
         { icon }
-        <h2 className="text-[20px]">{value < 10 ? `0${value}`: value}</h2>
+        <h2 className="text-[20px]">{getString(value)}</h2>
       </div>
 
       <h2 className="text-[12px]">{name}</h2>

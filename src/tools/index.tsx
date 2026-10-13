@@ -20,6 +20,22 @@ export function getTime(date: Date) {
     return !isOlderThanDay ? getHour(date) : getDate(date);
 }
 
+export function getFrenchDate(date: Date) {
+    return date.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    });
+}
+
+export function getFrenchDateTime(date: Date) {
+    return date.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    }) + date.toLocaleTimeString();
+}
+
 export function getDate(date: Date) {
     const res = date.toLocaleDateString()
         .slice(0, 5);
@@ -78,4 +94,11 @@ export function string_object<T>(key: string) {
         return value;
     });
     return jsonDatas;
+}
+
+export function getString(nb: number): string {
+    if (nb < 10) {
+        return `0${nb}`;
+    }
+    return String(nb);
 }

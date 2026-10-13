@@ -24,7 +24,7 @@ export default function MouvementSection() {
 
       { customerBook.map((move, i) => <React.Fragment key={i}>
 
-        <div className="text-gray-600">{getTime(move.date)}</div>
+        <div className="text-gray-600">{getTime(move.start)}</div>
 
         <p className="text-black text-[12px]">{move.roomId}</p>
 
@@ -40,7 +40,7 @@ export default function MouvementSection() {
           : move.status === 'CHECK_OUT' ?
             <FiArrowDownRight className="text-red-800" />
           : null }
-          <span className="capitalize ml-1 text-gray-600">{
+          <span className="ml-1 text-gray-600">{
             move.status === 'MOVE_IN' ? "Déplacée" :
             move.status === 'MOVE_OUT' ? "Changée" :
             move.status === 'UPDATE' ? "Mise à jour" :

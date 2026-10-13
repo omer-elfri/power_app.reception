@@ -16,13 +16,13 @@ export default function RoomsPage() {
     const [filteredRooms, setFilteredRooms] = React.useState(bedRoomTab);
 
     return (
-        <div className="flex flex-col gap-5 pb-10">
+        <div className="flex flex-col gap-3 pb-10">
 
             <PageTitle />
 
             <div className="grid grid-cols-[250px_1fr] gap-5">
 
-                <div className="flex flex-col gap-5 sticky top-3 self-start">
+                <div className="flex flex-col gap-5 sticky top-18 self-start">
                     <FilterSection form={form} setForm={setForm}
                         datas={bedRoomTab} setDatas={setFilteredRooms} />
                     <SoldedAside />

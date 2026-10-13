@@ -6,9 +6,9 @@ import { useDataContext } from "./hooks";
 import LoginPage from "./pages/login";
 import GlobalPage from "./pages/global";
 import RoomsPage from "./pages/rooms";
-import BookingPopup from "./popups/BookingPopup";
-import CleaningPopup from "./popups/CleaningPopup";
-import RoomPopup from "./popups/RoomPopup";
+import BookingPopup from "./popups/booking";
+import CleaningPopup from "./popups/clean";
+import RoomPopup from "./popups/[roomId]";
 
 export default function App() {
   const { roomPopup, bookingPopup, cleaningPopup } = useDataContext();

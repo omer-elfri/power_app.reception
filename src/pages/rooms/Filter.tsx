@@ -150,7 +150,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
                     <FilterOption value='free' color={colors.free} title="Libre"> <IoBed size={14} /> </FilterOption>
                     <FilterOption value='cleaning' color={colors.cleaning} title="En néttoyage"> <GiBroom size={14} /> </FilterOption>
                     <FilterOption value='coming' color={colors.coming} title="Réservées"> <FaCalendarAlt size={14} /> </FilterOption>
-                    <FilterOption value='issue' color={colors.issue} title="Problème"> <FaTools size={14} /> </FilterOption>
+                    <FilterOption value='issue' color={'#000'} title="Problème"> <FaTools size={14} /> </FilterOption>
                 </div>
 
             </div>

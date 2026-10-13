@@ -1,4 +1,5 @@
 import { twMerge } from "tailwind-merge";
+import { getString } from "../tools";
 
 export default function SoldRoom ({ name, subName, className, sold, color, total } : {
     name?: string,
@@ -12,15 +13,17 @@ export default function SoldRoom ({ name, subName, className, sold, color, total
     return (
         <div className={twMerge("grid grid-cols-[auto_auto_1fr] items-start gap-x-4 font-bold", (sold===0)?"text-gray-400":"", className)}>
 
-            <h2 className="row-span-3 text-[20px]" style={{color}}>{sold < 10 ? `0${sold}`: sold}</h2>
+            <h2 className="row-span-3 text-[20px]" style={{color}}>{getString(sold)}</h2>
 
             <div className="row-span-3 self-center h-6 border-l-1 border-gray-400/50" />
 
             { name && <h3 className="text-[12px]" style={{color}}>{name}</h3> }
+
             <div className="flex flex-row text-[11px] text-gray-500">
                 <span className="flex-1">{subName}</span>
-                <span>{sold} /</span><span className="text-black ml-[1px]">{total}</span>
+                <span>{getString(sold)} /</span><span className="text-black ml-[1px]">{getString(total)}</span>
             </div>
+
             <div className="bg-gray-400/30 mt-1">
                 <div className="h-[3px] bg-green-600" style={{ width: pourcentage.toString()+"%" }} />
             </div>

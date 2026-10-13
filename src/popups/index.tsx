@@ -1,13 +1,14 @@
 import { twMerge } from "tailwind-merge";
 
-export default function Popup({ className, children, onClose } : {
+export default function Popup({ className, children, } : {
   className?: string,
   children?: React.ReactNode,
   onClose: () => void,
 }) {
   return (
     <div className={twMerge("fixed inset-0 flex justify-center items-center \
-      bg-black/50 z-50 backdrop-blur-sm px-10 py-10", className)} onClick={onClose}>
+      bg-black/50 z-50 backdrop-blur-sm px-10 py-10", className)} //onClick={onClose}
+      >
       { children }
     </div>
   );
@@ -21,7 +22,7 @@ export function PopupBody({ top, className, subClassName, children } : {
 }) {
   return (
     <div className={twMerge("flex flex-col gap-3 bg-gray-200 rounded-lg \
-      w-full max-w-150 p-5 min-h-80 max-h-[calc(100vh-200px)]", className)}
+      w-full max-w-120 p-5 min-h-80 max-h-[calc(100vh-200px)]", className)}
       onClick={e => e.stopPropagation()}>
       { top }
       <div className={twMerge("flex flex-col gap-3 overflow-auto", subClassName)}>
@@ -33,12 +34,11 @@ export function PopupBody({ top, className, subClassName, children } : {
 
 
 
-    // reservation
-    // nettoyage
-    // pannes
-    // client
-    // analyse
-    // moves
-    // notification
-    // restauration
+    // reservation /
+    // nettoyage /
+    // pannes /
+    // client & moves /
+    // analyse /
+    // notification /
+    // restauration /
     // power ON & OFF

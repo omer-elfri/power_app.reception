@@ -8,27 +8,19 @@ import { GiBroom } from "react-icons/gi";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdError, MdPerson, MdPerson3, MdWarning } from "react-icons/md";
 import { room_ctg_datas } from "../configs/room_ctg";
-import { useDataContext } from "../hooks";
+import { useBedroom } from "../hooks/useBedroom";
 
 export default function RoomLine({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { lastCleaneds } = useDataContext();
+    const { getCleaningState } = useBedroom();
     const categoryNames = bedRoom.categories
         .map((ctgId) => ({ id: ctgId, ...room_ctg_datas[ctgId] }) )
         .map(({ name }) => name ).join(", ");
     const clientName = bedRoom.checkIn?.clientName ?? bedRoom.booked?.clientName ?? null;
 
-    const cleaningState = (() => {
-        const lastCleaned = lastCleaneds[bedRoom.id];
-        if (!lastCleaned) return "...";
-        const now = new Date(Date.now());
-        const endDate = (('end' in lastCleaned) && lastCleaned.end) ?? lastCleaned.date;
-        if (!endDate) return lastCleaned.valletName;
-        const res = endDate.getTime() - now.getTime() > 3*24*60*60*1000;
-        return !res ? "Propre" : "Non";
-    })();
+    const cleaningState = getCleaningState(bedRoom.id);
 
     return (
         <div className={twMerge("grid grid-cols-[auto_70px_2fr_1fr_1fr_auto] items-center gap-x-5 py-2 \

@@ -5,22 +5,23 @@ import { DataProvider } from "./hooks";
 import { AuthProvider } from "./hooks/useAuth";
 import { BedRoomProvider } from "./hooks/useBedroom";
 
-import InitComponent from "./Init";
+import Init from "./Init";
 import App from "./App";
+import "@daypicker/react/style.css";
 import "./App.css";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   // <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <DataProvider>
-          <BedRoomProvider>
-            <InitComponent />
-            <App />
-          </BedRoomProvider>
-        </DataProvider>
-      </AuthProvider>
-    </BrowserRouter>
+  <BrowserRouter>
+    <AuthProvider>
+      <DataProvider>
+        <BedRoomProvider>
+          <Init />
+          <App />
+        </BedRoomProvider>
+      </DataProvider>
+    </AuthProvider>
+  </BrowserRouter>
   // {/* </React.StrictMode>, */}
 );
 

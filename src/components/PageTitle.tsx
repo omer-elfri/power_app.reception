@@ -5,7 +5,6 @@ import { twMerge } from "tailwind-merge";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { IoPersonCircle } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa";
-import MyLink from "./MyLink";
 import { useAuth } from "../hooks/useAuth";
 
 export default function PageTitle({ className, children }: {
@@ -17,7 +16,7 @@ export default function PageTitle({ className, children }: {
     const navigate = useNavigate();
 
     return (
-        <div className={twMerge("flex flex-row justify-between items-center gap-3 pt-5", className)}>
+        <div className={twMerge("flex flex-row justify-between items-center gap-3 pt-5 pb-2 sticky top-0 bg-white/70 backdrop-blur-md z-30", className)}>
 
             <div className="flex flex-row items-center gap-2">
                 <img width={30} height={30} src="/power_icon.png" alt="" />
