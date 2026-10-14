@@ -9,6 +9,7 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { MdError, MdPerson, MdPerson3, MdWarning } from "react-icons/md";
 import { room_ctg_datas } from "../configs/room_ctg";
 import { useBedroom } from "../hooks/useBedroom";
+import RoomStatus from "./RoomStatus";
 
 export default function RoomLine({ room:bedRoom, className }: {
     room: BedRoom.Type,
@@ -48,7 +49,7 @@ export default function RoomLine({ room:bedRoom, className }: {
                     : <MdPerson size={15} style={{color: colors.sold}} />
                 : <MdPerson size={15} /> }
                 { bedRoom.booked && <FaCalendarAlt size={12} style={{color: colors.coming}} /> }
-                <span className="flex-1 text-center">{clientName ?? "libre"}</span>
+                <span className="flex-1 text-center">{clientName?.toUpperCase() ?? "libre"}</span>
             </div>
 
             <div className={twMerge("flex flex-row items-center gap-2", bedRoom.power ? "text-black" : "text-gray-400")}>
@@ -61,19 +62,13 @@ export default function RoomLine({ room:bedRoom, className }: {
                 <span className="">{cleaningState}</span>
             </div>
 
-            <div className="flex flex-row justify-end items-center flex-wrap gap-x-2 gap-y-1 font-bold">
-                { bedRoom.checkIn
-                ?   <StatusLabel value="Vendue" className="text-green-700 bg-green-700/15" />
-                : bedRoom.booked
-                ?   <StatusLabel value="Réservée" className="text-purple-700 bg-purple-700/15" />
-                :   <StatusLabel value="Libre" className="text-blue-700 bg-blue-700/15" /> }
-            </div>
+            <RoomStatus room={bedRoom} />
 
         </div>
     );
 }
 
-function StatusLabel({ className, value }: {
+export function StatusLabel({ className, value }: {
     className?: string,
     value: string,
 }) {

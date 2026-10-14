@@ -18,11 +18,12 @@ export default function RestaurationSection() {
           <th className="">Client</th>
           <th className="">Article</th>
           <th className="">Prix</th>
+          <th className="">Satut</th>
         </tr>
       </thead>
 
       <thead>
-        <tr><td colSpan={5} className="">
+        <tr><td colSpan={6} className="">
           <hr className="text-gray-400/40" />
         </td></tr>
 
@@ -34,6 +35,10 @@ export default function RestaurationSection() {
             <td className="">{data.client}</td>
             <td className="">{data.article}</td>
             <td className="">{formatPrice(data.price)}</td>
+            <td className="">{data.paid
+              ? <span className="text-gray-400">payé</span>
+              : "" }
+            </td>
           </tr>
         )) }
       </thead>

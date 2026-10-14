@@ -26,7 +26,7 @@ export default function CleaningPopup() {
 
   return (
     <Popup onClose={() => setCleaningPopup(false)}>
-      <PopupBody top={title} className="gap-3 min-w-150">
+      <PopupBody top={title} className="gap-3">
 
         <div className="grid grid-cols-[2fr_3fr] grid-rows-[auto_1fr] items-start gap-5 flex-1">
           { obsoletRooms.length > 0 && (

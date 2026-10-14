@@ -6,6 +6,7 @@ import { room_ctg_list } from "../../configs/types";
 
 import SectionBox, { Title } from "../../components/SectionBox";
 import SoldRoom from "../../components/SoldRoom";
+import { formatPrice } from '../../tools';
 
 export default function SoldedAside() {
     const { bedRoomTab } = useBedroom();
@@ -32,7 +33,7 @@ export default function SoldedAside() {
             <div className="flex flex-col gap-3"> { roomCategoryAnalysis.map((room_ctg) => (
                 <SoldRoom key={room_ctg.id}
                     name={room_ctg.name}
-                    subName={room_ctg.price}
+                    subName={formatPrice(room_ctg.price)}
                     sold={room_ctg.topSolded.length}
                     total={room_ctg.topTotal.length}
                 /> )) }

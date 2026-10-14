@@ -13,7 +13,7 @@ import BookingInfos from "./infos";
 
 export default function BookingPopup() {
   const { setBookingPopup } = useDataContext();
-  const [onglet, setOnglet] = React.useState<'form' | 'infos'>('form');
+  const [onglet, setOnglet] = React.useState<'form' | 'infos'>('infos');
 
   const title = (
     <Title bar className="gap-2"
@@ -26,15 +26,19 @@ export default function BookingPopup() {
 
   return (
     <Popup onClose={() => setBookingPopup(false)}>
-      <PopupBody top={title} className="min-w-120 h-100">
+      <PopupBody top={title}
+        subClassName="grid grid-cols-[auto_1fr] gap-3">
 
-        <OngletTab onglet={onglet} setOnglet={setOnglet} datas={[
-          { key: 'form', value: "Nouvelle" },
+        <BookingForm />
+        <BookingInfos />
+
+        {/* <OngletTab onglet={onglet} setOnglet={setOnglet} datas={[
           { key: 'infos', value: "Réservations" },
+          { key: 'form', value: "Nouvelle" },
         ]} className='min-h-80'>
-          <BookingForm className={onglet === 'form' ? "" : "hidden"} />
           <BookingInfos className={onglet === 'infos' ? "" : "hidden"} />
-        </OngletTab>
+          <BookingForm className={onglet === 'form' ? "" : "hidden"} />
+        </OngletTab> */}
 
       </PopupBody>
     </Popup>

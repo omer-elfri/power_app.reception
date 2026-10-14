@@ -2,7 +2,7 @@
 import React from "react";
 
 import { useAuth } from "./useAuth";
-import { CheckInProps, useDataContext } from ".";
+import { useDataContext } from ".";
 
 import { room_datas, roomIds } from "../configs/room";
 import { employers_datas } from "../configs/employer";
@@ -10,6 +10,8 @@ import { CheckInType, CleanType, ReservationType } from "../types";
 import Employer from "../types/employer";
 import BedRoom from "../types/bedroom";
 import { getFrenchDate, getFrenchDateTime, toTab } from "../tools";
+
+export type CheckInProps = Omit<CheckInType, 'status' | 'start' | 'end'> & { night: number };
 
 export type BedRoomContext = {
     bedRooms: BedRoom.Map,
@@ -129,12 +131,13 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
 
     const check_in = React.useCallback((roomId: BedRoom.Id, { night, ...props }: CheckInProps) => {
         const room = bedRooms[roomId];
-        const end = night ? new Date(Date.now() + night*24*60*60*1000)  : null;
+        const start = new Date(Date.now());
+        const end = night ? new Date(Date.now() + night * 24*60*60*1000)  : null;
 
         if (room.checkIn)
             throw Error(`La chambre ${roomId} est déja en check in`);
         addNotification(roomId, { label: 'CHECK_IN', datas: { clientName: props.clientName } });
-        const datas: CheckInType = { ...props, status: 'CHECK_IN', start: new Date(Date.now()), end, };
+        const datas: CheckInType = { ...props, status: 'CHECK_IN', start, end, };
         addToBook(roomId, datas, setCustomerBook);
     }, [bedRooms, addToBook, addNotification]);
 
@@ -165,20 +168,18 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
 
     const check_move = React.useCallback((roomId: BedRoom.Id, roomIdB: BedRoom.Id, description?: string) => {
         const checkIn = bedRooms[roomId].checkIn;
-        const checkInB = bedRooms[roomIdB].checkIn;
-        console.log("move", roomId);
 
         if (!checkIn)
             throw Error(`La chambre ${roomId} n'est pas en check in`);
-        if (checkInB)
+        if (bedRooms[roomIdB].checkIn)
             throw Error(`La chambre cible ${roomIdB} est en check in`);
-        check_in(roomIdB, {...checkIn, description: 'MOVE'});
-        check_out(roomId, 'MOVE');
 
-        const checkIn1: CheckInType = { ...checkIn, status: 'MOVE_IN', end: null };
         const checkIn2: CheckInType = { ...checkIn, status: 'MOVE_OUT', description, end: new Date(Date.now()) };
         addToBook(roomId, checkIn2, setCustomerBook);
+
+        const checkIn1: CheckInType = { ...checkIn, status: 'MOVE_IN', end: null };
         addToBook(roomIdB, checkIn1, setCustomerBook);
+
         addNotification(roomId, { label: 'CHECK_MOVE', datas: { clientName: checkIn.clientName, toRoomId: roomIdB } });
     }, [bedRooms, addToBook, addNotification, check_in, check_out]);
 
@@ -221,14 +222,6 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
     const book = React.useCallback((roomId: BedRoom.Id, props: ReservationType, description?: string) => {
         const bookedInPeriod = getBookedPeriod(props.start, props.end);
         const isBooked = bookedInPeriod.find(booked => booked.roomId === roomId);
-
-        console.log("tmp",
-            getFrenchDateTime(props.start),
-            props.end ? getFrenchDateTime(props.end) : null,
-
-            isBooked?.start ? getFrenchDateTime(isBooked?.start) : null,
-            isBooked?.end ? getFrenchDateTime(isBooked?.end) : null,
-        );
 
         if (isBooked) throw Error(
             `La chambre ${roomId} à déjà été réservée par \

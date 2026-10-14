@@ -14,41 +14,41 @@ import { RiServiceBellLine }  from "react-icons/ri";
 import { useDataContext } from "../../hooks";
 
 export default function GlobalPage() {
-  const { notificationBook, restaurant } = useDataContext();
+  const { notificationBook, setNotificationPopup, restaurant } = useDataContext();
 
   return (
     <div className="flex flex-col gap-1 pb-5">
 
       <PageTitle />
 
-      <div className="grid grid-cols-10 grid-rows-[auto_370px_250px] gap-5">
+      <div className="grid grid-cols-10 grid-rows-[auto_340px_minmax(230px,auto)] gap-5">
 
         <SectionBox className="col-span-10">
-          <Title icon={<FaRegCalendarAlt size={20} className="" />}>Activités du jour</Title>
+          <Title icon={<FaRegCalendarAlt size={20} />}>Activités du jour</Title>
           <ActivitySection />
         </SectionBox>
 
-        <SectionBox className="col-span-3" bottom={<SeeMore value="Plus de détails" />}>
+        <SectionBox className="col-span-3">
           <Title>Analyse</Title>
           <AnalyseSection />
         </SectionBox>
 
-        <SectionBox className="col-span-4"
-            bottom={<SeeMore value="Voir plus" />}>
-          <Title className="mb-3" icon={<TbArrowsDoubleNeSw size={20} />}>Mouvements du jour</Title>
+        <SectionBox className="col-span-4">
+          <Title icon={<TbArrowsDoubleNeSw size={20} />}
+            className="mb-3">Mouvements du jour</Title>
           <MouvementSection />
         </SectionBox>
 
         <SectionBox className="col-span-3 row-span-2"
-            bottom={<SeeMore value="Voir tout" />}>
-          <Title right={notificationBook.length}
-            icon={<IoMdNotificationsOutline size={20} className="" />}>Notifications</Title>
+            bottom={<SeeMore value="Voir tout" onClick={() => setNotificationPopup(true)} />}>
+          <Title icon={<IoMdNotificationsOutline size={20} />}
+            right={notificationBook.length}>Notifications</Title>
           <NotificationSection />
         </SectionBox>
 
-        <SectionBox className="col-span-7"
-            bottom={<SeeMore value="Voir tout" />}>
-          <Title right={restaurant.length} icon={<RiServiceBellLine size={22} className="" />}>Restauration</Title>
+        <SectionBox className="col-span-7">
+          <Title right={restaurant.length}
+            icon={<RiServiceBellLine size={22} />}>Restauration</Title>
           <RestaurationSection />
         </SectionBox>
 

@@ -11,7 +11,7 @@ export default function SoldRoom ({ name, subName, className, sold, color, total
 }) {
     const pourcentage = sold/total*100;
     return (
-        <div className={twMerge("grid grid-cols-[auto_auto_1fr] items-start gap-x-4 font-bold", (sold===0)?"text-gray-400":"", className)}>
+        <div className={twMerge("grid grid-cols-[auto_auto_1fr] items-center gap-x-4 font-bold", (sold===0)?"text-gray-400":"", className)}>
 
             <h2 className="row-span-3 text-[20px]" style={{color}}>{getString(sold)}</h2>
 

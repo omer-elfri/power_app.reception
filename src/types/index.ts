@@ -141,6 +141,9 @@ export type CheckInType = {
     price: number,
     description?: string,
     start: Date,
+
+    tel?: number,
+    town?: string,
 } & ({
     status: 'CHECK_IN' | 'UPDATE' | 'MOVE_IN',
     end: Date | null,

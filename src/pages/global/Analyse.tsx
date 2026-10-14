@@ -9,11 +9,12 @@ export default function AnalyseSection() {
   const { bedRoomTab } = useBedroom();
 
   const analysis = React.useMemo(() => ({
-    solded: bedRoomTab.filter(room => !!room.checkIn),
+    solded: bedRoomTab.filter(room => room.checkIn),
     free: bedRoomTab.filter(room => !room.checkIn),
     issues: bedRoomTab.filter(room => room.issue),
     coming_free: bedRoomTab.filter(room => room.booked && !room.checkIn),
-    cleaning_check_out: bedRoomTab.filter(room => room.cleaner && room.checkIn),
+    cleaning_check_out: bedRoomTab.filter(room => room.cleaner && !room.checkIn),
+    cleaning_check_in: bedRoomTab.filter(room => room.cleaner && room.checkIn),
   }), [bedRoomTab]);
 
   const data = [
@@ -25,7 +26,7 @@ export default function AnalyseSection() {
       value: analysis.coming_free.length,
       color: colors.coming
     },
-    { label: 'Néttoyage (check-out)',
+    { label: 'Néttoyage - libre',
       value: analysis.cleaning_check_out.length,
       color: colors.cleaning
     },

@@ -7,7 +7,7 @@ import { State } from '../types';
 export default function OngletTab<T extends string>({ onglet, setOnglet, datas, className, subClassName, children }: {
   onglet: T,
   setOnglet: (key: T) => void | State<T>,
-  datas: { key: T, value: React.ReactNode }[],
+  datas: { key: T, icon: React.ReactNode, value: React.ReactNode }[],
   children?: React.ReactNode,
   className?: string,
   subClassName?: string,
@@ -15,11 +15,14 @@ export default function OngletTab<T extends string>({ onglet, setOnglet, datas, 
   return (
     <div className={twMerge("flex flex-col gap-3 flex-1", className)}>
 
-      <div className="flex flex-row bg-gray-800 p-1 rounded font-bold">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3 rounded font-bold rounded-md">
         { datas.map(elem => (        
           <div key={elem.key} onClick={() => setOnglet(elem.key)} className={twMerge(
-            "text-[12px] text-gray-800 px-3 py-1 rounded cursor-pointer",
-            onglet === elem.key ? "bg-white" : "text-white")}>{elem.value}</div>
+            "flex flex-row gap-2 items-center text-[12px] px-3 py-2 rounded cursor-pointer border-1 border-gray-400",
+            onglet === elem.key ? "bg-blue-500 text-white" : "black")}>
+            { elem.icon }
+            <span>{elem.value}</span>
+          </div>
         )) }
       </div>
 

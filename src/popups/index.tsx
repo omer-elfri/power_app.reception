@@ -22,7 +22,7 @@ export function PopupBody({ top, className, subClassName, children } : {
 }) {
   return (
     <div className={twMerge("flex flex-col gap-3 bg-gray-200 rounded-lg \
-      w-full max-w-120 p-5 min-h-80 max-h-[calc(100vh-200px)]", className)}
+      w-full max-w-160 p-5 min-h-80 max-h-[calc(100vh-200px)]", className)}
       onClick={e => e.stopPropagation()}>
       { top }
       <div className={twMerge("flex flex-col gap-3 overflow-auto", subClassName)}>

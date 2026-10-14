@@ -9,9 +9,10 @@ import RoomsPage from "./pages/rooms";
 import BookingPopup from "./popups/booking";
 import CleaningPopup from "./popups/clean";
 import RoomPopup from "./popups/[roomId]";
+import NotificationPopup from "./popups/notification";
 
 export default function App() {
-  const { roomPopup, bookingPopup, cleaningPopup } = useDataContext();
+  const { roomPopup, bookingPopup, cleaningPopup, notificationPopup } = useDataContext();
 
   return (
     <div className="flex flex-col items-center w-screen max-h-screen px-5 py-2">
@@ -27,6 +28,7 @@ export default function App() {
       { roomPopup && <RoomPopup /> }
       { bookingPopup && <BookingPopup /> }
       { cleaningPopup && <CleaningPopup /> }
+      { notificationPopup && <NotificationPopup /> }
 
     </div>
   );

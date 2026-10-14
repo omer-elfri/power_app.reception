@@ -16,7 +16,7 @@ export default function BookingInfos({ className }: {
 
   return (
     <div className={twMerge("flex flex-col gap-3 h-full", className)}>
-      <TableTr values={["ID", "Réservée", "Chambre", "Arrivée", "Départ", "Action"]} className="border-b-1 pb-1 border-gray-400/50" />
+      <TableTr values={["Réservée", "Chambre", "Arrivée", "Départ", "Action"]} className="border-b-1 pb-1 border-gray-400/50" />
 
       { list.length > 0
       
@@ -28,7 +28,6 @@ export default function BookingInfos({ className }: {
             <div className="flex flex-col gap-2">
               { room_rsvs?.map(rsv =>
                 <TableTr key={rsv.id} values={[
-                  getString(rsv.id),
                   getTime(rsv.date),
                   <p className="text-black text-[12px]">{rsv.roomId}</p>,
                   getFrenchDate(rsv.start),
@@ -57,7 +56,7 @@ function TableTr({ values, className }: {
   className?: string,
 }) {
   return (
-    <div className={twMerge("grid grid-cols-[40px_1fr_1fr_2fr_2fr_auto] gap-3", className)}>
+    <div className={twMerge("grid grid-cols-[40px_1fr_2fr_2fr_auto] gap-3 px-2", className)}>
       { values.map((value, i) => (
         <div key={i} className="text-center font-bold text-[11px]">{value}</div>
       ))}

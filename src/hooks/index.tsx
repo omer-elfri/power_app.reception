@@ -4,7 +4,7 @@ import React from "react";
 
 import { useAuth } from './useAuth';
 import { CheckInType, CleanType, NotificationType, ReservationType,
-    RestaurantType, RoomType, State, StatusId, TypeWithTrace } from "../types";
+    RestaurantType, RoomType, State, StatusId, TypeWithId, TypeWithTrace } from "../types";
 import BedRoom from "../types/bedroom";
 import { getDate, string_object } from "../tools";
 import { roomIds } from "../configs/room";
@@ -54,6 +54,8 @@ type DataContextType = {
     setCleaningPopup: State<boolean>,
     bookingPopup: boolean,
     setBookingPopup: State<boolean>,
+    notificationPopup: boolean,
+    setNotificationPopup: State<boolean>,
 };
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
@@ -63,13 +65,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const [restaurantBook, setRestaurantBook] = React.useState<TypeWithTrace<RestaurantType>[]>([]);
     const [reservationBook, setReservationBook] = React.useState<TypeWithTrace<ReservationType>[]>([]);
     const [notificationBook, setNotificationBook] = React.useState<TypeWithTrace<NotificationType>[]>([]);
-    const [roomsBook, setRoomsBook] = React.useState<RoomType[]>([]);
+    const [roomsBook, setRoomsBook] = React.useState<TypeWithTrace<RoomType>[]>([]);
 
     const [refresh, setRefresh] = React.useState(new Date(Date.now()));
     const [status, setStatus] = React.useState<StatusId[]>([]);
     const [roomPopup, setRoomPopup] = React.useState<BedRoom.Id | null>(null);
     const [cleaningPopup, setCleaningPopup] = React.useState(false);
     const [bookingPopup, setBookingPopup] = React.useState(false);
+    const [notificationPopup, setNotificationPopup] = React.useState(false);
 
     useLocalData('cleaning_book', cleaningBook, setCleaningBook);
     useLocalData('customer_book', customerBook, setCustomerBook);
@@ -207,7 +210,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
 
     const restaurant = React.useMemo(() => {
-        return restaurantBook.filter(resto => !resto.paid || todayCustomers[resto.roomId]);
+        return restaurantBook.filter(resto => {
+            const customer = todayCustomers[resto.roomId]?.[0];
+            return !resto.paid || (customer && customer.date < resto.date);
+        } );
     }, [restaurantBook, todayCustomers]);
 
     const getRestaurations = React.useCallback((roomId: BedRoom.Id) => {
@@ -282,20 +288,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             roomPopup, setRoomPopup,
             cleaningPopup, setCleaningPopup,
             bookingPopup, setBookingPopup,
+            notificationPopup, setNotificationPopup,
         }}> { children }
         </dataContext.Provider>
     );
 }
 
-
-
-export type CheckInProps = {
-    sexe?: "Mr" | "Mme";
-    clientName: string;
-    price: number;
-    description?: string;
-    night?: number;
-}
 
 const dataContext = React.createContext<DataContextType | null>(null);
 
@@ -307,10 +305,11 @@ export function useDataContext() {
 }
 
 
-export function useLocalData<T extends Object>(localKey: string, data: T[], setter: (dtas: T[]) => void) {
+export function useLocalData<T extends TypeWithTrace<Object>>(localKey: string, data: T[], setter: (dtas: T[]) => void) {
 
     React.useEffect(() => {
-        const book = string_object<T[]>(localKey);
+        const book = string_object<T[]>(localKey)
+            ?.sort((a, b) => b.date.getTime() - a.date.getTime());
         if (book) setter(book);
     }, []);
 

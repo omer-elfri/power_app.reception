@@ -1,5 +1,3 @@
-'use client'
-
 import { TypeWithId } from "../types";
 
 export function uniqueId<T extends Record<string, any>>(
@@ -11,13 +9,6 @@ export function uniqueId<T extends Record<string, any>>(
     if (ids.length !== new Set(ids).size)
         throw Error("Double id");
     return tab;
-}
-
-export function getTime(date: Date) {
-    const now = Date.now();
-    const day = 24 * 60 * 60 * 1000;
-    const isOlderThanDay = now - date.getTime() >= day;
-    return !isOlderThanDay ? getHour(date) : getDate(date);
 }
 
 export function getFrenchDate(date: Date) {
@@ -34,6 +25,13 @@ export function getFrenchDateTime(date: Date) {
         month: "long",
         year: "numeric",
     }) + date.toLocaleTimeString();
+}
+
+export function getTime(date: Date) {
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+    const isOlderThanDay = now - date.getTime() >= day;
+    return !isOlderThanDay ? getHour(date) : getDate(date);
 }
 
 export function getDate(date: Date) {
