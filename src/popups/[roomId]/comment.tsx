@@ -8,11 +8,13 @@ import BedRoom from '../../types/bedroom';
 import { MdError, MdWarning } from "react-icons/md";
 import FormAside from '../../components/FormAside';
 import { useBedroom } from "../../hooks/useBedroom";
+import { useDataContext } from '../../hooks';
 
 export default function CommentBox({ room:bedRoom, className }: {
   room: BedRoom.Type,
   className?: string,
 }) {
+  const { checkError } = useDataContext();
   const { updateIssue } = useBedroom();
   const [priority, setPriority] = React.useState<PriorityId>(bedRoom.issue?.priority ?? 'low');
 
@@ -41,13 +43,15 @@ export default function CommentBox({ room:bedRoom, className }: {
     <FormAside title="Commentaire" bar={false} right={rigth}
       className={twMerge('', className)} onSubmit={e => {
         e.preventDefault();
-        const message = e.target.message.value;
-        if (message === '') throw new Error("Rentrez un commantaire");
-        updateIssue(bedRoom.id, {priority, message});
+        checkError(() => {
+          const message = e.target.message.value;
+          if (message === '') throw new Error("Rentrez un commentaire");
+          updateIssue(bedRoom.id, {priority, message});
+        });
       }}>
 
       <textarea name="message" defaultValue={bedRoom.issue?.message}
-        className='pt-3 pb-2 h-20 !border-none bg-gray-300/30 px-3 text-[12px]'
+        className='pt-3 pb-2 h-30 !border-none bg-gray-300/30 px-3 text-[12px]'
       />
 
       { !bedRoom.issue ? (

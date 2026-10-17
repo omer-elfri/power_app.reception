@@ -33,15 +33,15 @@ export default function BookingInfos({ className, setBookId }: {
 
             <div className="flex flex-col">
               { room_rsvs?.map(rsv =>
-                <TableTr key={rsv.id} onClick={() => setBookId(rsv.id)} values={[
-                  getTime(rsv.date),
+                <TableTr key={rsv.id} className="hover:bg-blue-400/20 cursor-pointer"
+                  onClick={() => setBookId(rsv.id)} values={[
+                  <p>{getTime(rsv.date)}</p>,
                   <p className="text-black text-[12px]">{rsv.roomId}</p>,
                   <p className="uppercase">{rsv.name}</p>,
-                  getFrenchDate(rsv.start).slice(0,6),
-                  rsv.end ? getFrenchDate(rsv.end).slice(0,6) : "...",
+                  <p>{getFrenchDate(rsv.start).slice(0,6)}</p>,
+                  <p>{rsv.end ? getFrenchDate(rsv.end).slice(0,6) : "..."}</p>,
                   rsv.cancel
-                  ? <p className="text-gray-500/50"
-                      onClick={() => {}}>annulée</p>
+                  ? <p className="text-gray-500/50">annulée</p>
                   : <p className="text-red-700 hover:underline cursor-pointer"
                       onClick={() => cancel_book(rsv.id)}>annuler</p>,
                 ]} />
@@ -64,7 +64,7 @@ function TableTr({ values, className, onClick }: {
 }) {
   return (
     <div className={twMerge("grid grid-cols-[60px_1fr_2fr_1fr_1fr_auto] gap-3 px-2 py-1 \
-        hover:bg-blue-400/20 cursor-pointer text-center", className)} onClick={onClick}>
+        text-center", className)} onClick={onClick}>
       { values.map((value, i) => (
         <div key={i} className="text-center font-bold text-[11px]">{value}</div>
       ))}

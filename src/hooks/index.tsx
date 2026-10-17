@@ -21,6 +21,7 @@ type DataContextType = {
     status: StatusId[], setStatus: State<StatusId[]>,
     alert: ["success" | "error", string] | null,
     setAlert: State<["success" | "error", string] | null>,
+    checkError: (handler : () => any, message?: string) => void,
 
     popupList: PopupType[],
     addPopup: (pop: PopupType) => void,
@@ -72,6 +73,16 @@ export function DataProvider({ children }: {
 
 
 
+
+    const checkError = React.useCallback((handler : () => any, message?: string) => {
+        try {
+            handler();
+            if (message) setAlert(['success', message]);
+        }
+        catch (e) {
+            setAlert(['error', e instanceof Error ? e.message : String(e)]);
+        }
+    }, []);
 
 
 
@@ -238,12 +249,13 @@ export function DataProvider({ children }: {
 
             restaurant,
 
+            checkError,
             popupList,
             addPopup: React.useCallback((pop: PopupType) => {
-                setPopupList(popupList => [ ...popupList, pop,]);
+                setPopupList(popupList => [ pop, ...popupList, ]);
             }, []),
             unPopup: React.useCallback(() => {
-                setPopupList(popupList => popupList.slice(0, popupList.length -1));
+                setPopupList(([_, ...popupList]) => popupList);
             }, []),
             status, setStatus,
             alert, setAlert,

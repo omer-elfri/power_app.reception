@@ -3,14 +3,12 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../hooks";
-import Popup, { PopupBody } from "..";
+import Popup, { CloseBtn, PopupBody } from "..";
 
-import MyButton from "../../components/MyButton";
 import { Title } from "../../components/SectionBox";
 import LabelInput from "../../components/LabelInput";
 
 import { DayPicker } from "@daypicker/react";
-import { ImCross } from "react-icons/im";
 import CleaningTable from "./table";
 import CleaningForm from "./form";
 import { ValletLine } from "./vallet";
@@ -22,17 +20,8 @@ import BedRoom from "../../types/bedroom";
 export default function CleaningPopup({ roomId }: {
   roomId?: BedRoom.Id,
 }) {
-  const { cleaning_book, unPopup, cleaners } = useDataContext();
+  const { cleaning_book, cleaners } = useDataContext();
   const [selectedDate, setSelectedDate] = React.useState<Date>();
-
-  const title = (
-    <Title bar className="gap-2"
-      right={<MyButton name="close" icon={<ImCross size={10} />}
-        className="bg-red-700/10 text-[11px] text-red-700 p-2 rounded"
-        onClick={unPopup}
-      />}>Entretien
-    </Title>
-  );
 
   const cleanedAtDate = cleaning_book.get.filter(clean => {
     if (!selectedDate) return true;
@@ -44,7 +33,8 @@ export default function CleaningPopup({ roomId }: {
 
   return (
     <Popup>
-      <PopupBody top={title} className="gap-3">
+      <PopupBody className="gap-3"
+        top={<Title bar className="gap-2" right={<CloseBtn />}>Entretien</Title>}>
 
         <div className="flex-1 w-full h-full grid grid-cols-[230px_1fr] grid-rows-[280px_260px_auto] gap-2 gap-x-5">
 

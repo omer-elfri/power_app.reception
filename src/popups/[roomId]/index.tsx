@@ -1,15 +1,13 @@
 'use client';
 
 import React from 'react';
-import Popup, { PopupBody } from "..";
+import Popup, { CloseBtn, PopupBody } from "..";
 
-import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
 
 import RoomStatus from '../../components/RoomStatus';
 import OngletTab from '../../components/OngletTab';
 import { Title } from "../../components/SectionBox";
-import { ImCross } from "react-icons/im";
 import { IoBed } from "react-icons/io5";
 import { IoIosPerson } from "react-icons/io";
 
@@ -25,17 +23,13 @@ export default function RoomPopup({ roomId }: {
   roomId: BedRoom.Id,
 }) {
   const [onglet, setOnglet] = React.useState('client_infos');
-  const { unPopup } = useDataContext();
   const { bedRooms } = useBedroom();
 
   if (!roomId) return null;
   const bedRoom = bedRooms[roomId];
 
   const title = (
-    <Title icon={<IoBed size={20} />} right={<ImCross size={13}
-      className="text-red-700 cursor-pointer"
-      onClick={unPopup} />
-    }>
+    <Title icon={<IoBed size={20} />} right={<CloseBtn />}>
       <h1 className="font-bold text-[15px]">Chambre {roomId}</h1>
       <RoomStatus room={bedRoom} />
     </Title>
@@ -43,7 +37,8 @@ export default function RoomPopup({ roomId }: {
 
   return (
     <Popup>
-      <PopupBody top={title} className='h-130'>
+      <PopupBody top={title} className='h-160'>
+
         <OngletTab onglet={onglet} setOnglet={setOnglet} datas={[
           { key: 'client_infos', icon: <IoIosPerson size={16} />, value: "Informations Client" },
           { key: 'room_infos', icon: <IoBed size={18} />, value: "Informations Chambre" },

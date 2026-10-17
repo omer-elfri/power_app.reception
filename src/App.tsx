@@ -14,9 +14,11 @@ import ListPopup from "./popups/list";
 import { twMerge } from "tailwind-merge";
 import { MdWarning } from "react-icons/md";
 import { FaCheckCircle } from "react-icons/fa";
+import ValletPopup from "./popups/vallet";
 
 export default function App() {
   const { alert, popupList } = useDataContext();
+  const popup = popupList[0];
 
   return (
     <div className="flex flex-col items-center w-screen max-h-screen px-5 py-2">
@@ -29,17 +31,15 @@ export default function App() {
         </Routes>
       </div>
 
-      { popupList.map(popup => (
-        popup[0] === 'CLEAN' ? <CleaningPopup key={popup[0]} roomId={popup[1]} /> :
-        popup[0] === 'BOOKING' ? <BookingPopup key={popup[0]} bookId={popup[1]} /> :
-        popup[0] === 'LIST' ? <ListPopup key={popup[0]} status={popup[1]} /> :
-        popup[0] === 'ROOM' ? <RoomPopup key={popup[0]} roomId={popup[1]} /> : null
-      )) }
+      { popup && (
+        popup[0] === 'CLEAN' ? <CleaningPopup roomId={popup[1]} /> :
+        popup[0] === 'BOOKING' ? <BookingPopup bookId={popup[1]} /> :
+        popup[0] === 'LIST' ? <ListPopup status={popup[1]} /> :
+        popup[0] === 'ROOM' ? <RoomPopup roomId={popup[1]} /> :
+        popup[0] === 'VALLET' ? <ValletPopup roomId={popup[1]} /> : null
+      ) }
 
-      {/* { popup?.[0] === 'ROOM' && <RoomPopup roomId={popup[1]} /> }
-      { popup?.[0] === 'CLEAN' && <CleaningPopup roomId={popup[1]} /> }
-      { popup?.[0] === 'BOOKING' && <BookingPopup bookId={popup[1]} /> }
-      { popup?.[0] === 'LIST' && <ListPopup status={popup[1]} /> } */}
+      {/* <ValletPopup roomId={'001'} /> */}
 
       { alert && (
         <div className={twMerge("fixed grid grid-cols-[auto_1fr] items-center gap-3 top-5 z-110 px-5 py-3 max-w-[80vw] text-center rounded text-[12px] font-bold flex-1",

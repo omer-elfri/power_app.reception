@@ -58,7 +58,7 @@ export type BedRoomContext = {
 
 export function BedRoomProvider({ children }: { children: React.ReactNode }) {
     const { authSession } = useAuth();
-    const { 
+    const { checkError,
         customer_book, cleaning_book, reservation_book, room_book,
         todayCustomers, todayBooked, getBookedPeriod,
         cleanings, customers, restaurant, reservations,
@@ -148,115 +148,137 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
 
 
     const switch_power = React.useCallback((roomId: BedRoom.Id, power: boolean | null) => {
-        if (power === null) {
-            updateBedRoom(roomId, { connected: false});
-        } else {
-            updateBedRoom(roomId, { connected: true, power });
-        }
+        checkError(() => {
+            if (power === null) {
+                updateBedRoom(roomId, { connected: false});
+            } else {
+                updateBedRoom(roomId, { connected: true, power });
+            }
+        }, `La chambre ${roomId} est ${power === null ? "déconnectée" : power ? "alimentée" : "éteinte" }`);
     }, [updateBedRoom]);
 
     const updateIssue = React.useCallback((roomId: BedRoom.Id, datas: {priority: PriorityId, message: string} | null) => {
-        room_book.add(roomId, { issue: datas ? { date: new Date(Date.now()), ...datas } : null });
+        checkError(() => {
+            room_book.add(roomId, { issue: datas ? { date: new Date(Date.now()), ...datas } : null });
+        });
     }, [bedRooms, room_book.add]);
 
 
     const check_in = React.useCallback((roomId: BedRoom.Id, customer: Omit<CustomerType, 'actions'>, description?: string) => {
-        const room = bedRooms[roomId];
-        if (room.customer)
-            throw Error(`La chambre ${roomId} est déja en check in`);
-        const action: CheckInType = { status: 'CHECK_IN', roomId,
-            datas: { customer }, date: new Date(Date.now()) };
-        const res: CustomerType = {...customer, actions: [action]}
-        customer_book.add(roomId, res, description);
+        checkError(() => {
+            const room = bedRooms[roomId];
+            if (room.customer)
+                throw Error(`La chambre ${roomId} est déja en check in`);
+            const action: CheckInType = { status: 'CHECK_IN', roomId,
+                datas: { customer }, date: new Date(Date.now()) };
+            const res: CustomerType = {...customer, actions: [action]}
+            customer_book.add(roomId, res, description);
+        }, `La chambre ${roomId} est vendue à ${customer.sexe} ${customer.name}`);
     }, [bedRooms, customer_book.add]);
 
     const check_update = React.useCallback((customerId: number, props: Partial<CustomerType>, description?: string) => {
-        const customer = customers[customerId];
-        if (!customer) throw Error(`Le client est introuvable`);
-
-        const action: CheckInType = { status: 'CHECK_UPDATE', roomId: customer.roomId,
-            datas: props, date: new Date(Date.now()) };
-        const res: Partial<CustomerType> = { ...props, actions: [ action, ...customer.actions, ] }
-        customer_book.update(customerId, res, description);
+        checkError(() => {
+            const customer = customers[customerId];
+            if (!customer) throw Error(`Le client est introuvable`);
+    
+            const action: CheckInType = { status: 'CHECK_UPDATE', roomId: customer.roomId,
+                datas: props, date: new Date(Date.now()) };
+            const res: Partial<CustomerType> = { ...props, actions: [ action, ...customer.actions, ] }
+            customer_book.update(customerId, res, description);
+        }, `Informations de ${customers[customerId].sexe} ${customers[customerId].name} modifiés avec succès`);
     }, [customers, customer_book.update]);
 
     const check_move = React.useCallback((customerId: number, toRoomId: BedRoom.Id, description?: string) => {
-        const customer = customers[customerId];
-        if (!customer)
-            throw Error(`Le client est introuvable`);
-        if (bedRooms[toRoomId].customer)
-            throw Error(`La chambre cible ${toRoomId} est en check in`);
-
-        const action: CheckInType = { status: 'CHECK_MOVE', roomId: toRoomId,
-            datas: { fromRoomId: customer.roomId }, date: new Date(Date.now()) };
-        const res: Partial<TypeWithTrace<CustomerType>> = { roomId: toRoomId, actions: [action, ...customer.actions, ]}
-        customer_book.update(customerId, res, description);
+        checkError(() => {
+            const customer = customers[customerId];
+            if (!customer)
+                throw Error(`Le client est introuvable`);
+            if (bedRooms[toRoomId].customer)
+                throw Error(`La chambre cible ${toRoomId} est en check in`);
+    
+            const action: CheckInType = { status: 'CHECK_MOVE', roomId: toRoomId,
+                datas: { fromRoomId: customer.roomId }, date: new Date(Date.now()) };
+            const res: Partial<TypeWithTrace<CustomerType>> = { roomId: toRoomId, actions: [action, ...customer.actions, ]}
+            customer_book.update(customerId, res, description);
+        }, `${customers[customerId].sexe} ${customers[customerId].name} de la chambre ${customers[customerId].roomId} s'est déplacé dans la chambre ${toRoomId}`);
     }, [customers, customer_book.update, bedRooms]);
 
     const check_out = React.useCallback((customerId: number, description?: string) => {
-        const customer = customers[customerId];
-        if (!customer) throw Error(`Le client est introuvable`);
-
-        const toPay = restaurant
-            .filter(resto => resto.customerId === customerId && !resto.paid)
-            .reduce((res, food) => res + food.price, 0);
-        if (toPay) alert(
-            `Le client ${customer.name} de la chambre ${customer.roomId} doit solder ${toPay} au restaurant`);
-        const action: CheckInType = { status: 'CHECK_OUT', roomId: customer.roomId, date: new Date(Date.now()) };
-        const res: Partial<CustomerType> = { actions: [action, ...customer.actions], end: new Date(Date.now())}
-        customer_book.update(customerId, res, description);
+        checkError(() => {
+            const customer = customers[customerId];
+            if (!customer) throw Error(`Le client est introuvable`);
+    
+            const toPay = restaurant
+                .filter(resto => resto.customerId === customerId && !resto.paid)
+                .reduce((res, food) => res + food.price, 0);
+            if (toPay) alert(
+                `Le client ${customer.name} de la chambre ${customer.roomId} doit solder ${toPay} au restaurant`);
+            const action: CheckInType = { status: 'CHECK_OUT', roomId: customer.roomId, date: new Date(Date.now()) };
+            const res: Partial<CustomerType> = { actions: [action, ...customer.actions], end: new Date(Date.now())}
+            customer_book.update(customerId, res, description);
+        }, `${customers[customerId].sexe} ${customers[customerId].name} à libéré la chambre ${customers[customerId].roomId}`);
     }, [customers, customer_book.update, restaurant]);
 
 
     const clean_room = React.useCallback((roomId: BedRoom.Id, valletId: Employer.Id, description?: string) => {
-        const room = bedRooms[roomId];
-        if ( room.cleaner )
-            throw Error(`La chambre ${roomId} est déjà en nettoyage`);
-        cleaning_book.add(roomId, { valletId,
-            sexe: employers_datas[valletId].sexe,
-            name: employers_datas[valletId].name,
-        }, description);
+        const vallet = employers_datas[valletId];
+        checkError(() => {
+            const room = bedRooms[roomId];
+            if ( room.cleaner )
+                throw Error(`La chambre ${roomId} est déjà en nettoyage`);
+            cleaning_book.add(roomId, { valletId,
+                sexe: vallet.sexe,
+                name: vallet.name,
+            }, description);
+        }, `Le néttoyage de la chambre ${roomId} est attribué à ${vallet.sexe} ${vallet.name}`);
     }, [bedRooms, cleaning_book.add]);
     
     const done_cleaning = React.useCallback((roomId: BedRoom.Id, description?: string) => {
-        const room = bedRooms[roomId];
-        if ( !room.cleaner )
-            throw Error(`La chambre ${roomId} n'est pas en nettoyage`);
-        cleaning_book.update(room.cleaner.id, { done: new Date(Date.now()) }, description);
+        checkError(() => {
+            const room = bedRooms[roomId];
+            if ( !room.cleaner )
+                throw Error(`La chambre ${roomId} n'est pas en nettoyage`);
+            cleaning_book.update(room.cleaner.id, { done: new Date(Date.now()) }, description);
+        }, `La chambre ${roomId} à été néttoyée par ${bedRooms[roomId].cleaner?.sexe} ${bedRooms[roomId].cleaner?.name}`);
     }, [bedRooms, cleaning_book.update]);
 
     const cancel_cleaning = React.useCallback((roomId: BedRoom.Id, description?: string) => {
-        const room = bedRooms[roomId];
-        if ( !room.cleaner )
-            throw Error(`La chambre ${roomId} n'est pas en nettoyage`);
-        cleaning_book.update(room.cleaner.id, { cancel: new Date(Date.now()) }, description);
+        checkError(() => {
+            const room = bedRooms[roomId];
+            if ( !room.cleaner )
+                throw Error(`La chambre ${roomId} n'est pas en nettoyage`);
+            cleaning_book.update(room.cleaner.id, { cancel: new Date(Date.now()) }, description);
+        }, `La chambre ${roomId} n'est plus en néttoyage`);
     }, [bedRooms, cleaning_book.update]);
 
 
     const book = React.useCallback((roomId: BedRoom.Id, props: ReservationType, description?: string) => {
-        console.log('elem', props.start, props.end)
-        const bookedInPeriod = getBookedPeriod(props.start, props.end);
-        const isBooked = bookedInPeriod.find(booked => booked.roomId === roomId);
-
-        if (isBooked) throw Error(
-            `La chambre ${roomId} à déjà été réservée par \
-            ${isBooked.name.toUpperCase()} du ${getFrenchDate(isBooked.start)} au \
-            ${isBooked.end ? getFrenchDate(isBooked.end) : '...'}`
-        );
-        const datas = { ...props, description };
-        reservation_book.add(roomId, datas, description);
+        checkError(() => {
+            const bookedInPeriod = getBookedPeriod(props.start, props.end);
+            const isBooked = bookedInPeriod.find(booked => booked.roomId === roomId);
+    
+            if (isBooked) throw Error(
+                `La chambre ${roomId} à déjà été réservée par \
+                ${isBooked.name.toUpperCase()} du ${getFrenchDate(isBooked.start)} au \
+                ${isBooked.end ? getFrenchDate(isBooked.end) : '...'}`
+            );
+            const datas = { ...props, description };
+            reservation_book.add(roomId, datas, description);
+        }, `La chambre ${roomId} à été réservée par Mr / Mme ${props.name} du ${getFrenchDate(props.start)} au ${getFrenchDate(props.end)}`);
     }, [bedRooms, reservation_book.add, getBookedPeriod]);
 
     const cancel_book = React.useCallback((bookId: number, description?: string) => {
         const room_rsv = reservations.find(rsv => rsv.id === bookId);
         if (!room_rsv) throw Error("Réservation introuvable");
-        if (!authSession) throw Error("Vous devez être connecté");
-        const datas = { ...room_rsv, description,
-            cancel: {
-                date: new Date(Date.now()),
-                auth_session: authSession.id,
-            } };
-        reservation_book.update(bookId, datas, description);
+        checkError(() => {
+            if (!authSession) throw Error("Vous devez être connecté");
+            const datas = { ...room_rsv, description,
+                cancel: {
+                    date: new Date(Date.now()),
+                    auth_session: authSession.id,
+                } };
+            reservation_book.update(bookId, datas, description);
+        }, `La réservation de la chambre ${room_rsv.roomId} par Mr / Mme ${room_rsv.name} du ${getFrenchDate(room_rsv.start)} au ${getFrenchDate(room_rsv.end)} est annulée`);
     }, [authSession, reservations, reservation_book.update]);
 
 

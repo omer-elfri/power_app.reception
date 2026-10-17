@@ -65,7 +65,7 @@ export default function CheckInForm({ room:bedRoom, className }: {
                         if (!bedRoom.customer) throw Error(
                             `La chambre ${bedRoom.id} n'est pas occupée`);
                         check_out(bedRoom.customer.id);
-                        addPopup(['CLEAN']);
+                        addPopup(['VALLET', bedRoom.id]);
                     }}
                         className="bg-transparent border-1 text-red-700 border-red-700 !py-1">Check out
                     </MyButton>

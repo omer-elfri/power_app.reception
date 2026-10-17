@@ -61,14 +61,15 @@ export default function CleaningTable({ list, className }: {
   );
 }
 
-function TableTr({ className, children, index=-1 }: {
+function TableTr({ className, children, index=-1, onClick }: {
   children: React.ReactNode[];
   index?: number,
   className?: string,
+  onClick?: () => void,
 }) {
   return (
       <div className={twMerge("grid grid-cols-[50px_60px_1fr_70px] items-center gap-x-3 py-2 relative text-[11px]",
-        className, index%2===0 ? "bg-blue-700/8" : "")}>
+        className, index%2===0 ? "bg-blue-700/8" : "")} onClick={onClick}>
         { children }
       </div>
   )
@@ -83,7 +84,8 @@ function CleanLine({ clean, className, canCancel, index=-1 }: {
   const { addPopup } = useDataContext();
   const { done_cleaning, cancel_cleaning } = useBedroom();
   return (
-      <TableTr index={index} className={className}>
+      <TableTr index={index} onClick={() => addPopup(['ROOM', clean.roomId])}
+          className={twMerge(className, "group hover:bg-blue-400/20 cursor-pointer")}>
 
         <p className="text-gray-600">{getTime(clean.date)}</p>
 
@@ -105,7 +107,7 @@ function CleanLine({ clean, className, canCancel, index=-1 }: {
           : clean.cancel ?
             <span title="annulée" className="text-gray-400">annulé</span>
 
-          : canCancel ? <div className="flex flex-row flex-wrap gap-1">
+          : canCancel ? <div className="flex flex-row flex-wrap gap-1 hidden group-hover:flex" onClick={e => e.stopPropagation()}>
 
             <div className="flex justify-center items-center p-1 size-5 bg-red-700 text-white rounded-full cursor-pointer"
               onClick={() => cancel_cleaning(clean.roomId)}><ImCross size={10} />

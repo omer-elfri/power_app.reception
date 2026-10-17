@@ -1,6 +1,6 @@
 'use client';
 
-import Popup, { PopupBody } from "..";
+import Popup, { CloseBtn, PopupBody } from "..";
 import { useDataContext } from "../../hooks";
 
 import { Title } from "../../components/SectionBox";
@@ -13,21 +13,11 @@ import React from "react";
 export default function BookingPopup({ bookId:defaultBookId }: {
   bookId?: number,
 }) {
-  const { unPopup } = useDataContext();
   const [bookId, setBookId] = React.useState(defaultBookId);
-
-  const title = (
-    <Title bar className="gap-2"
-      right={<MyButton name="close" icon={<ImCross size={10} />}
-        className="bg-red-700/10 text-[11px] text-red-700 p-2 rounded"
-        onClick={unPopup}
-      />}>Réservation
-    </Title>
-  );
 
   return (
     <Popup>
-      <PopupBody top={title}
+      <PopupBody top={<Title bar className="gap-2" right={<CloseBtn />}>Réservation</Title>}
         subClassName="grid grid-cols-[230px_1fr] gap-3">
 
         <BookingForm bookId={bookId} />

@@ -43,12 +43,12 @@ export const stages: {[k in StageId]: {
 export const colors: {[k in (StatusId)]: string} = {
     powered: '#cf0037',
     guest: '#074507',
-    sold: '#05324d',
+    sold: '#407236',
+    free: '#40723660',
     coming: '#aa00c4',
     restaurant: '#00635b',
     cleaning: '#006a9c',
     issue: '#6a7585',
-    free: '#407236',
 } as const;
 
 
@@ -134,5 +134,7 @@ export type PopupType =
     [ 'CLEAN', BedRoom.Id? ] |
     [ 'BOOKING', number? ] |
     [ 'ROOM', BedRoom.Id ] |
-    [ 'LIST', ListStatus? ] ;
+    [ 'LIST', ListStatus? ] |
+    [ 'VALLET', BedRoom.Id ] ;
+
 

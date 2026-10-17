@@ -34,8 +34,9 @@ export function ValletLine({ cleanerId, className }: {
 }) {
   const { todayCleaned } = useDataContext();
   const cleaner = employers_datas[cleanerId];
-  const roomsTotal = todayCleaned.filter(clean => clean.valletId === cleanerId);
-  const roomsDoing = roomsTotal.filter(clean => !(clean.done || clean.cancel));
+  const roomsTotal = todayCleaned.filter(clean => (
+    !clean.cancel && clean.valletId === cleanerId));
+  const roomsDone = roomsTotal.filter(clean => clean.done);
 
   return (
     <div className={twMerge("grid grid-cols-[auto_1fr_auto] items-center gap-x-3 p-2 py-3 rounded border-gray-300", className)}>
@@ -48,14 +49,12 @@ export function ValletLine({ cleanerId, className }: {
 
       <h2 className="font-bold text-[12px] text-gray-800 col-span-2">{cleaner.name}</h2>
 
-      <p className="font-bold text-[12px]"> {getString(roomsDoing.length)} / {getString(roomsTotal.length)} </p>
+      <p className="font-bold text-[12px]"> {getString(roomsDone.length)} / {getString(roomsTotal.length)} </p>
 
-      <div className="flex flex-row mt-1">
-        <p className={twMerge("font-bold text-[10px] px-[5px] py-[1px] rounded-md border-1",
-            (roomsDoing.length > 0) ? "bg-blue-400/15 border-blue-700" : "bg-green-400/15 border-green-700" )}>
-          { roomsDoing.length > 0 ? 'Occupée' : 'Libre' }
-        </p>
-      </div>
+      <p className={twMerge("font-bold text-[10px] px-[5px] py-[1px] rounded-md border-1 mt-1",
+          (roomsDone.length < roomsTotal.length) ? "bg-blue-400/15 border-blue-700" : "bg-green-400/15 border-green-700" )}>
+        { roomsDone.length < roomsTotal.length ? 'Occupée' : 'Libre' }
+      </p>
 
     </div>
   );
