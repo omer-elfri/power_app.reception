@@ -14,17 +14,8 @@ import { MdCleaningServices, MdWarning }  from "react-icons/md";
 import { ImPower }  from "react-icons/im";
 
 export default function ActivitySection() {
-  const { bedRoomTab } = useBedroom();
-  const { obsoletRooms, setPopup } = useDataContext();
-
-  const analysis = React.useMemo(() => ({
-    powered: bedRoomTab.filter(room => room.power),
-    solded: bedRoomTab.filter(room => !!room.customer),
-    free: bedRoomTab.filter(room => !room.customer),
-    coming_total: bedRoomTab.filter(room => room.booked),
-    issues: bedRoomTab.filter(room => room.issue),
-    cleaning_total: bedRoomTab.filter(room => room.cleaner),
-  }), [bedRoomTab]);
+  const { analysis } = useBedroom();
+  const { obsoletRooms, addPopup } = useDataContext();
 
   return (
     <div className="flex flex-row items-center gap-1">
@@ -33,7 +24,7 @@ export default function ActivitySection() {
         value={analysis.powered.length}
         name="Chambres" subName="alimentées"
         color={colors.powered}
-        // onClick={() => setStatus(['powered'])}
+        onClick={() => addPopup(['LIST', 'powered'])}
       />
       <ActivityBox
         icon={ <div className="flex flex-row">
@@ -44,28 +35,28 @@ export default function ActivitySection() {
         value={analysis.solded.length}
         name="Chambres" subName="vendues"
         color={colors.sold}
-        onClick={() =>  setPopup(['LIST', 'sold'])}
+        onClick={() =>  addPopup(['LIST', 'sold'])}
       />
       <ActivityBox
         icon={<IoBed size={35} />}
         value={analysis.free.length}
         name="Chambres" subName="disponibles"
         color={colors.free}
-        onClick={() =>  setPopup(['LIST', 'free'])}
+        onClick={() =>  addPopup(['LIST', 'free'])}
       />
       <ActivityBox
         icon={<FaCalendarAlt size={30} />}
-        value={analysis.coming_total.length}
+        value={analysis.coming.total.length}
         name="Réservations" subName="aujourd'hui"
         color={colors.coming}
-        onClick={() =>  setPopup(['BOOKING'])}
+        onClick={() =>  addPopup(['BOOKING'])}
       />
       <ActivityBox
         icon={<MdCleaningServices size={30} />}
-        value={analysis.cleaning_total.length}
+        value={analysis.cleaning.total.length}
         name="Chambre" subName="en néttoyage"
         color={colors.cleaning}
-        onClick={() =>  setPopup(['CLEAN'])}
+        onClick={() =>  addPopup(['LIST', 'clean'])}
         infobulle={obsoletRooms.length > 0 && <MdWarning
           title="Certaines chambres sont obsolètes"
           className="text-yellow-600" />}
@@ -75,7 +66,7 @@ export default function ActivitySection() {
         value={analysis.issues.length}
         name="Pannes" subName="signalées"
         color={colors.issue}
-        onClick={() =>  setPopup(['LIST', 'issue'])}
+        onClick={() =>  addPopup(['LIST', 'issue'])}
       />
     </div>
   );

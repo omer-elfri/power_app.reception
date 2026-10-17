@@ -49,7 +49,7 @@ function StageAside({ form, stage, rooms, className }: {
     rooms: BedRoom.Type[],
     className?: string,
 }) {
-    const { setPopup } = useDataContext();
+    const { addPopup } = useDataContext();
 
     return (
         <SectionBox className={className} subClassName="min-h-30 pb-3">
@@ -58,14 +58,14 @@ function StageAside({ form, stage, rooms, className }: {
             { (form === "line")
             ?   <div className="flex flex-col gap-2"> { rooms.map((room) =>
                     <div key={room.id} className="cursor-pointer"
-                        onClick={()=>setPopup(['ROOM', room.id])}>
+                        onClick={()=>addPopup(['ROOM', room.id])}>
                         <RoomLine room={room} />
                     </div> ) }
                 </div>
             :   <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,180px))] gap-x-3 gap-y-6 mt-5">
                     { rooms.map((room) =>
                         <div key={room.id} className="cursor-pointer"
-                            onClick={()=>setPopup(['ROOM', room.id])}>
+                            onClick={()=>addPopup(['ROOM', room.id])}>
                             <RoomBox room={room} />
                         </div>
                     ) }

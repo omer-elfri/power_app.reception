@@ -38,6 +38,7 @@ namespace BedRoom {
     }
 
     export type IssueType = {
+        date: Date,
         priority: PriorityId,
         message: string,
     }

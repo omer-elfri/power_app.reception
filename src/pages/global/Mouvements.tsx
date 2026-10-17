@@ -11,17 +11,15 @@ import { CheckInType, CustomerType, TypeWithTrace } from "../../types";
 type MoveType = Omit<TypeWithTrace<CustomerType>, 'actions'> & CheckInType;
 
 export default function MouvementSection() {
-  const { setPopup, customer_book, customers } = useDataContext();
+  const { addPopup, customer_book, customers } = useDataContext();
   const todayO = new Date(Date.now());
   todayO.setHours(0,0,0,0);
 
   const customerTab: MoveType[] = Object.values(customer_book.lasts)
-    .map(({ actions, ...customer }) => (
-      actions.map(action => ({ ...customer, ...action,
-        //  end:action.status === 'CHECK_OUT' ? customer.end : undefined,
-      }))
-    ))
-    .flatMap(elem => elem)
+    .map(({ actions, ...customer }) => {
+      console.log("actions", actions);
+      return ({...customer, ...actions[0]})
+    })
     .sort((a, b) => b.date.getTime() - a.date.getTime());
 
   return (
@@ -40,7 +38,7 @@ export default function MouvementSection() {
         <div className="text-gray-600">{getFrenchDateTime(move.date)}</div>
 
         <p className="text-black text-[12px] hover:cursor-pointer hover:underline"
-          onClick={() => setPopup(['ROOM', move.roomId])}>{move.roomId}
+          onClick={() => addPopup(['ROOM', move.roomId])}>{move.roomId}
         </p>
 
         <div className="flex flex-row items-center text-gray-600">
@@ -60,7 +58,7 @@ export default function MouvementSection() {
 
         { customers[move.id] && !customers[move.id].end
         ? <div className="text-gray-600 truncate cursor-pointer hover:underline"
-            onClick={() => setPopup(['ROOM', customers[move.id].roomId])}>{ move.name }
+            onClick={() => addPopup(['ROOM', customers[move.id].roomId])}>{ move.name }
           </div>
         : <div className="text-gray-600 truncate">{ move.name }</div> }
 

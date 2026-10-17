@@ -18,8 +18,13 @@ type DataContextType = {
     reservation_book: LocalBook<ReservationType>,
     room_book: LocalBook<RoomType>,
 
-    popup: PopupType | null, setPopup: State<PopupType | null>,
     status: StatusId[], setStatus: State<StatusId[]>,
+    alert: ["success" | "error", string] | null,
+    setAlert: State<["success" | "error", string] | null>,
+
+    popupList: PopupType[],
+    addPopup: (pop: PopupType) => void,
+    unPopup: () => void,
 
 
     reservations: TypeWithTrace<ReservationType>[],
@@ -47,9 +52,10 @@ export function DataProvider({ children }: {
     const reservation_book = useLocalData<ReservationType>('reservation_book');
     const room_book = useLocalData<RoomType>('room_book');
 
-    const [popup, setPopup] = React.useState<PopupType | null>(null);
+    const [popupList, setPopupList] = React.useState<PopupType[]>([]);
     const [refresh, setRefresh] = React.useState(new Date(Date.now()));
     const [status, setStatus] = React.useState<StatusId[]>([]);
+    const [alert, setAlert] = React.useState<['success' | 'error', string] | null>(null);
 
     React.useEffect(() => {
         const id = setInterval(() => {
@@ -57,6 +63,12 @@ export function DataProvider({ children }: {
         }, 3*60*60*1000);
         return () => clearInterval(id);
     }, []);
+
+    React.useEffect(() => {
+        if (!alert) return;
+        const id = setTimeout(() => setAlert(null), 3000);
+        return () => clearTimeout(id);
+    }, [alert]);
 
 
 
@@ -141,9 +153,9 @@ export function DataProvider({ children }: {
                 if (!cleaned.done) return false;
                 if (cleaned.date < obsoletDay) return true;
                 if (!customer) return false;
-                if (customer.end &&
-                    'end' in cleaned && cleaned.end &&
-                    customer.end < cleaned.end) return true;
+                if (customer.end && cleaned.done &&
+                   cleaned.done < customer.end
+                ) return true;
             } )
     }, [customer_book.lasts, cleaning_book.lasts]);
 
@@ -175,7 +187,7 @@ export function DataProvider({ children }: {
 
         const now = new Date(Date.now());
         const endDate = lastCleaned.done ?? null;
-        if (!endDate) return employers_datas[lastCleaned.valletId].name;
+        if (!endDate) return lastCleaned.name;
 
         const res = endDate.getTime() - now.getTime() > 3*24*60*60*1000;
         return !res ? "Propre" : "Non";
@@ -226,8 +238,15 @@ export function DataProvider({ children }: {
 
             restaurant,
 
-            popup, setPopup,
+            popupList,
+            addPopup: React.useCallback((pop: PopupType) => {
+                setPopupList(popupList => [ ...popupList, pop,]);
+            }, []),
+            unPopup: React.useCallback(() => {
+                setPopupList(popupList => popupList.slice(0, popupList.length -1));
+            }, []),
             status, setStatus,
+            alert, setAlert,
         }}>
             { children }
         </dataContext.Provider>

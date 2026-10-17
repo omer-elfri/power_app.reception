@@ -12,16 +12,16 @@ type AuthContextType = {
     isAuth: () => AuthSession,
     connect: (userId: Employer.Id, password: string) => void,
     disconnect: () => void,
-    addTrace: <T extends Object>(id: number, roomId: BedRoom.Id, data: T, description?: string) => TypeWithTrace<T>,
+    addTrace: <T extends Object>(
+        id: number, roomId: BedRoom.Id,
+        data: T, description?: string
+    ) => TypeWithTrace<T>,
     authSession: AuthSession | null,
     setAuthSession: State<AuthSession | null>,
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [authSession, setAuthSession] = React.useState<AuthSession | null>({
-        id: 'receptionist1',
-        name: "admin",
-    });
+    const [authSession, setAuthSession] = React.useState<AuthSession | null>(null);
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
@@ -57,9 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAuthSession({ id: userId, name: user.name, });
     }, []);
 
-    const disconnect = React.useCallback(() => {
-        setAuthSession(null);
-    }, []);
+    const disconnect = React.useCallback(() => setAuthSession(null), []);
 
     const isAuth = React.useCallback(() => {
         if (!authSession)

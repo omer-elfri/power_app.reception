@@ -16,7 +16,7 @@ export default function ChangeRoom({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { setPopup } = useDataContext();
+    const { addPopup } = useDataContext();
     const { bedRooms, bedRoomTab, check_move } = useBedroom();
 
     const submitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -29,7 +29,7 @@ export default function ChangeRoom({ room:bedRoom, className }: {
         if (toRoom.customer)
             throw Error(`La chambre ${roomId} est déjà occupée`);
         check_move(bedRoom.customer.id, roomId, description);
-        setPopup(['ROOM', roomId]);
+        addPopup(['ROOM', roomId]);
     }
 
     return (

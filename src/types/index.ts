@@ -74,13 +74,14 @@ export type RestaurantType = {
 }
 
 export type RoomType = {
-    roomId: BedRoom.Id,
     power?: boolean,
     issue: BedRoom.IssueType | null,
 }
 
 export type CleanType = {
+    sexe: Sex,
     valletId: Employer.Id,
+    name: string,
 } & ({
     done?: never,
     cancel?: never,

@@ -1,37 +1,22 @@
 'use client'
-import React from 'react'
-
 import { useBedroom } from "../../hooks/useBedroom";
-import { room_ctg_list } from "../../configs/types";
 
 import SectionBox, { Title } from "../../components/SectionBox";
 import SoldRoom from "../../components/SoldRoom";
 import { formatPrice } from '../../tools';
 
 export default function SoldedAside() {
-    const { bedRoomTab } = useBedroom();
+    const { analysis } = useBedroom();
 
-    const roomCategoryAnalysis = React.useMemo(() => {
-        return room_ctg_list.map((room_ctg) => {
-            const topCtgRooms = bedRoomTab.filter(({ categories }) => (
-                categories[0] === room_ctg.id ) );
-            return {
-                ...room_ctg,
-                topSolded: topCtgRooms.filter(room => room.customer),
-                topTotal: topCtgRooms,
-            };
-        });
-    }, [bedRoomTab]);
-
-    const nbSold = roomCategoryAnalysis.reduce((res, elem) => res + elem.topSolded.length, 0);
+    const nbSold = analysis.categories.reduce((res, elem) => res + elem.topSolded.length, 0);
 
     return (
         <SectionBox className="pb-5">
 
             <Title bar className="mb-2" right={nbSold}>Ventes</Title>
 
-            <div className="flex flex-col gap-3"> { roomCategoryAnalysis.map((room_ctg) => (
-                <SoldRoom key={room_ctg.id}
+            <div className="flex flex-col gap-3"> { analysis.categories.map((room_ctg) => (
+                <SoldRoom key={room_ctg.name}
                     name={room_ctg.name}
                     subName={formatPrice(room_ctg.price)}
                     sold={room_ctg.topSolded.length}

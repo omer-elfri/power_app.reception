@@ -14,7 +14,7 @@ import { MdOutlineCleaningServices } from "react-icons/md";
 import EntretienSection from "./Entretien";
 
 export default function GlobalPage() {
-  const { cleaning_book, setPopup, restaurant } = useDataContext();
+  const { cleaning_book, addPopup, restaurant } = useDataContext();
 
   return (
     <div className="flex flex-col gap-1 pb-5">
@@ -40,7 +40,7 @@ export default function GlobalPage() {
         </SectionBox>
 
         <SectionBox className="col-span-3 row-span-2"
-            bottom={<SeeMore value="Voir tout" onClick={() => setPopup(['CLEAN'])} />}>
+            bottom={<SeeMore value="Voir tout" onClick={() => addPopup(['CLEAN'])} />}>
           <Title icon={<MdOutlineCleaningServices size={16} />}
             right={cleaning_book.get.length}>Entretiens</Title>
           <EntretienSection />

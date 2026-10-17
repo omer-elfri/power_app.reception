@@ -2,7 +2,6 @@
 
 import { twMerge } from 'tailwind-merge';
 import { useDataContext } from '../../hooks';
-import { employers_datas } from '../../configs/employer';
 
 import BedRoom from '../../types/bedroom';
 import { getFrenchDateTime } from '../../tools';
@@ -16,13 +15,13 @@ export default function CleaningBox({ room:bedRoom, className }: {
   room: BedRoom.Type,
   className?: string,
 }) {
-  const { obsoletRooms, setPopup, cleaning_book } = useDataContext();
+  const { obsoletRooms, addPopup, cleaning_book } = useDataContext();
   const isObsolet = obsoletRooms.includes(bedRoom.id);
   const roomCleaneds = cleaning_book.get.filter(clean => !clean.cancel && clean.roomId === bedRoom.id);
 
   return (
     <FormAside title="Néttoyage" className={twMerge('relative', className)}
-      right={<GiBroom size={15} onClick={() => setPopup(['CLEAN'])} className='text-blue-600 cursor-pointer' />}>
+      right={<GiBroom size={15} onClick={() => addPopup(['CLEAN'])} className='text-blue-600 cursor-pointer' />}>
 
       { isObsolet && <div className='grid grid-cols-[auto_1fr] items-center gap-2 py-1 px-2 rounded bg-yellow-600/20'>
         <MdWarning size={18} className="text-yellow-600" title="A besoin de néttoyage" />
@@ -35,7 +34,7 @@ export default function CleaningBox({ room:bedRoom, className }: {
           { clean => <MyTr key={clean.id} color="bg-blue-400/20"
               className='grid-cols-[40px_1fr_40px] text-[11px] text-gray-700'>
             <p>{getFrenchDateTime(clean.date)}</p>
-            <p className="text-black">{employers_datas[clean.valletId].name}</p>
+            <p className="text-black">{clean.name}</p>
             <p>{clean.done ? getFrenchDateTime(clean.done) : '...'}</p>
           </MyTr> }
         </MyTable>

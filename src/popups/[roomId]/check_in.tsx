@@ -20,7 +20,7 @@ export default function CheckInForm({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { setPopup } = useDataContext();
+    const { addPopup, setAlert } = useDataContext();
     const { check_in, check_update, check_out } = useBedroom();
     const clientName =
         bedRoom.customer?.name ??
@@ -39,7 +39,10 @@ export default function CheckInForm({ room:bedRoom, className }: {
         const town = e.target.town.value as string;
 
         if (e.target.check_in) {
-            if (name === "") throw Error("Vous devez renseigner le nom du client")
+            if (name === "") {
+                setAlert(['error', "Vous devez renseigner le nom du client"]);
+                throw Error("Vous devez renseigner le nom du client");
+            }
             check_in(bedRoom.id, { sexe, name, tel, town, price }, description);
         }
         if (e.target.check_update) {
@@ -62,7 +65,7 @@ export default function CheckInForm({ room:bedRoom, className }: {
                         if (!bedRoom.customer) throw Error(
                             `La chambre ${bedRoom.id} n'est pas occupée`);
                         check_out(bedRoom.customer.id);
-                        setPopup(['CLEAN']);
+                        addPopup(['CLEAN']);
                     }}
                         className="bg-transparent border-1 text-red-700 border-red-700 !py-1">Check out
                     </MyButton>

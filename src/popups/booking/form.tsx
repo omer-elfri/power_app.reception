@@ -8,22 +8,25 @@ import { roomIds } from "../../configs/room";
 import { DateRange, DayPicker } from "@daypicker/react";
 import LabelInput from "../../components/LabelInput";
 import { useDataContext } from "../../hooks";
+import BedRoom from "../../types/bedroom";
+import { getFrenchDate } from "../../tools";
 
 export default function BookingForm({ bookId, className }: {
   bookId?: number,
   className?: string,
 }) {
-  const { reservation_book, getBookedPeriod } = useDataContext();
+  const { reservation_book, getBookedPeriod, setAlert } = useDataContext();
   const { book } = useBedroom();
 
   const [clientName, setClientName] = React.useState("");
-  const [selectedRoomId, setSelectedRoomId] = React.useState("");
+  const [selectedRoomId, setSelectedRoomId] = React.useState<BedRoom.Id>(roomIds[0]);
   const [description, setDescription] = React.useState("");
   const [selectedDate, setSelectedDate] = React.useState<DateRange>();
 
-  const [infos, setInfos] = React.useState<['success' | 'error', string]>();
   const roomBookeds = getBookedPeriod(selectedDate?.from, selectedDate?.to)
-  const bookInfos = reservation_book.get.find(rsv => rsv.id === bookId);
+  const bookInfos = React.useMemo(() => {
+    return reservation_book.get.find(rsv => rsv.id === bookId);
+  }, [reservation_book.get, bookId]);
 
   React.useEffect(() => {
     if (!bookInfos) return;
@@ -31,41 +34,43 @@ export default function BookingForm({ bookId, className }: {
     setClientName(bookInfos.name);
     setSelectedRoomId(bookInfos.roomId);
     setDescription(bookInfos.description ?? "");
+    console.log("tmp", bookInfos.roomId);
   }, [bookInfos]);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      if (infos) setInfos(undefined);
-    }, 3000);
-  }, [infos]);
 
   const subMitHandler = React.useCallback((e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!selectedDate?.from)
+      throw Error("Vous devez sélectionner une date d'arrivée");
+    if (selectedDate.to && selectedDate.from > selectedDate.to) {
+      const tmp = selectedDate.from;
+      selectedDate.from = selectedDate.to;
+      selectedDate.to = tmp;
+    }
+
     const clientName = e.target.clientName.value;
-    const roomId = e.target.roomId.value;
-    const start = selectedDate?.from;
-    const end = selectedDate?.to ?? new Date(Date.now() + 24*60*60*1000);
+    const roomId = selectedRoomId;
+    const start = selectedDate.from;
+    const end = selectedDate.to ?? new Date(start.getTime() + 24*60*60*1000);
     const description = e.target.description.value;
 
+    console.log("selectedDate", selectedDate)
+    
+    if (!roomId) {
+      setAlert(['error', "Vous devez préciser la chambre"]);
+      throw Error("Vous devez préciser la chambre");
+    }
     if (clientName === "") {
-      setInfos(['error', "Vous devez préciser le nom du client"]);
-      return;
+      setAlert(['error', "Vous devez préciser le nom du client"]);
+      throw Error("Vous devez préciser le nom du client");
     }
-    if (!start) {
-      setInfos(['error', "Vous devez sélectionner une date d'arrivée"]);
-      return;
-    }
-    if (!end) {
-      setInfos(['error', "Vous devez sélectionner une date de départ"]);
-      return;
-    }
-    setInfos(undefined);
+    setAlert(null);
     try {
       book(roomId, { name: clientName, start, end }, description);
-      setInfos(['success', "Réservation bien éffectuée"]);
+      setAlert(['success', "Réservation bien éffectuée"]);
     }
     catch(e) {
-      setInfos(['error', e instanceof Error ? e.message : String(e)]);
+      setAlert(['error', e instanceof Error ? e.message : String(e)]);
     }
   }, [book, selectedDate, clientName, selectedRoomId, description]);
 
@@ -84,16 +89,16 @@ export default function BookingForm({ bookId, className }: {
         </LabelInput>
 
         <LabelInput label="Nom du client" name="clientName" required autoFocus
-          value={clientName} onChange={e => setClientName(e.target.value)}
+          value={clientName} onChangeText={setClientName}
           inputClassName="uppercase h-8 !border-gray-400 shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)]"
         />
 
         <LabelInput label="Chambre" name="roomId" required
-          value={selectedRoomId} onChange={e => setSelectedRoomId(e.target.value)}
+          value={selectedRoomId} onChangeText={text => setSelectedRoomId(text as BedRoom.Id)}
           inputClassName="text-[12px] text-center h-8 !border-gray-400" options={
           roomIds.map(roomId => {
             const rsv = roomBookeds.find(room_rsv => room_rsv.roomId === roomId);
-            return ({ k: roomId, value: `${roomId} ${rsv ? " - " + rsv.name.toUpperCase() : ""}`, disabled: !!rsv });
+            return ({ k: roomId, value: `${roomId} ${rsv ? " - " + rsv.name.toUpperCase() + " - " + getFrenchDate(rsv.start).slice(0,6) + "..." + getFrenchDate(rsv.end).slice(0,6) : ""}`, disabled: !!rsv });
           })
         } />
 
@@ -103,14 +108,7 @@ export default function BookingForm({ bookId, className }: {
             className="shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)] h-20 px-2 py-1 text-[12px] font-bold text-gray-800 !border-gray-400" />
         </LabelInput>
 
-        { infos && (
-          <div className={twMerge("px-2 py-2 text-center rounded text-[12px] font-bold flex-1",
-            infos[0] === 'success' ? "bg-green-500/20 text-green-800" :
-            infos[0] === 'error' ? "bg-red-500/20 text-red-800" : "")}>{infos[1]}
-          </div>
-        ) }
-
-        <button type="submit" name="register" className="bg-gray-800 text-white text-[11px] self-end">Réserver</button>
+        <button type="submit" name="register" disabled={!!getBookedPeriod(selectedDate?.from, selectedDate?.to).find(room => room.roomId === selectedRoomId) } className="bg-gray-800 text-white text-[11px] self-end">Réserver</button>
 
       </form>
 

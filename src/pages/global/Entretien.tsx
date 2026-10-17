@@ -1,7 +1,6 @@
 'use client'
 
 import { twMerge } from "tailwind-merge";
-import { employers_datas } from "../../configs/employer";
 import { useDataContext } from "../../hooks";
 import { getFrenchDateTime } from "../../tools";
 
@@ -31,7 +30,7 @@ export default function EntretienSection() {
             /></td>
 
             <td className={twMerge("text-[11px] line-clamp-2 font-bold flex-1", clean.cancel ? "line-through" : "")}>
-              {employers_datas[clean.valletId].name}
+              {clean.name}
             </td>
 
             <td className="text-[11px] font-bold">{

@@ -42,16 +42,27 @@ export default function CommentBox({ room:bedRoom, className }: {
       className={twMerge('', className)} onSubmit={e => {
         e.preventDefault();
         const message = e.target.message.value;
-        updateIssue(bedRoom.id, priority, message);
+        if (message === '') throw new Error("Rentrez un commantaire");
+        updateIssue(bedRoom.id, {priority, message});
       }}>
 
       <textarea name="message" defaultValue={bedRoom.issue?.message}
         className='pt-3 pb-2 h-20 !border-none bg-gray-300/30 px-3 text-[12px]'
       />
 
-      <input type="submit" value="Envoyer"
-        className='self-end px-3 py-1 text-[12px] bg-blue-600 text-white cursor-pointer'
-      />
+      { !bedRoom.issue ? (
+        <input type="submit" value="Envoyer"
+          className='self-end px-3 py-1 text-[12px] bg-blue-600 text-white cursor-pointer'
+        />
+      ) : <div className='flex flex-row gap-3 justify-end'>
+        <button onClick={() => updateIssue(bedRoom.id, null)}
+          className='self-end px-3 !py-1 text-[12px] border-1 border-red-600 text-red-600 cursor-pointer'
+        >Retirer</button>
+        <input type="submit" value="Mofifier"
+          className='self-end px-3 py-1 text-[12px] bg-blue-600/70 text-white cursor-pointer'
+        />
+      </div> }
+
 
     </FormAside>
   );

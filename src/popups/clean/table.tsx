@@ -6,7 +6,6 @@ import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
 
-import { employers_datas } from "../../configs/employer";
 import { CleanType, TypeWithTrace } from "../../types";
 import { getTime } from "../../tools";
 
@@ -81,7 +80,7 @@ function CleanLine({ clean, className, canCancel, index=-1 }: {
   className?: string,
   canCancel?: boolean,
 }) {
-  const { setPopup } = useDataContext();
+  const { addPopup } = useDataContext();
   const { done_cleaning, cancel_cleaning } = useBedroom();
   return (
       <TableTr index={index} className={className}>
@@ -90,13 +89,13 @@ function CleanLine({ clean, className, canCancel, index=-1 }: {
 
         <p className="text-[12px] cursor-pointer hover:underline"
           onClick={() => {
-            setPopup(['ROOM', clean.roomId]);
+            addPopup(['ROOM', clean.roomId]);
           }}>{clean.roomId}
         </p>
 
-        <p className="text-gray-800">{employers_datas[clean.valletId].name}</p>
+        <p className="text-gray-800">{clean.name}</p>
 
-        <p className="flex flex-row justify-center items-center gap-2">
+        <div className="flex flex-row justify-center items-center gap-2">
 
           { clean.done ? <>
             { getTime(clean.done) }
@@ -116,10 +115,9 @@ function CleanLine({ clean, className, canCancel, index=-1 }: {
               onClick={() => done_cleaning(clean.roomId)}><FaCheck size={10} />
             </div>
 
-          </div>
+          </div> : null }
 
-          : null }
-        </p>
+        </div>
 
       </TableTr>
   )

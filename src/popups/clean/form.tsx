@@ -3,7 +3,6 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
-import { employers_datas } from "../../configs/employer";
 import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
 import Employer from "../../types/employer";
@@ -52,9 +51,7 @@ export default function CleaningForm({ roomId: defaultRoomId, className }: {
         <LabelInput label="Chambre" name="roomId" value={roomId} required
           onChangeText={text => setRoomId(text as BedRoom.Id)}
           options={ bedRoomTab.map(room => ({
-            k: room.id, value: `${room.id} ${room.cleaner
-              ? employers_datas[room.cleaner.valletId].name
-              : room.customer?.name ?? ""}`,
+            k: room.id, value: `${room.id} ${room.cleaner?.name ?? room.customer?.name ?? ""}`,
             disabled: !!room.cleaner })) }
         />
 
@@ -72,3 +69,4 @@ export default function CleaningForm({ roomId: defaultRoomId, className }: {
     </div>
   );
 }
+

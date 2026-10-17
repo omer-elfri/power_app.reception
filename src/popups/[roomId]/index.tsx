@@ -25,7 +25,7 @@ export default function RoomPopup({ roomId }: {
   roomId: BedRoom.Id,
 }) {
   const [onglet, setOnglet] = React.useState('client_infos');
-  const { setPopup } = useDataContext();
+  const { unPopup } = useDataContext();
   const { bedRooms } = useBedroom();
 
   if (!roomId) return null;
@@ -34,7 +34,7 @@ export default function RoomPopup({ roomId }: {
   const title = (
     <Title icon={<IoBed size={20} />} right={<ImCross size={13}
       className="text-red-700 cursor-pointer"
-      onClick={() => setPopup(null)} />
+      onClick={unPopup} />
     }>
       <h1 className="font-bold text-[15px]">Chambre {roomId}</h1>
       <RoomStatus room={bedRoom} />
@@ -42,7 +42,7 @@ export default function RoomPopup({ roomId }: {
   );
 
   return (
-    <Popup onClose={() => setPopup(null)}>
+    <Popup>
       <PopupBody top={title} className='h-130'>
         <OngletTab onglet={onglet} setOnglet={setOnglet} datas={[
           { key: 'client_infos', icon: <IoIosPerson size={16} />, value: "Informations Client" },

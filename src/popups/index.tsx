@@ -1,13 +1,14 @@
 import { twMerge } from "tailwind-merge";
+import { useDataContext } from "../hooks";
 
-export default function Popup({ className, children, } : {
+export default function Popup({ className, children } : {
   className?: string,
   children?: React.ReactNode,
-  onClose: () => void,
 }) {
+  const { unPopup } = useDataContext();
   return (
     <div className={twMerge("fixed inset-0 flex justify-center items-center \
-      bg-black/50 z-50 backdrop-blur-[4px] px-10 py-10", className)}>
+      bg-black/50 z-50 backdrop-blur-[4px] px-10 py-10", className)} onClick={unPopup}>
       { children }
     </div>
   );
@@ -30,3 +31,4 @@ export function PopupBody({ top, className, subClassName, children } : {
     </div>
   );
 }
+

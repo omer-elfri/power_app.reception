@@ -9,15 +9,39 @@ import { CheckInType, CustomerType, ReservationType, TypeWithTrace, PriorityId }
 import Employer from "../types/employer";
 import BedRoom from "../types/bedroom";
 import { getFrenchDate, toTab } from "../tools";
+import { employers_datas } from "../configs/employer";
+import { room_ctg_list, RoomCtgData } from "../configs/types";
 
 export type CheckInProps = Omit<CheckInType, 'status' | 'start' | 'end'> & { night: number };
+
+type AnalysisType = {
+    solded: BedRoom.Type[],
+    free: BedRoom.Type[],
+    powered: BedRoom.Type[],
+    issues: BedRoom.Type[],
+    coming: {
+        total: BedRoom.Type[],
+        sold: BedRoom.Type[],
+        free: BedRoom.Type[],
+    },
+    cleaning: {
+        total: BedRoom.Type[],
+        sold: BedRoom.Type[],
+        free: BedRoom.Type[],
+    },
+    categories: (RoomCtgData & {
+        topSolded: BedRoom.Type[],
+        topTotal: BedRoom.Type[],
+    })[],
+}
 
 export type BedRoomContext = {
     bedRooms: BedRoom.Map,
     bedRoomTab: BedRoom.Type[],
+    analysis: AnalysisType,
 
     switch_power: (roomId: BedRoom.Id, power: boolean | null) => void,
-    updateIssue: (roomId: BedRoom.Id, priority: PriorityId, message: string) => void,
+    updateIssue: (roomId: BedRoom.Id, datas: {priority: PriorityId, message: string} | null) => void,
 
     check_in: (roomId: BedRoom.Id, props: Omit<CustomerType, 'actions'>, description?: string) => void,
     check_update: (customerId: number, props: Partial<CustomerType>, description?: string) => void,
@@ -71,6 +95,38 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
         });
     }, []);
 
+    const analysis = React.useMemo(() => {
+        const solded = bedRoomTab.filter(room => room.customer);
+        const free = bedRoomTab.filter(room => !room.customer);
+        return {
+            solded, free,
+            powered: bedRoomTab.filter(room => room.power),
+            issues: bedRoomTab.filter(room => room.issue),
+            coming: {
+                total: bedRoomTab.filter(room => room.booked),
+                sold: solded.filter(room => room.booked),
+                free: free.filter(room => room.booked),
+            },
+            cleaning: {
+                total: bedRoomTab.filter(room => room.cleaner),
+                sold: solded.filter(room => room.cleaner),
+                free: free.filter(room => room.cleaner),
+            },
+            categories: (() => {
+                return room_ctg_list.map((room_ctg) => {
+                    const topCtgRooms = bedRoomTab.filter(({ categories }) => (
+                        categories[0] === room_ctg.id ) );
+                    return {
+                        ...room_ctg,
+                        topSolded: topCtgRooms.filter(room => room.customer),
+                        topTotal: topCtgRooms,
+                    };
+                });
+            })(),
+        }
+    }, [bedRoomTab]);
+    
+
     React.useEffect(() => {
         setBedRooms(bedRooms => {
             return Object.fromEntries( roomIds.map(roomId => {
@@ -99,8 +155,8 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
         }
     }, [updateBedRoom]);
 
-    const updateIssue = React.useCallback((roomId: BedRoom.Id, priority: PriorityId, message: string) => {
-        room_book.add(roomId, { roomId, issue: { priority, message } });
+    const updateIssue = React.useCallback((roomId: BedRoom.Id, datas: {priority: PriorityId, message: string} | null) => {
+        room_book.add(roomId, { issue: datas ? { date: new Date(Date.now()), ...datas } : null });
     }, [bedRooms, room_book.add]);
 
 
@@ -120,7 +176,7 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
 
         const action: CheckInType = { status: 'CHECK_UPDATE', roomId: customer.roomId,
             datas: props, date: new Date(Date.now()) };
-        const res: Partial<CustomerType> = { ...props, actions: [...customer.actions, action] }
+        const res: Partial<CustomerType> = { ...props, actions: [ action, ...customer.actions, ] }
         customer_book.update(customerId, res, description);
     }, [customers, customer_book.update]);
 
@@ -133,7 +189,7 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
 
         const action: CheckInType = { status: 'CHECK_MOVE', roomId: toRoomId,
             datas: { fromRoomId: customer.roomId }, date: new Date(Date.now()) };
-        const res: Partial<TypeWithTrace<CustomerType>> = { roomId: toRoomId, actions: [...customer.actions, action]}
+        const res: Partial<TypeWithTrace<CustomerType>> = { roomId: toRoomId, actions: [action, ...customer.actions, ]}
         customer_book.update(customerId, res, description);
     }, [customers, customer_book.update, bedRooms]);
 
@@ -147,7 +203,7 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
         if (toPay) alert(
             `Le client ${customer.name} de la chambre ${customer.roomId} doit solder ${toPay} au restaurant`);
         const action: CheckInType = { status: 'CHECK_OUT', roomId: customer.roomId, date: new Date(Date.now()) };
-        const res: Partial<CustomerType> = { actions: [...customer.actions, action], end: new Date(Date.now())}
+        const res: Partial<CustomerType> = { actions: [action, ...customer.actions], end: new Date(Date.now())}
         customer_book.update(customerId, res, description);
     }, [customers, customer_book.update, restaurant]);
 
@@ -156,7 +212,10 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
         const room = bedRooms[roomId];
         if ( room.cleaner )
             throw Error(`La chambre ${roomId} est déjà en nettoyage`);
-        cleaning_book.add(roomId, { valletId, }, description);
+        cleaning_book.add(roomId, { valletId,
+            sexe: employers_datas[valletId].sexe,
+            name: employers_datas[valletId].name,
+        }, description);
     }, [bedRooms, cleaning_book.add]);
     
     const done_cleaning = React.useCallback((roomId: BedRoom.Id, description?: string) => {
@@ -175,6 +234,7 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
 
 
     const book = React.useCallback((roomId: BedRoom.Id, props: ReservationType, description?: string) => {
+        console.log('elem', props.start, props.end)
         const bookedInPeriod = getBookedPeriod(props.start, props.end);
         const isBooked = bookedInPeriod.find(booked => booked.roomId === roomId);
 
@@ -203,7 +263,7 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <bedRoomContext.Provider value={{
-            bedRooms, bedRoomTab,
+            bedRooms, bedRoomTab, analysis,
             switch_power, updateIssue,
             check_in, check_update, check_move, check_out,
             clean_room, done_cleaning, cancel_cleaning,
