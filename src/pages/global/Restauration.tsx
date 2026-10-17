@@ -18,7 +18,7 @@ export default function RestaurationSection() {
           <th className="">Client</th>
           <th className="">Article</th>
           <th className="">Prix</th>
-          <th className="">Satut</th>
+          <th className="">Statut</th>
         </tr>
       </thead>
 

@@ -1,4 +1,4 @@
-import { TypeWithId } from "../types";
+import { TypeWithId, TypeWithTrace } from "../types";
 
 export function uniqueId<T extends Record<string, any>>(
     tab: T[],
@@ -20,11 +20,10 @@ export function getFrenchDate(date: Date) {
 }
 
 export function getFrenchDateTime(date: Date) {
-    return date.toLocaleDateString("fr-FR", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-    }) + date.toLocaleTimeString();
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+    const isOlderThanDay = now - date.getTime() >= day;
+    return !isOlderThanDay ? getHour(date) : getFrenchDate(date).slice(0,6);
 }
 
 export function getTime(date: Date) {
@@ -36,7 +35,7 @@ export function getTime(date: Date) {
 
 export function getDate(date: Date) {
     const res = date.toLocaleDateString()
-        .slice(0, 5);
+        .slice(0, 5).split("/").join(" / ");
     return res;
 }
 
@@ -100,3 +99,26 @@ export function getString(nb: number): string {
     }
     return String(nb);
 }
+
+
+export function getPerIdBook2
+<T extends Object, K extends keyof TypeWithTrace<T>>(
+    datas: TypeWithTrace<T>[],
+    key: K = 'roomId' as K,
+    max?: number,
+) {
+    const res: Partial<Record<
+        TypeWithTrace<T>[K] & PropertyKey,
+        TypeWithTrace<T> >> = {};
+
+    for (const elem of datas) {
+        const k = elem[key] as TypeWithTrace<T>[K] & PropertyKey;
+        if (!res[k]) {
+            res[k] = elem;
+            const nbRes = Object.values(res).length;
+            if (max === nbRes) break;
+        }
+    }
+    return res;
+}
+

@@ -13,7 +13,6 @@ export type RoomData = {
         ...BedRoom.Category.Id[],
     ],
     stage: StageId,
-    description?: string,
 }
 
 export type RoomCtgData = {

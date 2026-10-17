@@ -28,37 +28,34 @@ export default function ValletAside() {
   );
 }
 
-function ValletLine({ cleanerId, className }: {
+export function ValletLine({ cleanerId, className }: {
   cleanerId: Employer.Id,
   className?: string,
 }) {
-  const { cleanedToday } = useDataContext();
+  const { todayCleaned } = useDataContext();
   const cleaner = employers_datas[cleanerId];
-  const roomsTotal = cleanedToday
-    .filter(clean => clean.valletId === cleanerId);
-  const roomsDoing = roomsTotal.filter(clean => !('done' in clean || 'cancel' in clean));
+  const roomsTotal = todayCleaned.filter(clean => clean.valletId === cleanerId);
+  const roomsDoing = roomsTotal.filter(clean => !(clean.done || clean.cancel));
 
   return (
     <div className={twMerge("grid grid-cols-[auto_1fr_auto] items-center gap-x-3 p-2 py-3 rounded border-gray-300", className)}>
 
-      <div className="flex justify-center items-center row-span-3 size-9 bg-gray-400/20 rounded-full">
+      <div className="flex justify-center items-center row-span-2 size-9 bg-gray-400/20 rounded-full">
         { cleaner.sexe === 'Mr'
         ? <MdPerson className="text-green-900" size={18} />
         : <MdPerson3 className="text-green-900" size={18} /> }
       </div>
 
-      <h2 className="col-span-2 font-bold text-[12px] text-gray-800">{cleaner.name}</h2>
+      <h2 className="font-bold text-[12px] text-gray-800 col-span-2">{cleaner.name}</h2>
 
-      <p className="col-span-2 font-bold text-[12px]"> {getString(roomsDoing.length)} / {getString(roomsTotal.length)} </p>
+      <p className="font-bold text-[12px]"> {getString(roomsDoing.length)} / {getString(roomsTotal.length)} </p>
 
-      <p className={twMerge("font-bold text-[10px]")}>
-        { roomsDoing.map(clean => clean.roomId).join(', ') || '...' }
-      </p>
-
-      <p className={twMerge("font-bold text-[10px] px-[5px] py-[1px] rounded-md border-1",
-          (roomsDoing.length > 0) ? "bg-blue-400/15 border-blue-700" : "bg-green-400/15 border-green-700" )}>
-        { roomsDoing.length > 0 ? 'Occupée' : 'Libre' }
-      </p>
+      <div className="flex flex-row mt-1">
+        <p className={twMerge("font-bold text-[10px] px-[5px] py-[1px] rounded-md border-1",
+            (roomsDoing.length > 0) ? "bg-blue-400/15 border-blue-700" : "bg-green-400/15 border-green-700" )}>
+          { roomsDoing.length > 0 ? 'Occupée' : 'Libre' }
+        </p>
+      </div>
 
     </div>
   );

@@ -1,7 +1,7 @@
 import { room_ctg_datas } from "../configs/room_ctg";
 import { roomIds } from "../configs/room";
 import { RoomData } from "../configs/types";
-import { CheckInType, CleanType, ReservationType, RestaurantType, StageId, TypeWithId, TypeWithTrace } from ".";
+import { CleanType, CustomerType, PriorityId, ReservationType, RestaurantType, StageId, TypeWithId, TypeWithTrace } from ".";
 
 namespace BedRoom {
     export type Id = typeof roomIds[number];
@@ -26,20 +26,19 @@ namespace BedRoom {
             Category.Id,
             ...Category.Id[],
         ],
-        description?: string,
 
         connected: boolean,
         power: boolean | null,
 
-        checkIn: TypeWithTrace<CheckInType> | null,
+        customer: TypeWithTrace<CustomerType> | null,
         booked: TypeWithTrace<ReservationType> | null,
         cleaner: TypeWithTrace<CleanType> | null,
         restauration: TypeWithTrace<RestaurantType>[],
-        issue: IssueType | null,
+        issue: TypeWithTrace<IssueType> | null,
     }
 
     export type IssueType = {
-        priority: 'low' | 'medium' | 'high',
+        priority: PriorityId,
         message: string,
     }
 
@@ -48,12 +47,11 @@ namespace BedRoom {
             id: room.id as BedRoom.Id,
             stage: room.stage,
             categories: room.categories,
-            description: "",
     
             connected: false,
             power: null,
 
-            checkIn: null,
+            customer: null,
             booked: null,
             cleaner: null,
             issue: null,

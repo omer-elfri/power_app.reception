@@ -1,3 +1,4 @@
+import { ListStatus } from "../popups/list";
 import BedRoom from "./bedroom";
 import Employer from "./employer";
 
@@ -5,18 +6,7 @@ export type State<T> = React.Dispatch<React.SetStateAction<T>>;
 
 export type TypeWithId<T> = T & { id: string };
 
-export type ReservationRoomStatus = "canceled" | "coming" | "passed" | "doing";
-
-
-
-
-export type TypeWithTrace<T> = T & {
-    id: number,
-    roomId: BedRoom.Id,
-    description?: string,
-    auth_session: Employer.Id,
-    date: Date,
-}
+export type Id = number;
 
 export type FormType = 'line' | 'grid';
 
@@ -24,7 +14,20 @@ export type Sex = 'Mr' | 'Mme';
 
 export type StageId = '0'|'1'|'2'|'3'|'4'|'5';
 
+export type PriorityId = 'low' | 'medium' | 'high';
+
 export type StatusId = 'powered' | 'guest' | 'coming' | 'cleaning' | 'issue' | 'restaurant' | 'sold' | 'free';
+
+
+
+
+export type TypeWithTrace<T> = T & {
+    id: Id,
+    roomId: BedRoom.Id,
+    auth_session: Employer.Id,
+    date: Date,
+    description?: string,
+}
 
 export const stages: {[k in StageId]: {
     name: string,
@@ -37,7 +40,7 @@ export const stages: {[k in StageId]: {
     '5': { name: "Étage 5", },
 };
 
-export const colors: {[k in (StatusId | NotificationId)]: string} = {
+export const colors: {[k in (StatusId)]: string} = {
     powered: '#cf0037',
     guest: '#074507',
     sold: '#05324d',
@@ -46,22 +49,6 @@ export const colors: {[k in (StatusId | NotificationId)]: string} = {
     cleaning: '#006a9c',
     issue: '#6a7585',
     free: '#407236',
-
-    "DISCONNECTED": '#110c0d',
-    "POWER_ON": '#cf0037',
-    "POWER_OFF": '#cf0037',
-
-    "CHECK_IN": '#074507',
-    "CHECK_UPDATE": '#074507',
-    "CHECK_MOVE": '#074507',
-    "CHECK_OUT": '#074507',
-
-    "CLEANING_START": '#006a9c',
-    "CLEANING_CANCELED": '#006a9c',
-    "CLEANING_DONE": '#006a9c',
-
-    "BOOKED": '#aa00c4',
-    "BOOKED_CANCELED": '#aa00c4',
 } as const;
 
 
@@ -78,8 +65,8 @@ export const colors: {[k in (StatusId | NotificationId)]: string} = {
 
 
 export type RestaurantType = {
+    customerId: Id,
     time: Date,
-    roomId: BedRoom.Id,
     client: string,
     article: string,
     price: number,
@@ -92,73 +79,59 @@ export type RoomType = {
     issue: BedRoom.IssueType | null,
 }
 
-export type NotificationType = {
-} & ({
-    label: 'DISCONNECTED' | 'POWER_ON' | 'POWER_OFF',
-} | {
-    label: 'CHECK_IN' | 'CHECK_UPDATE' | 'CHECK_OUT',
-    datas: { clientName: string, }
-} | {
-    label: 'CHECK_MOVE',
-    datas: { clientName: string, toRoomId: BedRoom.Id }
-} | {
-    label: 'CLEANING_START' | 'CLEANING_CANCELED' | 'CLEANING_DONE',
-    datas: { cleanerName: string, }
-} | {
-    label: 'BOOKED' | 'BOOKED_CANCELED',
-    // datas: { bookerName: string, bookedDate: Date, }
-    datas: { bookerName: string, bookedDate: Date, },
-})
-export type NotificationId = (
-    'DISCONNECTED' |
-    'POWER_ON' |
-    'POWER_OFF' |
-        'CHECK_IN' |
-        'CHECK_UPDATE' |
-        'CHECK_MOVE' |
-        'CHECK_OUT' |
-    'CLEANING_START' |
-    'CLEANING_CANCELED' |
-    'CLEANING_DONE' |
-        'BOOKED' |
-        'BOOKED_CANCELED'
-);
-
-
 export type CleanType = {
     valletId: Employer.Id,
-    description?: string,
 } & ({
-    done?: Date | null,
+    done?: never,
+    cancel?: never,
 } | {
+    done: Date,
+    cancel?: never,
+} | {
+    done?: never,
     cancel: Date,
 })
 
 
-export type CheckInType = {
-    sexe?: 'Mr' | 'Mme',
-    clientName: string,
-    price: number,
-    description?: string,
-    start: Date,
-
+export type CustomerType = {
+    sexe?: Sex,
+    name: string,
     tel?: number,
     town?: string,
+    price: number,
+    end?: Date,
+    actions: CheckInType[];
+}
+export type CheckInType = {
+    date: Date,
+    roomId: BedRoom.Id,
 } & ({
-    status: 'CHECK_IN' | 'UPDATE' | 'MOVE_IN',
-    end: Date | null,
+    status: 'CHECK_IN',
+    datas: { customer: Omit<CustomerType, 'actions'> },
 } | {
-    status: 'CHECK_OUT' | 'MOVE_OUT',
-    end: Date,
+    status: 'CHECK_UPDATE',
+    datas: Partial<CustomerType>,
+} | {
+    status: 'CHECK_MOVE',
+    datas: { fromRoomId: BedRoom.Id },
+} | {
+    status: 'CHECK_OUT',
+    datas?: never,
 })
 
 export type ReservationType = {
-    clientName: string,
+    name: string,
     start: Date,
-    end: Date | null,
-    description?: string,
+    end: Date,
     cancel?: {
         date: Date,
         auth_session?: Employer.Id,
     },
 }
+
+export type PopupType =
+    [ 'CLEAN', BedRoom.Id? ] |
+    [ 'BOOKING', number? ] |
+    [ 'ROOM', BedRoom.Id ] |
+    [ 'LIST', ListStatus? ] ;
+

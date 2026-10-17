@@ -1,10 +1,11 @@
+import { Sex } from ".";
 import { employers_datas } from "../configs/employer";
 
 namespace Employer {
     export type Id = keyof typeof employers_datas;
 
     export type Type = {
-        sexe: 'Mr' | 'Mme',
+        sexe: Sex,
         name: string,
         pass: string,
         rules: [Rule, ...Rule[]],

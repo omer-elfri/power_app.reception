@@ -7,7 +7,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useDataContext } from "../hooks";
 
 import { IoPersonCircle } from "react-icons/io5";
-import { FaPowerOff, FaCalendarAlt, FaPlus } from "react-icons/fa";
+import { FaPowerOff, FaCalendarAlt } from "react-icons/fa";
 import { GiBroom } from "react-icons/gi";
 
 export default function PageTitle({ className, children }: {
@@ -16,7 +16,7 @@ export default function PageTitle({ className, children }: {
 }) {
     const { authSession, disconnect } = useAuth();
     const { pathname } = useLocation();
-    const { setBookingPopup, setCleaningPopup } = useDataContext();
+    const { setPopup } = useDataContext();
 
     return (
         <div className={twMerge("flex flex-row justify-between items-center gap-3 pt-5 pb-2 sticky top-0 bg-white/70 backdrop-blur-md z-30", className)}>
@@ -31,11 +31,11 @@ export default function PageTitle({ className, children }: {
                 <Link to="/rooms" className={twMerge("text-gray-500 pb-3", pathname.startsWith('/rooms') ? "border-b-2 text-red-700 border-red-700" : "")}>Chambres</Link>
             </div>
 
-            <button className="bg-blue-500 text-white" onClick={() => setCleaningPopup(true)}>
+            <button className="bg-blue-500 text-white" onClick={() => setPopup(['CLEAN'])}>
                 <GiBroom /> <span>Néttoyage</span>
             </button>
 
-            <button className="bg-purple-500 text-white" onClick={() => setBookingPopup(true)}>
+            <button className="bg-purple-500 text-white" onClick={() => setPopup(['BOOKING'])}>
                 <FaCalendarAlt /> <span>Réservation</span>
             </button>
 

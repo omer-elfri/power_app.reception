@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { FaArrowRight }  from "react-icons/fa";
+import MyButton from "./MyButton";
 
 export default function SectionBox({ className, subClassName, children, bottom }: {
   className?: string,
@@ -48,9 +49,11 @@ export function SeeMore({ onClick, value }: {
   onClick?: () => void,
   value?: string,
 }) {
-  return (
-    <div className="flex flex-row justify-between text-blue-600 font-bold text-[12px] border-t-1 border-gray-500/30 pt-3 cursor-pointer" onClick={onClick}>
-      <p>{ value ?? "Tout voir" }</p> <FaArrowRight />
-    </div>
-  );
+  return (<>
+    <MyButton iconRight={<FaArrowRight />} onClick={onClick}
+      className="bg-transparent border-t-1 text-left text-blue-600 border-gray-500/30 !p-0 !pt-2 !rounded-none">
+      { value ?? "Tout voir" }
+    </MyButton>
+  </>);
 }
+

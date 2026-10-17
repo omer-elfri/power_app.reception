@@ -4,17 +4,17 @@ import SectionBox, { SeeMore, Title } from "../../components/SectionBox";
 import ActivitySection from "./Activities";
 import AnalyseSection from "./Analyse";
 import MouvementSection from "./Mouvements";
-import NotificationSection from "./Notifications";
 import RestaurationSection from "./Restauration";
 
 import { FaRegCalendarAlt }  from "react-icons/fa";
-import { IoMdNotificationsOutline } from "react-icons/io";
 import { TbArrowsDoubleNeSw }  from "react-icons/tb";
 import { RiServiceBellLine }  from "react-icons/ri";
 import { useDataContext } from "../../hooks";
+import { MdOutlineCleaningServices } from "react-icons/md";
+import EntretienSection from "./Entretien";
 
 export default function GlobalPage() {
-  const { notificationBook, setNotificationPopup, restaurant } = useDataContext();
+  const { cleaning_book, setPopup, restaurant } = useDataContext();
 
   return (
     <div className="flex flex-col gap-1 pb-5">
@@ -40,10 +40,10 @@ export default function GlobalPage() {
         </SectionBox>
 
         <SectionBox className="col-span-3 row-span-2"
-            bottom={<SeeMore value="Voir tout" onClick={() => setNotificationPopup(true)} />}>
-          <Title icon={<IoMdNotificationsOutline size={20} />}
-            right={notificationBook.length}>Notifications</Title>
-          <NotificationSection />
+            bottom={<SeeMore value="Voir tout" onClick={() => setPopup(['CLEAN'])} />}>
+          <Title icon={<MdOutlineCleaningServices size={16} />}
+            right={cleaning_book.get.length}>Entretiens</Title>
+          <EntretienSection />
         </SectionBox>
 
         <SectionBox className="col-span-7">

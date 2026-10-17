@@ -5,8 +5,8 @@ import Popup, { PopupBody } from "..";
 
 import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
-import BedRoom from '../../types/bedroom';
 
+import RoomStatus from '../../components/RoomStatus';
 import OngletTab from '../../components/OngletTab';
 import { Title } from "../../components/SectionBox";
 import { ImCross } from "react-icons/im";
@@ -18,67 +18,59 @@ import CheckInForm from './check_in';
 import ChangeRoom from './change_room';
 import CleaningBox from './cleaning';
 import CommentBox from './comment';
-import RoomStatus from '../../components/RoomStatus';
-import { twMerge } from 'tailwind-merge';
-import NotificationBox from './notification';
+import ReservationTab from './reservation';
+import BedRoom from '../../types/bedroom';
 
-export default function RoomPopup() {
+export default function RoomPopup({ roomId }: {
+  roomId: BedRoom.Id,
+}) {
   const [onglet, setOnglet] = React.useState('client_infos');
-  const { roomPopup, setRoomPopup } = useDataContext();
+  const { setPopup } = useDataContext();
   const { bedRooms } = useBedroom();
 
-  if (!roomPopup) return null;
-  const bedRoom = bedRooms[roomPopup];
+  if (!roomId) return null;
+  const bedRoom = bedRooms[roomId];
+
+  const title = (
+    <Title icon={<IoBed size={20} />} right={<ImCross size={13}
+      className="text-red-700 cursor-pointer"
+      onClick={() => setPopup(null)} />
+    }>
+      <h1 className="font-bold text-[15px]">Chambre {roomId}</h1>
+      <RoomStatus room={bedRoom} />
+    </Title>
+  );
 
   return (
-    <Popup onClose={() => setRoomPopup(null)}>
-      <PopupBody subClassName="font-bold h-130" top={(
-        <Title icon={<IoBed size={20} />}
-          right={<ImCross size={13}
-            className="text-red-700 cursor-pointer"
-            onClick={() => setRoomPopup(null)} />
-          } >
-          <h1 className="font-bold text-[15px]">Chambre {roomPopup}</h1>
-          <RoomStatus room={bedRoom} />
-        </Title>
-      )}>
-
+    <Popup onClose={() => setPopup(null)}>
+      <PopupBody top={title} className='h-130'>
         <OngletTab onglet={onglet} setOnglet={setOnglet} datas={[
-          { key: 'client_infos', icon: <IoIosPerson size={16  } />, value: "Informations Client" },
+          { key: 'client_infos', icon: <IoIosPerson size={16} />, value: "Informations Client" },
           { key: 'room_infos', icon: <IoBed size={18} />, value: "Informations Chambre" },
-        ]} className='h-full'>
-          { onglet === 'client_infos' && <ClientTab room={bedRoom} /> }
-          { onglet === 'room_infos' && <RoomTab room={bedRoom} /> }
-        </OngletTab>
+        ]}>
 
+          { onglet === 'client_infos' && (
+            <div className="grid grid-cols-6 grid-rows-[auto_1fr] gap-5 \
+              [&_label]:!text-gray-800 \
+              [&_input]:!border-gray-400 \
+              [&_select]:!border-gray-400 \
+              [&_textarea]:!border-gray-400">
+              <CheckInForm room={bedRoom} className="row-span-2 col-span-full" />
+              <ChangeRoom room={bedRoom} className='col-span-3' />
+              <Restaurant room={bedRoom} className='col-span-3' />
+            </div>
+          ) }
+
+          { onglet === 'room_infos' && (
+            <div className='grid grid-cols-5 grid-rows-[1fr_auto] flex-1 bg-green400 gap-3'>
+              <CleaningBox room={bedRoom} className='row-span-2 col-span-2' />
+              <ReservationTab room={bedRoom} className="col-span-3" />
+              <CommentBox room={bedRoom} className='col-span-3' />
+            </div>
+          ) }
+
+        </OngletTab>
       </PopupBody>
     </Popup>
-  );
-}
-
-function ClientTab({ room:bedRoom }: {
-    room: BedRoom.Type,
-}) {
-    return (
-        <div className="flex flex-col gap-y-2">
-            <div className={twMerge("[&_label]:!text-gray-800 [&_input]:!border-gray-400 [&_select]:!border-gray-400 [&_textarea]:!border-gray-400",
-                "grid grid-cols-6 grid-rows-[auto_1fr] gap-5")}>
-                <CheckInForm room={bedRoom} className="row-span-2 col-span-full" />
-                <ChangeRoom room={bedRoom} className='col-span-3' />
-                <Restaurant room={bedRoom} className='col-span-3' />
-            </div>
-        </div>
-    );
-}
-
-function RoomTab({ room:bedRoom }: {
-  room: BedRoom.Type,
-}) {
-  return (
-    <div className='grid grid-cols-5 grid-rows-[auto_1fr] gap-3'>
-      <CleaningBox room={bedRoom} className='col-span-2' />
-      <NotificationBox room={bedRoom} className='row-span-2 col-span-3' />
-      <CommentBox room={bedRoom} className='col-span-2' />
-    </div>
   );
 }

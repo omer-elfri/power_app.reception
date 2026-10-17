@@ -1,25 +1,26 @@
 import { twMerge } from "tailwind-merge";
 
+import { room_ctg_datas } from "../configs/room_ctg";
+import RoomStatus from "./RoomStatus";
+import { useDataContext } from "../hooks";
 import { colors } from "../types";
+
 import BedRoom from "../types/bedroom";
 
 import { HiLightningBolt } from "react-icons/hi";
 import { GiBroom } from "react-icons/gi";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdError, MdPerson, MdPerson3, MdWarning } from "react-icons/md";
-import { room_ctg_datas } from "../configs/room_ctg";
-import { useBedroom } from "../hooks/useBedroom";
-import RoomStatus from "./RoomStatus";
 
 export default function RoomLine({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { getCleaningState } = useBedroom();
+    const { getCleaningState } = useDataContext();
     const categoryNames = bedRoom.categories
         .map((ctgId) => ({ id: ctgId, ...room_ctg_datas[ctgId] }) )
         .map(({ name }) => name ).join(", ");
-    const clientName = bedRoom.checkIn?.clientName ?? bedRoom.booked?.clientName ?? null;
+    const clientName = bedRoom.customer?.name ?? bedRoom.booked?.name ?? null;
 
     const cleaningState = getCleaningState(bedRoom.id);
 
@@ -42,12 +43,12 @@ export default function RoomLine({ room:bedRoom, className }: {
 
             <div> {categoryNames} </div>
 
-            <div className={twMerge("flex flex-row items-center gap-2", clientName ? "text-black" : "text-gray-400")}>
-                { bedRoom.checkIn ?
-                    (bedRoom.checkIn.sexe === 'Mme')
+            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.customer ? "text-black" : "text-gray-400")}>
+                { bedRoom.customer ?
+                    (bedRoom.customer.sexe === 'Mme')
                     ? <MdPerson3 size={15} style={{color: colors.sold}} />
                     : <MdPerson size={15} style={{color: colors.sold}} />
-                : <MdPerson size={15} /> }
+                : !clientName ? <MdPerson size={15} /> : null }
                 { bedRoom.booked && <FaCalendarAlt size={12} style={{color: colors.coming}} /> }
                 <span className="flex-1 text-center">{clientName?.toUpperCase() ?? "libre"}</span>
             </div>

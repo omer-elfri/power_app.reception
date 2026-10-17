@@ -10,7 +10,7 @@ import BedRoom from "./types/bedroom";
 import { useBedroom } from './hooks/useBedroom';
 
 export default function InitComponent() {
-    const { switch_power, updateBedRoom, } = useBedroom();
+    const { switch_power, } = useBedroom();
 
     React.useEffect(() => { // general_info and notification settings
         (async () => {
@@ -22,7 +22,7 @@ export default function InitComponent() {
                 room_id: BedRoom.Id,
                 power: boolean,
             }[]>("general_status");
-            espTab.forEach((esp) => updateBedRoom(esp.room_id, esp));
+            espTab.forEach((esp) => switch_power(esp.room_id, esp.power));
         })();
     }, []);
 

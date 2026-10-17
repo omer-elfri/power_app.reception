@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import { getString } from "../tools";
 
-export default function ActivityBox({ icon, label, name, subName, value, onClick, bar=true, color="#000" } : {
+export default function ActivityBox({ icon, label, name, subName, value, onClick, bar=true, color="#000", infobulle } : {
   icon?: React.ReactNode,
   label?: string,
   name: string,
@@ -10,10 +10,11 @@ export default function ActivityBox({ icon, label, name, subName, value, onClick
   color?: string,
   bar?: boolean,
   onClick?: () => void,
+  infobulle?: React.ReactNode,
 }) {
   return ( <>
 
-    <div className={twMerge("flex flex-col items-center font-bold px-1 py-5 rounded flex-1 text-center", onClick ? "cursor-pointer" : "")} onClick={onClick}>
+    <div className={twMerge("flex flex-col items-center font-bold px-1 py-5 rounded flex-1 text-center relative", onClick ? "cursor-pointer" : "")} onClick={onClick}>
 
       { label && <p className="text-[12px] self-start">{label}</p> }
 
@@ -25,6 +26,8 @@ export default function ActivityBox({ icon, label, name, subName, value, onClick
       <h2 className="text-[12px]">{name}</h2>
 
       { subName && <p className="text-[12px] text-gray-500">{subName}</p> }
+
+      { infobulle && <div className="absolute top-2 right-0">{infobulle}</div>}
 
     </div>
 

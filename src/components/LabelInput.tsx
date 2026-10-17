@@ -39,7 +39,7 @@ export default function LabelInput({ onChangeText, label, type="text", name, val
     return (
         <div className={twMerge("flex flex-col gap-1", className)}>
             { label && <label htmlFor={name} className="font-bold">
-                <span className="text-[11px]">{label} </span>
+                <span className="text-[11px] font-bold">{label} </span>
                 { required && <span className="text-red-700">*</span> }
             </label> }
             { res }

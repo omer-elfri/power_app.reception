@@ -9,12 +9,12 @@ export default function AnalyseSection() {
   const { bedRoomTab } = useBedroom();
 
   const analysis = React.useMemo(() => ({
-    solded: bedRoomTab.filter(room => room.checkIn),
-    free: bedRoomTab.filter(room => !room.checkIn),
+    solded: bedRoomTab.filter(room => room.customer),
+    free: bedRoomTab.filter(room => !room.customer),
     issues: bedRoomTab.filter(room => room.issue),
-    coming_free: bedRoomTab.filter(room => room.booked && !room.checkIn),
-    cleaning_check_out: bedRoomTab.filter(room => room.cleaner && !room.checkIn),
-    cleaning_check_in: bedRoomTab.filter(room => room.cleaner && room.checkIn),
+    coming_free: bedRoomTab.filter(room => room.booked && !room.customer),
+    cleaning_check_out: bedRoomTab.filter(room => room.cleaner && !room.customer),
+    cleaning_check_in: bedRoomTab.filter(room => room.cleaner && room.customer),
   }), [bedRoomTab]);
 
   const data = [

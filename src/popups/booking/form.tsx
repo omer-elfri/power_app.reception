@@ -9,15 +9,29 @@ import { DateRange, DayPicker } from "@daypicker/react";
 import LabelInput from "../../components/LabelInput";
 import { useDataContext } from "../../hooks";
 
-export default function BookingForm({ className }: {
+export default function BookingForm({ bookId, className }: {
+  bookId?: number,
   className?: string,
 }) {
-  const { getBookedPeriod } = useDataContext();
+  const { reservation_book, getBookedPeriod } = useDataContext();
   const { book } = useBedroom();
-  const [selected, setSelected] = React.useState<DateRange>();
+
+  const [clientName, setClientName] = React.useState("");
+  const [selectedRoomId, setSelectedRoomId] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [selectedDate, setSelectedDate] = React.useState<DateRange>();
+
   const [infos, setInfos] = React.useState<['success' | 'error', string]>();
-  const roomBookeds = getBookedPeriod(selected?.from, selected?.to)
-    // .map(room_rsv => room_rsv.roomId);
+  const roomBookeds = getBookedPeriod(selectedDate?.from, selectedDate?.to)
+  const bookInfos = reservation_book.get.find(rsv => rsv.id === bookId);
+
+  React.useEffect(() => {
+    if (!bookInfos) return;
+    setSelectedDate({ from: bookInfos.start, to: bookInfos.end });
+    setClientName(bookInfos.name);
+    setSelectedRoomId(bookInfos.roomId);
+    setDescription(bookInfos.description ?? "");
+  }, [bookInfos]);
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -25,12 +39,12 @@ export default function BookingForm({ className }: {
     }, 3000);
   }, [infos]);
 
-  const subMitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const subMitHandler = React.useCallback((e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const clientName = e.target.clientName.value;
     const roomId = e.target.roomId.value;
-    const start = selected?.from;
-    const end = selected?.to ?? null;
+    const start = selectedDate?.from;
+    const end = selectedDate?.to ?? new Date(Date.now() + 24*60*60*1000);
     const description = e.target.description.value;
 
     if (clientName === "") {
@@ -47,40 +61,46 @@ export default function BookingForm({ className }: {
     }
     setInfos(undefined);
     try {
-      book(roomId, { clientName, start, end, description });
+      book(roomId, { name: clientName, start, end }, description);
       setInfos(['success', "Réservation bien éffectuée"]);
     }
     catch(e) {
-      setInfos(['error', e instanceof Error
-        ? e.message : String(e)]);
+      setInfos(['error', e instanceof Error ? e.message : String(e)]);
     }
-  }
+  }, [book, selectedDate, clientName, selectedRoomId, description]);
 
   return (
     <div className={twMerge("flex flex-col gap-2", className)}>
       
       <form className="flex flex-col gap-x-4 gap-y-2" onSubmit={subMitHandler}>
 
-        <LabelInput label="Nom du client" name="clientName" inputClassName="uppercase h-8 !border-gray-400 shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)]" required autoFocus />
-
         <LabelInput label="Période">
           <div className="shadow-[inset_0_2px_4px_4px__rgba(0,0,0,0.15)] rounded px-3 py-1">
             <DayPicker mode="range" className="my-calendar" min={1} required
-              selected={selected} onSelect={setSelected}
+              selected={selectedDate} onSelect={setSelectedDate}
               disabled={{ before: new Date() }}
             />
           </div>
         </LabelInput>
 
-        <LabelInput label="Chambre" name="roomId" required options={
+        <LabelInput label="Nom du client" name="clientName" required autoFocus
+          value={clientName} onChange={e => setClientName(e.target.value)}
+          inputClassName="uppercase h-8 !border-gray-400 shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)]"
+        />
+
+        <LabelInput label="Chambre" name="roomId" required
+          value={selectedRoomId} onChange={e => setSelectedRoomId(e.target.value)}
+          inputClassName="text-[12px] text-center h-8 !border-gray-400" options={
           roomIds.map(roomId => {
             const rsv = roomBookeds.find(room_rsv => room_rsv.roomId === roomId);
-            return ({ k: roomId, value: `${roomId} ${rsv ? " - " + rsv.clientName.toUpperCase() : ""}`, disabled: !!rsv });
+            return ({ k: roomId, value: `${roomId} ${rsv ? " - " + rsv.name.toUpperCase() : ""}`, disabled: !!rsv });
           })
-        } inputClassName="text-[12px] text-center h-8 !border-gray-400" />
+        } />
 
         <LabelInput name="description" label="Description">
-          <textarea name="description" id="description" className="shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)] h-20 px-2 py-1 text-[12px] font-bold text-gray-800 !border-gray-400" />
+          <textarea name="description" id="description"
+            value={description} onChange={e => setDescription(e.target.value)}
+            className="shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)] h-20 px-2 py-1 text-[12px] font-bold text-gray-800 !border-gray-400" />
         </LabelInput>
 
         { infos && (
@@ -91,9 +111,6 @@ export default function BookingForm({ className }: {
         ) }
 
         <button type="submit" name="register" className="bg-gray-800 text-white text-[11px] self-end">Réserver</button>
-        {/* <div className="flex flex-row gap-3 justify-end items-start col-span-full">
-        </div> */}
-
 
       </form>
 

@@ -15,7 +15,7 @@ export default function FormAside({ icon, title, right, className, subClassName,
     bar?: boolean,
 }) {
     return (
-        <form className={twMerge("bg-white/60 flex flex-col gap-y-2 px-3 py-3 rounded shadow-md", className)} onSubmit={onSubmit}>
+        <form className={twMerge("bg-white/60 flex flex-col gap-y-2 px-3 py-3 font-bold rounded shadow-md", className)} onSubmit={onSubmit}>
 
             <div className="flex flex-row justify-between items-center flex-wrap gap-2">
                 { icon }

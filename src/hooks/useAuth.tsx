@@ -12,7 +12,7 @@ type AuthContextType = {
     isAuth: () => AuthSession,
     connect: (userId: Employer.Id, password: string) => void,
     disconnect: () => void,
-    addTrace: <T extends Object>(id: number, roomId: BedRoom.Id, data: T) => TypeWithTrace<T>,
+    addTrace: <T extends Object>(id: number, roomId: BedRoom.Id, data: T, description?: string) => TypeWithTrace<T>,
     authSession: AuthSession | null,
     setAuthSession: State<AuthSession | null>,
 };
@@ -32,41 +32,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             navigate("/preview");
     }, [authSession, pathname, navigate]);
 
-    // React.useEffect(() => {
-    //     let logoutTimer: ReturnType<typeof setTimeout>;
-    //     if (!authSession) return;
+    React.useEffect(() => {
+        let logoutTimer: ReturnType<typeof setTimeout>;
+        if (!authSession) return;
 
-    //     let i = 0;
-
-    //     const t = setInterval(() => {
-    //         console.log(++i);
-    //     }, 1000);
-
-    //     const resetTimer = () => {
-    //         i = 0;
-    //         clearTimeout(logoutTimer);
-    //         logoutTimer = setTimeout(() => {
-    //             setAuthSession(null);
-    //         }, 2 * 60 * 1000);
-    //     };
-    //     resetTimer();
-    //     window.addEventListener('mousemove', resetTimer);
-    //     return () => {
-    //         clearTimeout(logoutTimer);
-    //         window.removeEventListener('mousemove', resetTimer);
-
-    //         clearInterval(t);
-    //     }
-    // }, [authSession]);
+        const resetTimer = () => {
+            clearTimeout(logoutTimer);
+            logoutTimer = setTimeout(() => {
+                setAuthSession(null);
+            }, 2 * 60 * 1000);
+        };
+        resetTimer();
+        window.addEventListener('mousemove', resetTimer);
+        return () => {
+            clearTimeout(logoutTimer);
+            window.removeEventListener('mousemove', resetTimer);
+        }
+    }, [authSession]);
 
     const connect = React.useCallback((userId: Employer.Id, password: string) => {
         const user = employers_datas[userId];
         if (user.pass !== password)
             throw new Error("Identifiants incorrects");
-        setAuthSession({
-            id: userId,
-            name: user.name,
-        });
+        setAuthSession({ id: userId, name: user.name, });
     }, []);
 
     const disconnect = React.useCallback(() => {
@@ -80,10 +68,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [authSession]);
 
     const addTrace = React.useCallback(<T extends Object>(
-        id: number, roomId: BedRoom.Id, data: T
+        id: number, roomId: BedRoom.Id, data: T, description?: string
     ): TypeWithTrace<T> => {
         if (!authSession) throw Error("Vous devez vous connecté");
         return ({ ...data, id, roomId,
+            description,
             date: new Date(Date.now()),
             auth_session: authSession.id,
         });

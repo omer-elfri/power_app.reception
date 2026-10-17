@@ -17,7 +17,7 @@ export default function SoldedAside() {
                 categories[0] === room_ctg.id ) );
             return {
                 ...room_ctg,
-                topSolded: topCtgRooms.filter(room => room.checkIn),
+                topSolded: topCtgRooms.filter(room => room.customer),
                 topTotal: topCtgRooms,
             };
         });

@@ -43,7 +43,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
                 const categoryNames = room.categories
                     .map(ctgId => room_ctg_datas[ctgId].name);
                 const textToSearch = room.id + " " +
-                    (room.checkIn?.clientName ?? "") + " " +
+                    (room.customer?.name ?? "") + " " +
                     categoryNames.join(" ");
                 const textToSearchFormated = textToSearch.toLowerCase()
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -61,8 +61,8 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
             })
             .filter((room) => { // status
                 if (status.includes('powered') && !room.power
-                    || status.includes('sold') && !room.checkIn
-                    || status.includes('free') && room.checkIn
+                    || status.includes('sold') && !room.customer
+                    || status.includes('free') && room.customer
                     || status.includes('cleaning') && !room.cleaner
                     || status.includes('coming') && !room.booked
                     || status.includes('issue') && !room.issue)

@@ -7,7 +7,7 @@ export default function RoomStatus({ room:bedRoom }: {
     className?: string,
 }) {
     return (
-        bedRoom.checkIn
+        bedRoom.customer
         ?   <StatusLabel value="Vendue" className="text-green-700 bg-green-700/15" />
         : bedRoom.booked
         ?   <StatusLabel value="Réservée" className="text-purple-700 bg-purple-700/15" />

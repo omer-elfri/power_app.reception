@@ -10,23 +10,30 @@ import MyButton from "../../components/MyButton";
 
 import { FaExchangeAlt } from "react-icons/fa";
 import { HiSwitchHorizontal } from "react-icons/hi";
+import { useDataContext } from "../../hooks";
 
 export default function ChangeRoom({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
+    const { setPopup } = useDataContext();
     const { bedRooms, bedRoomTab, check_move } = useBedroom();
 
     const submitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         const roomId = e.target.roomId.value as BedRoom.Id;
         const description = e.target.description.value as BedRoom.Id;
-        if (bedRooms[roomId].checkIn) throw Error(`La chambre ${roomId} est déjà occupée`);
-        check_move(bedRoom.id, roomId, description);
+        const toRoom = bedRooms[roomId];
+        if (!bedRoom.customer)
+            throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
+        if (toRoom.customer)
+            throw Error(`La chambre ${roomId} est déjà occupée`);
+        check_move(bedRoom.customer.id, roomId, description);
+        setPopup(['ROOM', roomId]);
     }
 
     return (
-        <FormAside title="Changer de chambre" bar={false}
+        <FormAside title="Changer de chambre"
             icon={<HiSwitchHorizontal />} onSubmit={submitHandler}
             subClassName="flex flex-col gap-2" className={twMerge("", className)}
             right={
@@ -35,9 +42,11 @@ export default function ChangeRoom({ room:bedRoom, className }: {
                 </MyButton>
             }>
 
-            <LabelInput name="roomId"
-                options={ bedRoomTab.map(room => ({
-                    k: room.id, disabled: !!room.checkIn })) }
+            <LabelInput label="Envoyer à la chambre" name="roomId" options={
+                bedRoomTab.map(room => ({ k: room.id,
+                    value: `${room.id} ${room.customer?.name.toUpperCase() ?? ""}`,
+                    disabled: bedRoom.customer ? !!room.customer : !room.customer,
+                })) }
             />
 
             <LabelInput label="Pourquoi ?" name="description" required>

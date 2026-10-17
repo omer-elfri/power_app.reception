@@ -46,7 +46,7 @@ export default function LoginPage() {
   }, []);
 
   return (
-    <div style={{ backgroundImage: "url('/rue marina.jpg')" }} className="bg-no-repeat bg-center bg-cover bg-white absolute inset-0">
+    <div style={{ backgroundImage: "url('/rue marina.jpg')" }} className="bg-no-repeat bg-center bg-cover bg-white absolute inset-0 z-100">
       <div className="flex justify-center items-center gap-5 w-full h-full bg-black/70 backdrop-blur-sm">
 
         <form className="flex flex-col gap-3 bg-gray-200 px-10 py-5 rounded-md shadow min-w-[400px]" onSubmit={loginHandler}>
@@ -67,7 +67,7 @@ export default function LoginPage() {
 
           <MyInput label="Mot de passe" icon={<IoKeyOutline />}>
               <input type={ showPass ? "text" : "password"} id="password" name="password" required autoFocus
-                className="!border-none pl-2 h-8 text-[14px] tracking-wide flex-1" placeholder="X X X X"
+                className="!border-none pl-2 h-8 text-[14px] tracking-wide flex-1 tracking-wide tracking-[20px]" placeholder="X X X X"
                 value={password} onChange={(e) => setPassword(e.target.value)} />
               { showPass
                 ? <MdOutlineRemoveRedEye className="" onClick={() => setShowPass(false)} />

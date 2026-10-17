@@ -1,28 +1,26 @@
 'use client'
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
-import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
+import { useDataContext } from "../../hooks";
 import { colors } from "../../types";
 import ActivityBox from "../../components/ActivityBox";
 
 import { GoArrowUpRight }  from "react-icons/go";
 import { IoBed, IoPersonSharp }  from "react-icons/io5";
 import { FaTools, FaCalendarAlt }  from "react-icons/fa";
-import { MdCleaningServices }  from "react-icons/md";
+import { MdCleaningServices, MdWarning }  from "react-icons/md";
 import { ImPower }  from "react-icons/im";
 
 export default function ActivitySection() {
-  const { setStatus, setBookingPopup, setCleaningPopup } = useDataContext();
   const { bedRoomTab } = useBedroom();
-  const navigate = useNavigate();
+  const { obsoletRooms, setPopup } = useDataContext();
 
   const analysis = React.useMemo(() => ({
     powered: bedRoomTab.filter(room => room.power),
-    solded: bedRoomTab.filter(room => !!room.checkIn),
-    free: bedRoomTab.filter(room => !room.checkIn),
+    solded: bedRoomTab.filter(room => !!room.customer),
+    free: bedRoomTab.filter(room => !room.customer),
     coming_total: bedRoomTab.filter(room => room.booked),
     issues: bedRoomTab.filter(room => room.issue),
     cleaning_total: bedRoomTab.filter(room => room.cleaner),
@@ -35,63 +33,49 @@ export default function ActivitySection() {
         value={analysis.powered.length}
         name="Chambres" subName="alimentées"
         color={colors.powered}
-        onClick={() => {
-          setStatus(['powered']);
-          navigate("/rooms");
-        }}
+        // onClick={() => setStatus(['powered'])}
       />
       <ActivityBox
-        icon={(
-          <div className="flex flex-row">
+        icon={ <div className="flex flex-row">
             <IoPersonSharp size={30} />
             <GoArrowUpRight className="ml-[-8px] " />
           </div>
-        )}
+        }
         value={analysis.solded.length}
         name="Chambres" subName="vendues"
         color={colors.sold}
-        onClick={() => {
-          setStatus(['sold']);
-          navigate("/rooms");
-        }}
+        onClick={() =>  setPopup(['LIST', 'sold'])}
       />
       <ActivityBox
         icon={<IoBed size={35} />}
         value={analysis.free.length}
         name="Chambres" subName="disponibles"
         color={colors.free}
-        onClick={() => {
-          setStatus(['free']);
-          navigate("/rooms");
-        }}
+        onClick={() =>  setPopup(['LIST', 'free'])}
       />
       <ActivityBox
         icon={<FaCalendarAlt size={30} />}
         value={analysis.coming_total.length}
         name="Réservations" subName="aujourd'hui"
         color={colors.coming}
-        onClick={() => {
-          setBookingPopup(true);
-        }}
+        onClick={() =>  setPopup(['BOOKING'])}
       />
       <ActivityBox
         icon={<MdCleaningServices size={30} />}
         value={analysis.cleaning_total.length}
         name="Chambre" subName="en néttoyage"
         color={colors.cleaning}
-        onClick={() => {
-          setCleaningPopup(true);
-        }}
+        onClick={() =>  setPopup(['CLEAN'])}
+        infobulle={obsoletRooms.length > 0 && <MdWarning
+          title="Certaines chambres sont obsolètes"
+          className="text-yellow-600" />}
       />
       <ActivityBox bar={false}
         icon={<FaTools size={30} />}
         value={analysis.issues.length}
         name="Pannes" subName="signalées"
         color={colors.issue}
-        onClick={() => {
-          setStatus(['issue']);
-          navigate("/rooms");
-        }}
+        onClick={() =>  setPopup(['LIST', 'issue'])}
       />
     </div>
   );

@@ -3,95 +3,63 @@
 import React from "react";
 
 import { useAuth } from './useAuth';
-import { CheckInType, CleanType, NotificationType, ReservationType,
-    RestaurantType, RoomType, State, StatusId, TypeWithId, TypeWithTrace } from "../types";
+import { CleanType, CustomerType, PopupType, ReservationType,
+    RestaurantType, RoomType, State, StatusId, TypeWithTrace } from "../types";
+import Employer from "../types/employer";
 import BedRoom from "../types/bedroom";
 import { getDate, string_object } from "../tools";
 import { roomIds } from "../configs/room";
-import Employer from "../types/employer";
 import { employers_datas } from "../configs/employer";
 
 type DataContextType = {
-    roomMap: Partial<Record<BedRoom.Id, RoomType>>,
-    customerBook: TypeWithTrace<CheckInType>[],
-    cleaningBook: TypeWithTrace<CleanType>[],
-    reservationBook: TypeWithTrace<ReservationType>[],
-    restaurantBook: TypeWithTrace<RestaurantType>[],
-    notificationBook: TypeWithTrace<NotificationType>[],
+    customer_book: LocalBook<CustomerType>,
+    cleaning_book: LocalBook<CleanType>,
+    restaurant_book: LocalBook<RestaurantType>,
+    reservation_book: LocalBook<ReservationType>,
+    room_book: LocalBook<RoomType>,
 
-    setCustomerBook: State<TypeWithTrace<CheckInType>[]>,
-    setCleaningBook: State<TypeWithTrace<CleanType>[]>,
-    setReservationBook: State<TypeWithTrace<ReservationType>[]>,
-
-    addToBook: <T extends Object>(roomId: BedRoom.Id, data: T, setter: State<TypeWithTrace<T>[]>) => void,
-    updateBook: <T extends Object>(id: number, data: Partial<T>, setter: State<TypeWithTrace<T>[]>) => void,
-
+    popup: PopupType | null, setPopup: State<PopupType | null>,
+    status: StatusId[], setStatus: State<StatusId[]>,
 
 
     reservations: TypeWithTrace<ReservationType>[],
     todayBooked: Partial<Record<BedRoom.Id, TypeWithTrace<ReservationType>[]>>,
     getBookedPeriod: (dateStart?: Date, dateEnd?: Date | null) => TypeWithTrace<ReservationType>[],
 
-    lastCustomers: Partial<Record<BedRoom.Id, TypeWithTrace<CheckInType>>>,
-    todayCustomers: Partial<Record<BedRoom.Id, TypeWithTrace<CheckInType>[]>>,
+    customers: { [k: number]: TypeWithTrace<CustomerType> },
+    todayCustomers: Partial<Record<BedRoom.Id, TypeWithTrace<CustomerType>[]>>,
 
     obsoletRooms: BedRoom.Id[],
     cleaners: (Employer.Type & {id: Employer.Id, rooms: TypeWithTrace<CleanType>[]})[],
-    cleanedToday: TypeWithTrace<CleanType>[],
-    lastCleaneds: Partial<Record<BedRoom.Id, TypeWithTrace<CleanType>>>,
+    todayCleaned: TypeWithTrace<CleanType>[],
     cleanings: Partial<Record<BedRoom.Id, TypeWithTrace<CleanType>[]>>,
+    getCleaningState: (roomId: BedRoom.Id) => string,
 
     restaurant: TypeWithTrace<RestaurantType>[],
-    getRestaurations: (roomId: BedRoom.Id) => TypeWithTrace<RestaurantType>[],
-
-    addNotification: (roomId: BedRoom.Id, data: NotificationType) =>  void,
-
-    status: StatusId[],
-    setStatus: State<StatusId[]>,
-    roomPopup: BedRoom.Id | null,
-    setRoomPopup: State<BedRoom.Id | null>,
-    cleaningPopup: boolean,
-    setCleaningPopup: State<boolean>,
-    bookingPopup: boolean,
-    setBookingPopup: State<boolean>,
-    notificationPopup: boolean,
-    setNotificationPopup: State<boolean>,
 };
 
-export function DataProvider({ children }: { children: React.ReactNode }) {
-    const { addTrace } = useAuth();
-    const [customerBook, setCustomerBook] = React.useState<TypeWithTrace<CheckInType>[]>([]);
-    const [cleaningBook, setCleaningBook] = React.useState<TypeWithTrace<CleanType>[]>([]);
-    const [restaurantBook, setRestaurantBook] = React.useState<TypeWithTrace<RestaurantType>[]>([]);
-    const [reservationBook, setReservationBook] = React.useState<TypeWithTrace<ReservationType>[]>([]);
-    const [notificationBook, setNotificationBook] = React.useState<TypeWithTrace<NotificationType>[]>([]);
-    const [roomsBook, setRoomsBook] = React.useState<TypeWithTrace<RoomType>[]>([]);
+export function DataProvider({ children }: {
+    children: React.ReactNode
+}) {
+    const customer_book = useLocalData<CustomerType>('customer_book');
+    const cleaning_book = useLocalData<CleanType>('cleaning_book');
+    const restaurant_book = useLocalData<RestaurantType>('restaurant_book');
+    const reservation_book = useLocalData<ReservationType>('reservation_book');
+    const room_book = useLocalData<RoomType>('room_book');
 
+    const [popup, setPopup] = React.useState<PopupType | null>(null);
     const [refresh, setRefresh] = React.useState(new Date(Date.now()));
     const [status, setStatus] = React.useState<StatusId[]>([]);
-    const [roomPopup, setRoomPopup] = React.useState<BedRoom.Id | null>(null);
-    const [cleaningPopup, setCleaningPopup] = React.useState(false);
-    const [bookingPopup, setBookingPopup] = React.useState(false);
-    const [notificationPopup, setNotificationPopup] = React.useState(false);
-
-    useLocalData('cleaning_book', cleaningBook, setCleaningBook);
-    useLocalData('customer_book', customerBook, setCustomerBook);
-    useLocalData('reservation_book', reservationBook, setReservationBook);
-    useLocalData('restaurant_book', restaurantBook, setRestaurantBook);
-    useLocalData('notification_book', notificationBook, setNotificationBook);
-    useLocalData('room_book', roomsBook, setRoomsBook);
-
-    const roomMap = React.useMemo(() => {
-        return Object.fromEntries( roomsBook.map(elem => [elem.roomId, elem]) ) as
-            Partial<Record<BedRoom.Id, RoomType>>;
-    }, [roomsBook]);
-
 
     React.useEffect(() => {
-        setInterval(() => {
+        const id = setInterval(() => {
             setRefresh( new Date(Date.now()) );
         }, 3*60*60*1000);
+        return () => clearInterval(id);
     }, []);
+
+
+
 
 
 
@@ -99,9 +67,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
     const reservations = React.useMemo(() => {
         const today = new Date(Date.now());
-        return reservationBook.filter(rsv => (
-            !('cancel' in rsv) && (!rsv.end || rsv.end > today) ));
-    }, [refresh, reservationBook]);
+        return reservation_book.get.filter(rsv => (
+            !rsv.cancel && (!rsv.end || rsv.end > today) ));
+    }, [refresh, reservation_book.get]);
 
     const getBookedPeriod = React.useCallback((
         dateStart?: Date, dateEnd?: Date | null
@@ -110,84 +78,80 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             const start = new Date(dateStart ?? Date.now());
             start.setHours(0, 0, 0, 0);
             const end = dateEnd ?? new Date(start.getTime() + 24*60*60*1000);
-            return (
-                (rsv.start < end) &&
+            return ( rsv.start < end &&
                 (!rsv.end || rsv.end > start)
             );
         });
     }, [reservations]);
 
+
+
     const todayBooked = React.useMemo(() => {
         const comingToday = getBookedPeriod();
-        console.log("comingToday", comingToday);
         return Object.groupBy(comingToday, rsv => rsv.roomId);
     }, [getBookedPeriod]);
 
-
-
-
-    const lastCustomers = React.useMemo(() => {
-        const map: Partial<Record<BedRoom.Id, TypeWithTrace<CheckInType>>> = {};
-        let nbFound = 0;
-
-        for (const customer of customerBook) {
-            if (!map[customer.roomId]) {
-                map[customer.roomId] = customer;
-                if (++nbFound === roomIds.length) break;
-            }
-        }
-        return map;
-    }, [customerBook]);
-
     const todayCustomers = React.useMemo(() => {
         const today = new Date(Date.now());
-        const tab = Object.values(lastCustomers)
+        const tab = Object.values(customer_book.lasts)
             .filter(customer => !customer.end || customer.end > today);
         return Object.groupBy(tab, elem => elem.roomId);
-    }, [refresh, lastCustomers]);
+    }, [refresh, customer_book.lasts]);
 
-
-
-
-
-
-
-    const lastCleaneds = React.useMemo(() => {
-        const map: Partial<Record<BedRoom.Id, TypeWithTrace<CleanType>>> = {};
-        let nbFound = 0;
-
-        for (const cleaner of cleaningBook) {
-            if (!map[cleaner.roomId] && !('cancel' in cleaner)) {
-                map[cleaner.roomId] = cleaner;
-                if (++nbFound === roomIds.length) break;
-            }
-        }
-        return map;
-    }, [cleaningBook]);
-
-    const obsoletRooms = React.useMemo(() => {
-        const obsoletDay = new Date(Date.now() - 3*24*60*60*1000);
-        return roomIds
-            .filter(roomId => !lastCleaneds[roomId] ||
-                lastCleaneds[roomId].date < obsoletDay);
-    }, [lastCleaneds]);
-
-    const cleanings = React.useMemo(() => {
-        const cleanings1 = cleaningBook
-            .filter(elem => !('cancel' in elem) && !elem.done);
-        return Object.groupBy(cleanings1, elem => elem.roomId);
-    }, [cleaningBook]);
-
-    const cleanedToday = React.useMemo(() => {
-        const res: TypeWithTrace<CleanType>[] = [];
+    const todayCleaned = React.useMemo(() => {
         const today = new Date(Date.now());
-        for (const clean of cleaningBook) {
+        const res: TypeWithTrace<CleanType>[] = [];
+        for (const clean of cleaning_book.get) {
             if ( getDate(clean.date) !== getDate(today) )
                 break;
             res.unshift(clean);
         }
         return res;
-    }, [refresh, cleaningBook]);
+    }, [refresh, cleaning_book.get]);
+
+
+
+
+    const customers = React.useMemo(() => {
+        const res: { [k: number]: TypeWithTrace<CustomerType> } = { };
+        Object.values(todayCustomers)
+            .forEach(([customer]) => {
+                res[customer.id] = customer;
+            });
+        return res;
+    }, [todayCustomers]);
+
+    
+
+
+
+
+
+
+
+
+    
+    const obsoletRooms = React.useMemo(() => {
+        const obsoletDay = new Date(Date.now() - 3*24*60*60*1000);
+        return roomIds
+            .filter(roomId => {
+                const customer = customer_book.lasts[roomId];
+                const cleaned = cleaning_book.lasts[roomId];
+                if (!cleaned) return true;
+                if (!cleaned.done) return false;
+                if (cleaned.date < obsoletDay) return true;
+                if (!customer) return false;
+                if (customer.end &&
+                    'end' in cleaned && cleaned.end &&
+                    customer.end < cleaned.end) return true;
+            } )
+    }, [customer_book.lasts, cleaning_book.lasts]);
+
+    const cleanings = React.useMemo(() => {
+        const cleanings1 = cleaning_book.get
+            .filter(elem => !elem.cancel && !elem.done);
+        return Object.groupBy(cleanings1, elem => elem.roomId);
+    }, [cleaning_book.get]);
 
     const cleaners = React.useMemo(() => {
         return Object.entries(employers_datas)
@@ -197,11 +161,27 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
                 return rules.includes(Employer.Rule.CLEANER);
             })
             .map(vallet => ({ ...vallet,
-                rooms: cleanedToday.filter(clean =>
+                rooms: todayCleaned.filter(clean =>
                     clean.valletId === vallet.id),
-            })) as
-            (Employer.Type & {id: Employer.Id, rooms: TypeWithTrace<CleanType>[]})[];
-    }, [cleanedToday]);
+            })) as (Employer.Type & {
+                id: Employer.Id,
+                rooms: TypeWithTrace<CleanType>[],
+            })[];
+    }, [todayCleaned]);
+
+    const getCleaningState = React.useCallback((roomId: BedRoom.Id) => {
+        const lastCleaned = cleaning_book.lasts[roomId];
+        if (!lastCleaned) return "...";
+
+        const now = new Date(Date.now());
+        const endDate = lastCleaned.done ?? null;
+        if (!endDate) return employers_datas[lastCleaned.valletId].name;
+
+        const res = endDate.getTime() - now.getTime() > 3*24*60*60*1000;
+        return !res ? "Propre" : "Non";
+    }, [cleaning_book.lasts]);
+
+
 
 
 
@@ -210,15 +190,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
 
     const restaurant = React.useMemo(() => {
-        return restaurantBook.filter(resto => {
+        return restaurant_book.get.filter(resto => {
             const customer = todayCustomers[resto.roomId]?.[0];
             return !resto.paid || (customer && customer.date < resto.date);
         } );
-    }, [restaurantBook, todayCustomers]);
-
-    const getRestaurations = React.useCallback((roomId: BedRoom.Id) => {
-        return restaurant.filter(restauration => restauration.roomId === roomId) ?? null;
-    }, [restaurant]);
+    }, [restaurant_book.get, todayCustomers]);
 
 
 
@@ -226,40 +202,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
 
 
-
-    const addToBook = React.useCallback(<T extends Object>(
-        roomId: BedRoom.Id, data: T, setter: State<TypeWithTrace<T>[]>
-    ) => {
-        setter(list => {
-            const id = list.length === 0 ? 0 : list[0].id + 1;
-            const res = addTrace(id, roomId, data);
-            return [res, ...list];
-        });
-    }, [addTrace]);
-
-    const updateBook = React.useCallback(<T extends Object>(
-        id: number, data: Partial<T>, setter: State<TypeWithTrace<T>[]>
-    ) => {
-        setter(list => {
-            const index = list.findIndex(elem => elem.id === id);
-            if (index === -1) throw new Error("Cette donnée est introuvable");
-            return list.map((elem, i) => (i === index) ? { ...elem, ...data } : elem);
-        });
-    }, []);
 
     return (
         <dataContext.Provider value={{
-            roomMap,
-            customerBook,
-            cleaningBook,
-            reservationBook,
-            restaurantBook,
-            notificationBook,
-
-            addToBook, updateBook,
-            setCustomerBook,
-            setCleaningBook,
-            setReservationBook,
+            customer_book,
+            cleaning_book,
+            restaurant_book,
+            reservation_book,
+            room_book,
 
             reservations,
             todayBooked,
@@ -267,29 +217,19 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
             obsoletRooms,
             cleaners,
-            cleanedToday,
+            todayCleaned,
             cleanings,
-            lastCleaneds,
+            getCleaningState,
 
-            lastCustomers,
+            customers,
             todayCustomers,
 
             restaurant,
-            getRestaurations,
 
-            addNotification: React.useCallback((
-                roomId: BedRoom.Id,
-                data: NotificationType,
-            ) => {
-                addToBook(roomId, data, setNotificationBook);
-            }, [addToBook]),
-
+            popup, setPopup,
             status, setStatus,
-            roomPopup, setRoomPopup,
-            cleaningPopup, setCleaningPopup,
-            bookingPopup, setBookingPopup,
-            notificationPopup, setNotificationPopup,
-        }}> { children }
+        }}>
+            { children }
         </dataContext.Provider>
     );
 }
@@ -305,16 +245,65 @@ export function useDataContext() {
 }
 
 
-export function useLocalData<T extends TypeWithTrace<Object>>(localKey: string, data: T[], setter: (dtas: T[]) => void) {
+
+export type LocalBook<T extends Object> = {
+    get: TypeWithTrace<T>[];
+    add: (roomId: BedRoom.Id, data: T, description?: string) => void;
+    update: (id: number, data: Partial<TypeWithTrace<T>>, description?: string) => void;
+    lasts: Partial<Record<BedRoom.Id, TypeWithTrace<T>>>;
+}
+
+export function useLocalData<T extends Object>(localKey: string): LocalBook<T> {
+    const { addTrace } = useAuth();
+    const [datas, setDatas] = React.useState<TypeWithTrace<T>[]>([]);
 
     React.useEffect(() => {
-        const book = string_object<T[]>(localKey)
+        const book = string_object<TypeWithTrace<T>[]>(localKey)
             ?.sort((a, b) => b.date.getTime() - a.date.getTime());
-        if (book) setter(book);
+        if (book) setDatas(book);
     }, []);
 
     React.useEffect(() => {
-        if (data.length === 0) return;
-        localStorage.setItem(localKey, JSON.stringify(data));
-    }, [data]);
+        if (datas.length === 0) return;
+        localStorage.setItem(localKey, JSON.stringify(datas));
+    }, [datas]);
+
+    const add = React.useCallback((
+        roomId: BedRoom.Id, data: T,
+        description?: string
+    ) => {
+        setDatas(list => {
+            const id = list.length === 0 ? 0 : list[0].id + 1;
+            const res = addTrace(id, roomId, data, description);
+            return [res, ...list];
+        });
+    }, [addTrace]);
+
+    const update = React.useCallback((
+        id: number,
+        data: Partial<TypeWithTrace<T>>,
+        description?: string,
+    ) => {
+        setDatas(list => {
+            const index = list.findIndex(elem => elem.id === id);
+            if (index === -1) throw new Error("Cette donnée est introuvable");
+            return list.map((elem, i) => (i === index)
+                ? { ...elem, ...data, description } : elem);
+        });
+    }, []);
+
+    const lasts = React.useMemo(() => {
+        const list = datas.filter(data => !('cancel' in data) || !data.cancel);
+        const res: Partial<Record<BedRoom.Id, TypeWithTrace<T> >> = { };
+
+        for (const elem of list)
+            if (!res[ elem.roomId ]) {
+                res[ elem.roomId ] = elem;
+                const nbRes = Object.values(res).length;
+                if (roomIds.length === nbRes) break;
+            }
+        return res;
+    }, [datas]);
+
+    return { get: datas, add, update, lasts };
 }

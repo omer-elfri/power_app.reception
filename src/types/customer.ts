@@ -4,7 +4,7 @@ namespace Customer {
 
     export type Type = {
         name: string,
-        rules: [string, ...string[]],
+        rules: string[],
         enterprise?: string,
         ifu?: number,
         tel?: number,
