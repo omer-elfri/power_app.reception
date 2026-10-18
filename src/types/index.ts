@@ -1,3 +1,4 @@
+import { AuthSession } from "../hooks/useAuth";
 import { ListStatus } from "../popups/list";
 import BedRoom from "./bedroom";
 import Employer from "./employer";
@@ -135,6 +136,8 @@ export type PopupType =
     [ 'BOOKING', number? ] |
     [ 'ROOM', BedRoom.Id ] |
     [ 'LIST', ListStatus? ] |
+    [ 'USER' ] |
+    [ 'CHANGE_PASS'] |
     [ 'VALLET', BedRoom.Id ] ;
 
 

@@ -12,7 +12,7 @@ export default function BookingInfos({ className, setBookId }: {
   className?: string,
   setBookId: State<number | undefined>,
 }) {
-  const { reservations } = useDataContext();
+  const { reservations, addPopup } = useDataContext();
   const { cancel_book } = useBedroom();
   const list = reservations
     .sort((a, b) => a.start.getDate() - b.start.getDate());
@@ -36,7 +36,7 @@ export default function BookingInfos({ className, setBookId }: {
                 <TableTr key={rsv.id} className="hover:bg-blue-400/20 cursor-pointer"
                   onClick={() => setBookId(rsv.id)} values={[
                   <p>{getTime(rsv.date)}</p>,
-                  <p className="text-black text-[12px]">{rsv.roomId}</p>,
+                  <p className="text-black text-[12px] a" onClick={() => addPopup(['ROOM', rsv.roomId])}>{rsv.roomId}</p>,
                   <p className="uppercase">{rsv.name}</p>,
                   <p>{getFrenchDate(rsv.start).slice(0,6)}</p>,
                   <p>{rsv.end ? getFrenchDate(rsv.end).slice(0,6) : "..."}</p>,

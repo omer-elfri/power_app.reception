@@ -2,27 +2,29 @@
 
 import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../hooks";
-import { getFrenchDateTime } from "../../tools";
+import { getDuration, getFrenchDateTime } from "../../tools";
 
 export default function EntretienSection() {
-  const { cleaning_book } = useDataContext();
-  const today = new Date(Date.now());
-  const todayCleaning = cleaning_book.get.filter(
-    clean => (!clean.done && !clean.cancel) ||
-      clean.date.getDate() === today.getDate() ||
-      clean.done?.getDate() === today.getDate() ||
-      clean.cancel?.getDate() === today.getDate()
-  ).slice(0,15);
+  const { cleaning_book, addPopup } = useDataContext();
+  // const today = new Date(Date.now());
+  // const todayCleaning = cleaning_book.get.filter(
+  //   clean => (!clean.done && !clean.cancel) ||
+  //     clean.date.getDate() === today.getDate() ||
+  //     clean.done?.getDate() === today.getDate() ||
+  //     clean.cancel?.getDate() === today.getDate()
+  // ).slice(0,15);
 
   return (
     <table className="flex flex-col text-gray-600">
       <tbody>
-        { todayCleaning.map((clean, i) => (
+        { cleaning_book.get.map((clean, i) => (
           <tr key={i} className="flex flex-row gap-3 items-start py-2 border-t-1 border-gray-400/50">
 
             <td className="text-[11px] font-bold">{getFrenchDateTime(clean.date)}</td>
 
-            <td className={twMerge("text-[12px] font-bold text-black", clean.cancel ? "line-through" : "")}>{clean.roomId}</td>
+            <td className={twMerge("text-[12px] font-bold text-black a", clean.cancel ? "line-through" : "")}
+              onClick={() => addPopup(['ROOM', clean.roomId])}>{clean.roomId}
+            </td>
 
             <td> <div className="w-2 rounded-full aspect-square mt-[5px]"
               style={{ backgroundColor: clean.done ? "#090" :
@@ -34,8 +36,8 @@ export default function EntretienSection() {
             </td>
 
             <td className="text-[11px] font-bold">{
-              clean.done ? getFrenchDateTime(clean.done) :
-              clean.cancel ? getFrenchDateTime(clean.cancel) : ""}
+              clean.done ? getDuration(clean.date, clean.done) :
+              clean.cancel ? getDuration(clean.date, clean.cancel) : "..."}
             </td>
 
           </tr>

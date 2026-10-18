@@ -36,6 +36,7 @@ type DataContextType = {
     todayCustomers: Partial<Record<BedRoom.Id, TypeWithTrace<CustomerType>[]>>,
 
     obsoletRooms: BedRoom.Id[],
+    isObsolet: (roomId: BedRoom.Id) => boolean,
     cleaners: (Employer.Type & {id: Employer.Id, rooms: TypeWithTrace<CleanType>[]})[],
     todayCleaned: TypeWithTrace<CleanType>[],
     cleanings: Partial<Record<BedRoom.Id, TypeWithTrace<CleanType>[]>>,
@@ -67,10 +68,21 @@ export function DataProvider({ children }: {
 
     React.useEffect(() => {
         if (!alert) return;
-        const id = setTimeout(() => setAlert(null), 3000);
+        const id = setTimeout(() => setAlert(null), 5*1000);
         return () => clearTimeout(id);
     }, [alert]);
 
+
+    React.useEffect(() => {
+        // if (popupList?.[0]?.[0] !== 'CHANGE_PASS')
+        //     setPopupList(r => [['CHANGE_PASS'], ...r])
+        console.log("popupList", popupList)
+    }, [popupList]);
+
+    React.useEffect(() => {
+        console.log("DataProvider monté");
+        return () => console.log("DataProvider démonté");
+    }, []);
 
 
 
@@ -153,7 +165,6 @@ export function DataProvider({ children }: {
 
 
 
-    
     const obsoletRooms = React.useMemo(() => {
         const obsoletDay = new Date(Date.now() - 3*24*60*60*1000);
         return roomIds
@@ -162,13 +173,17 @@ export function DataProvider({ children }: {
                 const cleaned = cleaning_book.lasts[roomId];
                 if (!cleaned) return true;
                 if (!cleaned.done) return false;
-                if (cleaned.date < obsoletDay) return true;
+                if (cleaned.done < obsoletDay) return true;
                 if (!customer) return false;
                 if (customer.end && cleaned.done &&
                    cleaned.done < customer.end
                 ) return true;
             } )
     }, [customer_book.lasts, cleaning_book.lasts]);
+
+    const isObsolet = React.useCallback((roomId: BedRoom.Id) => {
+        return obsoletRooms.includes(roomId);
+    }, [obsoletRooms]);
 
     const cleanings = React.useMemo(() => {
         const cleanings1 = cleaning_book.get
@@ -192,17 +207,14 @@ export function DataProvider({ children }: {
             })[];
     }, [todayCleaned]);
 
-    const getCleaningState = React.useCallback((roomId: BedRoom.Id) => {
-        const lastCleaned = cleaning_book.lasts[roomId];
+    const getCleaningState = React.useCallback((bedRoomId: BedRoom.Id) => {
+        const lastCleaned = cleaning_book.lasts[bedRoomId];
+
         if (!lastCleaned) return "...";
-
-        const now = new Date(Date.now());
-        const endDate = lastCleaned.done ?? null;
-        if (!endDate) return lastCleaned.name;
-
-        const res = endDate.getTime() - now.getTime() > 3*24*60*60*1000;
-        return !res ? "Propre" : "Non";
-    }, [cleaning_book.lasts]);
+        if (!lastCleaned.done) lastCleaned.name;
+        if (isObsolet(bedRoomId)) return 'Sale';
+        return "Propre";
+    }, [isObsolet, cleaning_book.lasts]);
 
 
 
@@ -224,8 +236,6 @@ export function DataProvider({ children }: {
 
 
 
-
-
     return (
         <dataContext.Provider value={{
             customer_book,
@@ -239,6 +249,7 @@ export function DataProvider({ children }: {
             getBookedPeriod,
 
             obsoletRooms,
+            isObsolet,
             cleaners,
             todayCleaned,
             cleanings,
@@ -252,7 +263,11 @@ export function DataProvider({ children }: {
             checkError,
             popupList,
             addPopup: React.useCallback((pop: PopupType) => {
-                setPopupList(popupList => [ pop, ...popupList, ]);
+                setPopupList(popupList => {
+                    const r = [ pop, ...popupList, ]
+                    console.log("pop", r)
+                    return r;
+                });
             }, []),
             unPopup: React.useCallback(() => {
                 setPopupList(([_, ...popupList]) => popupList);

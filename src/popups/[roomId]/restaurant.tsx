@@ -8,7 +8,7 @@ import FormAside from "../../components/FormAside";
 import { RiRestaurantFill, RiServiceBellLine } from "react-icons/ri";
 
 import { formatPrice } from "../../tools";
-import MyTable, { MyTr } from "../../components/MyTable";
+import { MyTr } from "../../components/MyTable";
 import NoElem from "../../components/NoElem";
 
 export default function Restaurant({ room:bedRoom, className }: {
@@ -33,14 +33,14 @@ export default function Restaurant({ room:bedRoom, className }: {
 
             <NoElem Icon={RiServiceBellLine} size={50} text="Aucune commande" className="gap-2" list={roomRestos}>
 
-                <MyTable datas={roomRestos}>
-                    { resto => <MyTr key={resto.id} color="bg-blue-400/20"
+                <div className="flex flex-col">
+                    { roomRestos.map(resto => <MyTr key={resto.id} color="bg-blue-400/20"
                         className="grid-cols-[auto_1fr_auto] px-2 text-[11px] text-gray-600">
                         <p>{resto.article}</p>
                         <p>{resto.client}</p>
                         <p>{formatPrice(resto.price)}</p>
-                    </MyTr> }
-                </MyTable>
+                    </MyTr>) }
+                </div>
 
             </NoElem>
         </FormAside>

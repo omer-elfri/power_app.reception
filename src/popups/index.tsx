@@ -48,10 +48,6 @@ export function CloseBtn() {
       className="bg-red-700/10 text-[11px] text-red-700 p-2 rounded"
       onClick={unPopup}
     />
-    // <ImCross size={13}
-    //   className="text-red-700 cursor-pointer"
-    //   onClick={unPopup}
-    // />
   );
 }
 

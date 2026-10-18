@@ -14,7 +14,7 @@ export default function PageTitle({ className, children }: {
     className?: string,
     children?: React.ReactNode,
 }) {
-    const { authSession, disconnect } = useAuth();
+    const { authSession } = useAuth();
     const { pathname } = useLocation();
     const { addPopup } = useDataContext();
 
@@ -39,20 +39,11 @@ export default function PageTitle({ className, children }: {
                 <FaCalendarAlt /> <span>Réservation</span>
             </button>
 
-            <div className="group flex flex-row gap-1">
-
-                <div className="group-hover:hidden flex justify-center items-center gap-1 p-1 pr-3 rounded-full bg-blue-500/30 cursor-pointer" onClick={disconnect}>
-                    <IoPersonCircle size={23} className="text-blue-600" />
-                    <span className="font-bold text-[13px] uppercase">{authSession?.name}</span>
-                </div>
-
-                <div className="hidden group-hover:flex flex flex-row justify-center items-center gap-2 p-1 px-2 rounded-full bg-red-500/30 cursor-pointer" onClick={disconnect}>
-                    <span className="font-bold text-[13px] uppercase">Sortir</span>
-                    <FaPowerOff size={15} className="text-red-600" />
-                </div>
-
+            <div className="flex justify-center items-center gap-1 p-1 pr-3 rounded-full bg-blue-500/30 cursor-pointer" onClick={() => addPopup(['USER'])}>
+                <IoPersonCircle size={23} className="text-blue-600" />
+                <span className="font-bold text-[13px] uppercase">{authSession?.name}</span>
             </div>
-
+            
             { children }
 
         </div>

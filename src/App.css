@@ -106,3 +106,12 @@ input, select, textarea {
 .my-calendar .rdp-weekday {
   font-size: 11px;
 }
+
+.a {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+

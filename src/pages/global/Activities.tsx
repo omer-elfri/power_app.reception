@@ -12,6 +12,7 @@ import { IoBed, IoPersonSharp }  from "react-icons/io5";
 import { FaTools, FaCalendarAlt }  from "react-icons/fa";
 import { MdCleaningServices, MdWarning }  from "react-icons/md";
 import { ImPower }  from "react-icons/im";
+import { getString } from "../../tools";
 
 export default function ActivitySection() {
   const { analysis } = useBedroom();
@@ -43,6 +44,9 @@ export default function ActivitySection() {
         name="Chambres" subName="disponibles"
         color={colors.free}
         onClick={() =>  addPopup(['LIST', 'free'])}
+        infobulle={analysis.issues.length > 0 && <MdWarning
+          title={`${getString(analysis.issues.length)} chambre(s) sont problématiques`}
+          className="text-yellow-600" />}
       />
       <ActivityBox
         icon={<FaCalendarAlt size={30} />}

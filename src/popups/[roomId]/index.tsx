@@ -1,15 +1,16 @@
 'use client';
 
 import React from 'react';
+import { twMerge } from 'tailwind-merge';
 import Popup, { CloseBtn, PopupBody } from "..";
 
+import { useDataContext } from '../../hooks';
 import { useBedroom } from "../../hooks/useBedroom";
+import BedRoom from '../../types/bedroom';
 
 import RoomStatus from '../../components/RoomStatus';
 import OngletTab from '../../components/OngletTab';
 import { Title } from "../../components/SectionBox";
-import { IoBed } from "react-icons/io5";
-import { IoIosPerson } from "react-icons/io";
 
 import Restaurant from './restaurant';
 import CheckInForm from './check_in';
@@ -17,20 +18,23 @@ import ChangeRoom from './change_room';
 import CleaningBox from './cleaning';
 import CommentBox from './comment';
 import ReservationTab from './reservation';
-import BedRoom from '../../types/bedroom';
 
-export default function RoomPopup({ roomId }: {
+import { MdWarning } from 'react-icons/md';
+import { IoBed } from "react-icons/io5";
+import { IoIosPerson } from "react-icons/io";
+import FormAside from '../../components/FormAside';
+
+export default function RoomPopup({ roomId:bedRoomId }: {
   roomId: BedRoom.Id,
 }) {
-  const [onglet, setOnglet] = React.useState('client_infos');
   const { bedRooms } = useBedroom();
-
-  if (!roomId) return null;
-  const bedRoom = bedRooms[roomId];
+  const bedRoom = bedRooms[bedRoomId];
+  const [onglet, setOnglet] = React.useState('client_infos');
 
   const title = (
-    <Title icon={<IoBed size={20} />} right={<CloseBtn />}>
-      <h1 className="font-bold text-[15px]">Chambre {roomId}</h1>
+    <Title icon={<IoBed size={20} />} right={<CloseBtn />} className='text-gray-500'>
+      <h1 className="font-bold text-[15px]">
+        <span>CH</span> <span className='text-black text-[20px]'>{bedRoomId}</span></h1>
       <RoomStatus room={bedRoom} />
     </Title>
   );
@@ -42,7 +46,9 @@ export default function RoomPopup({ roomId }: {
         <OngletTab onglet={onglet} setOnglet={setOnglet} datas={[
           { key: 'client_infos', icon: <IoIosPerson size={16} />, value: "Informations Client" },
           { key: 'room_infos', icon: <IoBed size={18} />, value: "Informations Chambre" },
-        ]}>
+        ]} subClassName='[&_input,&_textarea]:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)] gap-5'>
+
+          <IssueSide roomId={bedRoomId} />
 
           { onglet === 'client_infos' && (
             <div className="grid grid-cols-6 grid-rows-[auto_1fr] gap-5 \
@@ -67,5 +73,29 @@ export default function RoomPopup({ roomId }: {
         </OngletTab>
       </PopupBody>
     </Popup>
+  );
+}
+
+function IssueSide({ roomId:bedRoomId }: {
+  roomId: BedRoom.Id,
+}) {
+  const { isObsolet } = useDataContext();
+  const { bedRooms } = useBedroom();
+  const bedRoom = bedRooms[bedRoomId];
+
+  return (
+    <FormAside title="A votre attention" subClassName='flex flex-row flex-wrap gap-2'>
+
+      { bedRoom.issue &&  <p className={twMerge("rounded px-2 py-1 text-[11px]",
+          bedRoom.issue.priority === "high" ? "bg-red-600/20 text-red-700" : "bg-yellow-600/20 text-yellow-700")}>
+          {bedRoom.issue?.message}
+      </p> }
+
+      { isObsolet(bedRoomId) && <div className='grid grid-cols-[auto_1fr] items-center gap-2 py-1 px-2 rounded bg-yellow-600/20 font-bold'>
+        <MdWarning size={18} className="text-yellow-600" title="A besoin de néttoyage" />
+        <p className='text-gray-800 text-[11px]'>Cette chambre à besoin d'être néttoyer</p>
+      </div> }
+
+    </FormAside>
   );
 }

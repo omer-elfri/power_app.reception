@@ -10,13 +10,14 @@ import BedRoom from "../types/bedroom";
 import { HiLightningBolt } from "react-icons/hi";
 import { GiBroom } from "react-icons/gi";
 import { FaCalendarAlt } from "react-icons/fa";
-import { MdError, MdPerson, MdPerson3, MdWarning } from "react-icons/md";
+import { MdError, MdWarning } from "react-icons/md";
+import { PersonSex2 } from "./PersonSex";
 
 export default function RoomLine({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { getCleaningState } = useDataContext();
+    const { getCleaningState, isObsolet } = useDataContext();
     const categoryNames = bedRoom.categories
         .map((ctgId) => ({ id: ctgId, ...room_ctg_datas[ctgId] }) )
         .map(({ name }) => name ).join(", ");
@@ -44,11 +45,9 @@ export default function RoomLine({ room:bedRoom, className }: {
             <div> {categoryNames} </div>
 
             <div className={twMerge("flex flex-row items-center gap-2", bedRoom.customer ? "text-black" : "text-gray-400")}>
-                { bedRoom.customer ?
-                    (bedRoom.customer.sexe === 'Mme')
-                    ? <MdPerson3 size={15} style={{color: colors.sold}} />
-                    : <MdPerson size={15} style={{color: colors.sold}} />
-                : !clientName ? <MdPerson size={15} /> : null }
+                { bedRoom.customer
+                ? <PersonSex2 sexe={bedRoom.customer.sexe} size={15} />
+                : !clientName ? <PersonSex2 size={15} /> : null }
                 { bedRoom.booked && <FaCalendarAlt size={12} style={{color: colors.coming}} /> }
                 <span className="flex-1 text-center">{clientName?.toUpperCase() ?? "libre"}</span>
             </div>
@@ -58,7 +57,7 @@ export default function RoomLine({ room:bedRoom, className }: {
                 <span className="">{bedRoom.power ? "Allumée" : "Éteinte"}</span>
             </div>
 
-            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.cleaner ? "text-black" : "text-gray-400")}>
+            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.cleaner ? "text-black" : isObsolet(bedRoom.id) ? "text-red-600" : "text-gray-400")}>
                 <GiBroom size={14} className={bedRoom.cleaner ? "text-blue-600" : ""} />
                 <span className="">{cleaningState}</span>
             </div>

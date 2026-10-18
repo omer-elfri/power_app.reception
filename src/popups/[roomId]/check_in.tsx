@@ -65,7 +65,8 @@ export default function CheckInForm({ room:bedRoom, className }: {
                         if (!bedRoom.customer) throw Error(
                             `La chambre ${bedRoom.id} n'est pas occupée`);
                         check_out(bedRoom.customer.id);
-                        addPopup(['VALLET', bedRoom.id]);
+                        if (!bedRoom.cleaner)
+                            addPopup(['VALLET', bedRoom.id]);
                     }}
                         className="bg-transparent border-1 text-red-700 border-red-700 !py-1">Check out
                     </MyButton>
@@ -84,13 +85,7 @@ export default function CheckInForm({ room:bedRoom, className }: {
             className={twMerge("", className)}
             subClassName="gap-3"
             onSubmit={handleSubmit}
-            right={<SubmitButtons />}
-        >
-
-            { bedRoom.issue &&  <p className={twMerge("rounded px-2 py-1 text-[11px]",
-                bedRoom.issue.priority === "high" ? "bg-red-500/10 text-red-700" : "bg-yellow-500/10 text-yellow-700")}>
-                {bedRoom.issue?.message}
-            </p> }
+            right={<SubmitButtons />} >
 
             <div className="grid grid-cols-2 gap-5 text-[12px]">
 
@@ -134,7 +129,7 @@ export default function CheckInForm({ room:bedRoom, className }: {
 
                 <LabelInput label="Infos supplémentaires" name='description'>
                     <textarea id='description'
-                        className="p-2 text-[11px] h-full min-h-30 py-[5px]"
+                        className="p-2 text-[11px] h-full min-h-30 py-[5px] bg-gray-300/40"
                         defaultValue={bedRoom.customer?.description}
                         placeholder="IFU / entreprise / autre description"
                     />

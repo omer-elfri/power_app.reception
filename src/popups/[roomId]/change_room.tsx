@@ -17,7 +17,7 @@ export default function ChangeRoom({ room:bedRoom, className }: {
     className?: string,
 }) {
     const { addPopup } = useDataContext();
-    const { bedRooms, bedRoomTab, check_move } = useBedroom();
+    const { analysis, bedRooms, bedRoomTab, check_move } = useBedroom();
 
     const submitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -37,7 +37,7 @@ export default function ChangeRoom({ room:bedRoom, className }: {
             icon={<HiSwitchHorizontal />} onSubmit={submitHandler}
             subClassName="flex flex-col gap-2" className={twMerge("", className)}
             right={
-                <MyButton name='change_room' icon={<FaExchangeAlt />}
+                <MyButton name='change_room' icon={<FaExchangeAlt />} disabled={bedRoom.customer && analysis.free.length === 0 || !bedRoom.customer && analysis.solded.length === 0}
                     className="!py-1 bg-yellow-700/10 text-yellow-700 border-yellow-700 self-end">Déplacer
                 </MyButton>
             }>

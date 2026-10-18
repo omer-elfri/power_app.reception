@@ -122,3 +122,20 @@ export function getPerIdBook2
     return res;
 }
 
+export function getDuration(start: Date, end: Date) {
+    const total = Math.floor((end.getTime() - start.getTime()) / 60000);
+
+    // start.setDate(Date.(2,11,2020))
+
+    const j = Math.floor(total / 1440);
+    const h = Math.floor((total % 1440) / 60);
+    const min = total % 60;
+
+    if (start.getDate() < end.getDate())
+        return getFrenchDate(end).slice(0,6);
+
+    if (j) return `${j}j ${h}h`;
+    if (h) return `${h}h ${min}m`;
+    return `${min}m`;
+}
+

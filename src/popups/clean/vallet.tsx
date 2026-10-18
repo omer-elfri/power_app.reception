@@ -1,14 +1,12 @@
 'use client';
 
 import { twMerge } from "tailwind-merge";
-
 import { useDataContext } from "../../hooks";
 
 import { employers_datas } from "../../configs/employer";
 import Employer from "../../types/employer";
 import { getString } from "../../tools";
-
-import { MdPerson, MdPerson3 } from "react-icons/md";
+import { PersonSex2 } from "../../components/PersonSex";
 
 export default function ValletAside() {
   const { cleaners } = useDataContext();
@@ -42,9 +40,7 @@ export function ValletLine({ cleanerId, className }: {
     <div className={twMerge("grid grid-cols-[auto_1fr_auto] items-center gap-x-3 p-2 py-3 rounded border-gray-300", className)}>
 
       <div className="flex justify-center items-center row-span-2 size-9 bg-gray-400/20 rounded-full">
-        { cleaner.sexe === 'Mr'
-        ? <MdPerson className="text-green-900" size={18} />
-        : <MdPerson3 className="text-green-900" size={18} /> }
+        <PersonSex2 sexe={cleaner.sexe} size={18} className="text-green-900" />
       </div>
 
       <h2 className="font-bold text-[12px] text-gray-800 col-span-2">{cleaner.name}</h2>

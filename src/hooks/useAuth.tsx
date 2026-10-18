@@ -21,7 +21,10 @@ type AuthContextType = {
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [authSession, setAuthSession] = React.useState<AuthSession | null>(null);
+    const [authSession, setAuthSession] = React.useState<AuthSession | null>({
+        id: 'receptionist1',
+        name: 'ADMIN',
+    });
     const { pathname } = useLocation();
     const navigate = useNavigate();
 

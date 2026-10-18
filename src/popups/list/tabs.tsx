@@ -4,6 +4,7 @@ import { useDataContext } from "../../hooks";
 import BedRoom from '../../types/bedroom';
 
 import { getFrenchDateTime } from '../../tools';
+import { PersonSex2} from '../../components/PersonSex';
 
 import { IoBedOutline, IoRestaurantOutline } from "react-icons/io5";
 import { FaRegClock, FaWifi } from 'react-icons/fa';
@@ -11,6 +12,14 @@ import { MdOutlineDescription, MdOutlinePerson2, MdOutlinePriorityHigh, MdWarnin
 import { PiBroomBold } from 'react-icons/pi';
 import { RxLightningBolt } from 'react-icons/rx';
 import { MyTh, RoomId, TheTable } from "./table";
+import { twMerge } from "tailwind-merge";
+import { PriorityId } from "../../types";
+
+const issueMap: Record<PriorityId, { bg: string, border: string, text: string }> = {
+  'low': { bg: "bg-blue-800", border: "bg-blue-400/20 border-blue-800/50", text: "Faible", },
+  'medium': { bg: "bg-yellow-800", border: "bg-yellow-400/20 border-yellow-800/50", text: "Moyen", },
+  'high': { bg: "bg-red-800", border: "bg-red-400/20 border-red-800/50", text: "Grave", },
+};
 
 export function PowerTab({ datas }: {
   datas: BedRoom.Type[],
@@ -54,7 +63,7 @@ export function SoldTab({ datas }: {
       { room => [
         <span>{getFrenchDateTime(room.customer!.date)}</span>,
         <RoomId value={room.id} />,
-        <span>{room.customer!.name}</span>,
+        <PersonSex2 sexe={room.customer!.sexe}>{room.customer!.name}</PersonSex2>,
         <span>{room.customer!.description}</span>,
         <span>{room.restauration.reduce((res, resto) => res + resto.price, 0)}</span>,
       ] }
@@ -73,6 +82,7 @@ export function FreeTab({ datas }: {
         <MyTh Icon={FaRegClock} value="Depuis" />,
         <MyTh Icon={IoBedOutline} value="CH" size={15} />,
         <MyTh Icon={PiBroomBold} value="Néttoyé par" />,
+        <MyTh Icon={MdOutlineDescription} value="Priorité" />,
         <MyTh Icon={MdOutlineDescription} value="Description" />,
       ]}>
       { room => {
@@ -80,9 +90,20 @@ export function FreeTab({ datas }: {
         const vallet = cleaning_book.lasts[room.id];
         return [
           <span>{ customer ? getFrenchDateTime(customer.end!) : "..."}</span>,
+
           <RoomId value={room.id} />,
+
           <span>{vallet?.name}</span>,
-          <span>{customer?.description || "..."}</span>,
+
+          <div className='flex flex-row justify-end'>
+            { room.issue && <div title={room.issue.message}
+              className={twMerge("flex flex-row gap-2 rounded px-2 border-1", issueMap[room.issue.priority].border)}>
+              <div className={twMerge('p-1 bg-blue-800 self-center rounded-full', issueMap[room.issue.priority].bg)} />
+              <span className='text-[11px]'>{issueMap[room.issue.priority].text}</span>
+            </div> }
+          </div>,
+
+          <span>{(room.issue?.message ?? customer?.description) || "..."}</span>,
         ]} }
     </TheTable>
   );
@@ -91,7 +112,7 @@ export function FreeTab({ datas }: {
 export function CleanTab({ datas }: {
   datas: BedRoom.Type[],
 }) {
-  const { cleaning_book, obsoletRooms } = useDataContext();
+  const { cleaning_book, isObsolet } = useDataContext();
 
   return (
     <TheTable datas={datas}
@@ -106,12 +127,16 @@ export function CleanTab({ datas }: {
         // if (!clean) return null;
         return [
           <span>{getFrenchDateTime(clean!.date)}</span>,
+
           <RoomId value={room.id} />,
-          <div>{ !obsoletRooms.includes(room.id)
-            ? <div>{clean.name}</div>
-            : <span>...</span>
+
+          <div className="flex justify-center">
+            { !isObsolet(room.id)
+              ? <PersonSex2 sexe={clean.sexe}>{clean.name}</PersonSex2>
+              : <span>...</span>
           }</div>,
-          <div className='text-[11px] text-gray-600 flex flex-row justify-center'>{ !obsoletRooms.includes(room.id)
+
+          <div className='text-[11px] text-gray-600 flex flex-row justify-center'>{ !isObsolet(room.id)
             ? <span>En néttoyage</span>
             : <div className='flex flex-row items-center gap-2 text-center'>
               <MdWarning size={18} className='text-yellow-800' />

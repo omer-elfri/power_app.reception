@@ -7,7 +7,7 @@ import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
 
 import { CleanType, TypeWithTrace } from "../../types";
-import { getTime } from "../../tools";
+import { getDuration, getTime } from "../../tools";
 
 import { Bar } from "../../components/SectionBox";
 import { FaCheck } from "react-icons/fa";
@@ -39,7 +39,7 @@ export default function CleaningTable({ list, className }: {
               <span>{cleaningTab.length} chambres</span>
             </p>
             <div className="flex flex-col"> { cleaningTab.map((clean, i) =>
-              <CleanLine key={i} index={i} clean={clean} canCancel /> ) }
+              <CleanLine key={clean.id} index={i} clean={clean} canCancel /> ) }
             </div>
           </>  }
 
@@ -49,7 +49,7 @@ export default function CleaningTable({ list, className }: {
               <span>{list.length} chambres</span>
             </p>
             <div className="flex flex-col"> { list.map((clean, i) =>
-              <CleanLine key={i} index={i} clean={clean} /> ) }
+              <CleanLine key={clean.id} index={i} clean={clean} /> ) }
             </div>
           </>  }
 
@@ -100,7 +100,8 @@ function CleanLine({ clean, className, canCancel, index=-1 }: {
         <div className="flex flex-row justify-center items-center gap-2">
 
           { clean.done ? <>
-            { getTime(clean.done) }
+            { getDuration(clean.date, clean.done) }
+            {/* { getTime(clean.done) } */}
             <FaCheck size={9} title="Fait" className="absolute bottom-1 right-2 text-green-700" />
           </>
 

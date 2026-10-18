@@ -34,7 +34,6 @@ export default function BookingForm({ bookId, className }: {
     setClientName(bookInfos.name);
     setSelectedRoomId(bookInfos.roomId);
     setDescription(bookInfos.description ?? "");
-    console.log("tmp", bookInfos.roomId);
   }, [bookInfos]);
 
   const subMitHandler = React.useCallback((e: React.SubmitEvent<HTMLFormElement>) => {
@@ -54,8 +53,6 @@ export default function BookingForm({ bookId, className }: {
     const end = selectedDate.to ?? new Date(start.getTime() + 24*60*60*1000);
     const description = e.target.description.value;
 
-    console.log("selectedDate", selectedDate)
-    
     if (!roomId) {
       setAlert(['error', "Vous devez préciser la chambre"]);
       throw Error("Vous devez préciser la chambre");

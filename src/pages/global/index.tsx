@@ -21,7 +21,7 @@ export default function GlobalPage() {
 
       <PageTitle />
 
-      <div className="grid grid-cols-10 grid-rows-[auto_340px_minmax(230px,auto)] gap-5">
+      <div className="grid grid-cols-10 grid-rows-[auto_auto_minmax(230px,1fr)] gap-5">
 
         <SectionBox className="col-span-10">
           <Title icon={<FaRegCalendarAlt size={20} />}>Activités du jour</Title>
@@ -34,21 +34,18 @@ export default function GlobalPage() {
         </SectionBox>
 
         <SectionBox className="col-span-4">
-          <Title icon={<TbArrowsDoubleNeSw size={20} />}
-            className="mb-3">Mouvements du jour</Title>
+          <Title icon={<TbArrowsDoubleNeSw size={20} />} className="mb-3">Mouvements du jour</Title>
           <MouvementSection />
         </SectionBox>
 
-        <SectionBox className="col-span-3 row-span-2"
+        <SectionBox className="col-span-3 row-span-2 max-h-[650px]"
             bottom={<SeeMore value="Voir tout" onClick={() => addPopup(['CLEAN'])} />}>
-          <Title icon={<MdOutlineCleaningServices size={16} />}
-            right={cleaning_book.get.length}>Entretiens</Title>
+          <Title icon={<MdOutlineCleaningServices size={16} />} right={cleaning_book.get.length}>Entretiens</Title>
           <EntretienSection />
         </SectionBox>
 
         <SectionBox className="col-span-7">
-          <Title right={restaurant.length}
-            icon={<RiServiceBellLine size={22} />}>Restauration</Title>
+          <Title right={restaurant.length} icon={<RiServiceBellLine size={22} />}>Restauration</Title>
           <RestaurationSection />
         </SectionBox>
 
