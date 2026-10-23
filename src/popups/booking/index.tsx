@@ -1,14 +1,11 @@
 'use client';
 
+import React from "react";
 import Popup, { CloseBtn, PopupBody } from "..";
-import { useDataContext } from "../../hooks";
 
 import { Title } from "../../components/SectionBox";
-import MyButton from "../../components/MyButton";
-import { ImCross } from "react-icons/im";
 import BookingForm from "./form";
 import BookingInfos from "./infos";
-import React from "react";
 
 export default function BookingPopup({ bookId:defaultBookId }: {
   bookId?: number,

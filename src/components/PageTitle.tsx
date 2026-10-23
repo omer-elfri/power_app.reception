@@ -7,7 +7,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useDataContext } from "../hooks";
 
 import { IoPersonCircle } from "react-icons/io5";
-import { FaPowerOff, FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
 import { GiBroom } from "react-icons/gi";
 
 export default function PageTitle({ className, children }: {

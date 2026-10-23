@@ -1,17 +1,19 @@
 'use client';
 
 import Popup, { PopupBody } from "..";
-import { Title } from "../../components/SectionBox";
 import { useDataContext } from "../../hooks";
-import { getString } from "../../tools";
 import { useBedroom } from "../../hooks/useBedroom";
 import BedRoom from "../../types/bedroom";
+import Employer from "../../types/employer";
+import { getString } from "../../tools";
+
+import { Title } from "../../components/SectionBox";
 import { PersonSex2 } from "../../components/PersonSex";
 
 export default function ValletPopup({ roomId: bedRoomId }: {
   roomId: BedRoom.Id,
 }) {
-  const { cleaners, todayCleaned, unPopup } = useDataContext();
+  const { unPopup, cleaners, cleaning_book } = useDataContext();
   const { clean_room } = useBedroom();
     
   return (
@@ -19,12 +21,11 @@ export default function ValletPopup({ roomId: bedRoomId }: {
       <PopupBody top={<Title className="text-white">Choisissez un vallet</Title>} className="bg-transparent" subClassName="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-5 overflow-visible">
 
         { cleaners.map(cleaner => {
-          const roomsTotal = todayCleaned.filter(clean => (
-            !clean.cancel && clean.valletId === cleaner.id));
+          const roomsTotal = cleaning_book.today.filter(clean => clean.valletId === cleaner.id);
           const roomsDone = roomsTotal.filter(clean => clean.done);
           return (
             <div key={cleaner.id} className="grid grid-rows-[1fr_auto] gap-2 p-4 bg-white rounded relative animate-1 cursor-pointer hover:scale-105 transition-transform duration-700 ease-in-out"
-              onClick={() => { clean_room(bedRoomId, cleaner.id); unPopup(); }}>
+              onClick={() => { clean_room(bedRoomId, cleaner.id as Employer.Id); unPopup(); }}>
 
               <div className="grid gris-cols-2 gap-1 w-12 absolute top-3 right-2 text-white p-2 rounded text-center">
                 <p className="text-white bg-green-800">{getString(roomsDone.length)}</p>

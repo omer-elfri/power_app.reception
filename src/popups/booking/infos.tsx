@@ -4,7 +4,7 @@ import { useDataContext } from "../../hooks";
 import { twMerge } from "tailwind-merge";
 import { useBedroom } from "../../hooks/useBedroom";
 
-import { getFrenchDate, getTime } from "../../tools";
+import { getFrenchDate, getTime } from "../../tools/date";
 import NoElem from "../../components/NoElem";
 import { State } from "../../types";
 
@@ -12,7 +12,7 @@ export default function BookingInfos({ className, setBookId }: {
   className?: string,
   setBookId: State<number | undefined>,
 }) {
-  const { reservations, addPopup } = useDataContext();
+  const { addPopup, reservations } = useDataContext();
   const { cancel_book } = useBedroom();
   const list = reservations
     .sort((a, b) => a.start.getDate() - b.start.getDate());

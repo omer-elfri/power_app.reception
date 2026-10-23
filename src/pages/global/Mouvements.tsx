@@ -2,19 +2,19 @@
 
 import React from "react";
 import { useDataContext } from "../../hooks";
-import { getFrenchDateTime } from "../../tools";
+import { getFrenchDateTime } from "../../tools/date";
 
 import { IoArrowUpOutline }  from "react-icons/io5";
 import { FiArrowDownRight, FiArrowUpRight } from "react-icons/fi";
-import { CheckInType, CustomerType, TypeWithTrace } from "../../types";
+import { CheckInType } from "../../types/types";
 
 export default function MouvementSection() {
-  const { addPopup, customer_book, customers } = useDataContext();
+  const { addPopup, customer_book } = useDataContext();
   const today = new Date(Date.now());
   today.setHours(0,0,0,0);
 
-  const customerTab = customer_book.get
-    .filter(customer => !customer.end || customer.end.getDate() === today.getDate());
+  const customerTab = customer_book.get.filter(customer =>
+    !customer.end || customer.end.getDate() === today.getDate());
 
   return (
     <div className="grid grid-cols-[auto_auto_auto_1fr_minmax(auto,40px)] \
@@ -31,15 +31,15 @@ export default function MouvementSection() {
 
         <div className="text-gray-600">{getFrenchDateTime(customer.date)}</div>
 
-        <p className="text-black text-[12px] hover:cursor-pointer hover:underline"
+        <p className="text-black text-[12px] a"
           onClick={() => addPopup(['ROOM', customer.roomId])}>{customer.roomId}
         </p>
 
         <MoveSens move={customer.actions[0]} />
 
-        { customers[customer.id] && !customers[customer.id].end
-        ? <div className="text-gray-600 truncate cursor-pointer hover:underline"
-            onClick={() => addPopup(['ROOM', customers[customer.id].roomId])}>{ customer.name }
+        { !customer.end
+        ? <div className="text-gray-600 truncate a"
+            onClick={() => addPopup(['ROOM', customer.roomId])}>{ customer.name }
           </div>
         : <div className="text-gray-600 truncate">{ customer.name }</div> }
 

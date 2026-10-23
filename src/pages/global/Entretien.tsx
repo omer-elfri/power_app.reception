@@ -2,22 +2,19 @@
 
 import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../hooks";
-import { getDuration, getFrenchDateTime } from "../../tools";
+import { getDuration, getFrenchDateTime } from "../../tools/date";
+import { TypeWithTrace } from "../../types";
+import { CleanType } from "../../types/types";
 
-export default function EntretienSection() {
-  const { cleaning_book, addPopup } = useDataContext();
-  // const today = new Date(Date.now());
-  // const todayCleaning = cleaning_book.get.filter(
-  //   clean => (!clean.done && !clean.cancel) ||
-  //     clean.date.getDate() === today.getDate() ||
-  //     clean.done?.getDate() === today.getDate() ||
-  //     clean.cancel?.getDate() === today.getDate()
-  // ).slice(0,15);
+export default function EntretienSection({ cleans }: {
+  cleans: TypeWithTrace<CleanType>[],
+}) {
+  const { addPopup } = useDataContext();
 
   return (
     <table className="flex flex-col text-gray-600">
       <tbody>
-        { cleaning_book.get.map((clean, i) => (
+        { cleans.map((clean, i) => (
           <tr key={i} className="flex flex-row gap-3 items-start py-2 border-t-1 border-gray-400/50">
 
             <td className="text-[11px] font-bold">{getFrenchDateTime(clean.date)}</td>
@@ -37,7 +34,7 @@ export default function EntretienSection() {
 
             <td className="text-[11px] font-bold">{
               clean.done ? getDuration(clean.date, clean.done) :
-              clean.cancel ? getDuration(clean.date, clean.cancel) : "..."}
+              clean.cancel ? getDuration(clean.date, clean.cancel.date) : "..."}
             </td>
 
           </tr>

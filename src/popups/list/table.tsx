@@ -7,7 +7,6 @@ import { useDataContext } from "../../hooks";
 import BedRoom from '../../types/bedroom';
 
 import { getString } from '../../tools';
-import { stages } from '../../types';
 import { IconType } from 'react-icons/lib';
 
 export function TheTable({ top, children, datas }: {
@@ -16,7 +15,7 @@ export function TheTable({ top, children, datas }: {
   children: (d: BedRoom.Type) => React.ReactNode[],
 }) {
   const { addPopup } = useDataContext();
-  const roomStages = Object.groupBy(datas, room => stages[room.stage].name);
+  const roomStages = Object.groupBy(datas, room => room.stage);
 
   return (
     <table className='[&_td,&_th]:py-1 font-bold text-[12px] text-gray-600'>

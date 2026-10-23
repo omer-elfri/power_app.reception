@@ -1,8 +1,8 @@
 'use client'
-import { useBedroom } from "../../hooks/useBedroom";
 
 import SectionBox, { Title } from "../../components/SectionBox";
 import SoldRoom from "../../components/SoldRoom";
+import { useBedroom } from "../../hooks/useBedroom";
 import { formatPrice } from '../../tools';
 
 export default function SoldedAside() {

@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import { useDataContext } from '../../hooks';
 
 import BedRoom from '../../types/bedroom';
-import { getDuration, getFrenchDateTime } from '../../tools';
+import { getDuration, getFrenchDateTime } from '../../tools/date';
 import { GiBroom } from "react-icons/gi";
 import FormAside from '../../components/FormAside';
 import { MyTr } from '../../components/MyTable';
@@ -15,8 +15,7 @@ export default function CleaningBox({ room:bedRoom, className }: {
   className?: string,
 }) {
   const { addPopup, cleaning_book } = useDataContext();
-  const roomCleaneds = cleaning_book.get.filter(clean =>
-    !clean.cancel && clean.roomId === bedRoom.id);
+  const roomCleaneds = cleaning_book.get.filter(clean => clean.roomId === bedRoom.id);
 
   return (
     <FormAside title="Néttoyage" className={twMerge('relative', className)} subClassName=''

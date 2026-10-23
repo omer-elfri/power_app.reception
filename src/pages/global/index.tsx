@@ -1,20 +1,27 @@
 import PageTitle from "../../components/PageTitle";
 import SectionBox, { SeeMore, Title } from "../../components/SectionBox";
+import { useDataContext } from "../../hooks";
 
 import ActivitySection from "./Activities";
 import AnalyseSection from "./Analyse";
 import MouvementSection from "./Mouvements";
+import EntretienSection from "./Entretien";
 import RestaurationSection from "./Restauration";
 
 import { FaRegCalendarAlt }  from "react-icons/fa";
 import { TbArrowsDoubleNeSw }  from "react-icons/tb";
 import { RiServiceBellLine }  from "react-icons/ri";
-import { useDataContext } from "../../hooks";
 import { MdOutlineCleaningServices } from "react-icons/md";
-import EntretienSection from "./Entretien";
 
 export default function GlobalPage() {
-  const { cleaning_book, addPopup, restaurant } = useDataContext();
+  const { cleaning_book, addPopup, restaurant, } = useDataContext();
+
+  const today = new Date(Date.now());
+  const todayCleaning = cleaning_book.get.filter(
+    clean => !clean.done ||
+      clean.date.getDate() === today.getDate() ||
+      clean.done?.getDate() === today.getDate()
+  ).slice(0,15);
 
   return (
     <div className="flex flex-col gap-1 pb-5">
@@ -40,8 +47,8 @@ export default function GlobalPage() {
 
         <SectionBox className="col-span-3 row-span-2 max-h-[650px]"
             bottom={<SeeMore value="Voir tout" onClick={() => addPopup(['CLEAN'])} />}>
-          <Title icon={<MdOutlineCleaningServices size={16} />} right={cleaning_book.get.length}>Entretiens</Title>
-          <EntretienSection />
+          <Title icon={<MdOutlineCleaningServices size={16} />} right={todayCleaning.length}>Entretiens</Title>
+          <EntretienSection cleans={todayCleaning} />
         </SectionBox>
 
         <SectionBox className="col-span-7">

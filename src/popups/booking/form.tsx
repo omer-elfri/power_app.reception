@@ -3,23 +3,22 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 import { useBedroom } from "../../hooks/useBedroom";
-import { roomIds } from "../../configs/room";
 
 import { DateRange, DayPicker } from "@daypicker/react";
 import LabelInput from "../../components/LabelInput";
 import { useDataContext } from "../../hooks";
 import BedRoom from "../../types/bedroom";
-import { getFrenchDate } from "../../tools";
+import { getFrenchDate } from "../../tools/date";
 
 export default function BookingForm({ bookId, className }: {
   bookId?: number,
   className?: string,
 }) {
-  const { reservation_book, getBookedPeriod, setAlert } = useDataContext();
-  const { book } = useBedroom();
+  const { reservation_book, setAlert, getBookedPeriod } = useDataContext();
+  const { bedRoomTab, book, } = useBedroom();
 
   const [clientName, setClientName] = React.useState("");
-  const [selectedRoomId, setSelectedRoomId] = React.useState<BedRoom.Id>(roomIds[0]);
+  const [selectedRoomId, setSelectedRoomId] = React.useState<BedRoom.Id>(bedRoomTab[0]?.id);
   const [description, setDescription] = React.useState("");
   const [selectedDate, setSelectedDate] = React.useState<DateRange>();
 
@@ -85,19 +84,30 @@ export default function BookingForm({ bookId, className }: {
           </div>
         </LabelInput>
 
-        <LabelInput label="Nom du client" name="clientName" required autoFocus
-          value={clientName} onChangeText={setClientName}
-          inputClassName="uppercase h-8 !border-gray-400 shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)]"
-        />
+        <div className="grid grid-cols-[80px_1fr] gap-2">
 
-        <LabelInput label="Chambre" name="roomId" required
-          value={selectedRoomId} onChangeText={text => setSelectedRoomId(text as BedRoom.Id)}
-          inputClassName="text-[12px] text-center h-8 !border-gray-400" options={
-          roomIds.map(roomId => {
-            const rsv = roomBookeds.find(room_rsv => room_rsv.roomId === roomId);
-            return ({ k: roomId, value: `${roomId} ${rsv ? " - " + rsv.name.toUpperCase() + " - " + getFrenchDate(rsv.start).slice(0,6) + "..." + getFrenchDate(rsv.end).slice(0,6) : ""}`, disabled: !!rsv });
-          })
-        } />
+          <LabelInput label="Chambre" name="roomId" required
+            value={selectedRoomId.toString()} onChangeText={setSelectedRoomId}
+            inputClassName="text-[12px] text-center h-8 !border-gray-400" options={
+            bedRoomTab.map(room => {
+              const rsv = roomBookeds.find(room_rsv => room_rsv.roomId === room.id);
+              return ({
+                k: room.id.toString(),
+                value: `${room.id} ${rsv
+                  ? " - " + rsv.name.toUpperCase() + " - " + getFrenchDate(rsv.start).slice(0,6) + "..." + getFrenchDate(rsv.end).slice(0,6)
+                  : room.issue?.priority === 'high' ? " - hors service" : "" }`,
+                disabled: !!rsv || room.issue?.priority === 'high',
+              });
+            })
+          } />
+
+          <LabelInput label="Nom du client" name="clientName" required autoFocus
+            value={clientName} onChangeText={setClientName}
+            inputClassName="uppercase h-8 !border-gray-400 shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)]"
+          />
+
+        </div>
+
 
         <LabelInput name="description" label="Description">
           <textarea name="description" id="description"

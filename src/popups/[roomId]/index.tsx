@@ -4,7 +4,6 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 import Popup, { CloseBtn, PopupBody } from "..";
 
-import { useDataContext } from '../../hooks';
 import { useBedroom } from "../../hooks/useBedroom";
 import BedRoom from '../../types/bedroom';
 
@@ -23,10 +22,12 @@ import { MdWarning } from 'react-icons/md';
 import { IoBed } from "react-icons/io5";
 import { IoIosPerson } from "react-icons/io";
 import FormAside from '../../components/FormAside';
+import { useDataContext } from '../../hooks';
 
 export default function RoomPopup({ roomId:bedRoomId }: {
   roomId: BedRoom.Id,
 }) {
+  const { isObsolet } = useDataContext();
   const { bedRooms } = useBedroom();
   const bedRoom = bedRooms[bedRoomId];
   const [onglet, setOnglet] = React.useState('client_infos');
@@ -48,7 +49,7 @@ export default function RoomPopup({ roomId:bedRoomId }: {
           { key: 'room_infos', icon: <IoBed size={18} />, value: "Informations Chambre" },
         ]} subClassName='[&_input,&_textarea]:shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)] gap-5'>
 
-          <IssueSide roomId={bedRoomId} />
+          { ( bedRoom.issue || isObsolet(bedRoomId) ) && <IssueSide roomId={bedRoomId} /> }
 
           { onglet === 'client_infos' && (
             <div className="grid grid-cols-6 grid-rows-[auto_1fr] gap-5 \
@@ -79,12 +80,13 @@ export default function RoomPopup({ roomId:bedRoomId }: {
 function IssueSide({ roomId:bedRoomId }: {
   roomId: BedRoom.Id,
 }) {
-  const { isObsolet } = useDataContext();
+  const { isObsolet, addPopup } = useDataContext();
   const { bedRooms } = useBedroom();
   const bedRoom = bedRooms[bedRoomId];
 
   return (
-    <FormAside title="A votre attention" subClassName='flex flex-row flex-wrap gap-2'>
+    <FormAside title="A votre attention" subClassName='flex flex-row flex-wrap gap-2'
+      right={<button onClick={() => addPopup(['VALLET', bedRoomId])} className='bg-blue-500 text-white !py-1'>Néttoyer</button>}>
 
       { bedRoom.issue &&  <p className={twMerge("rounded px-2 py-1 text-[11px]",
           bedRoom.issue.priority === "high" ? "bg-red-600/20 text-red-700" : "bg-yellow-600/20 text-yellow-700")}>

@@ -1,14 +1,14 @@
 "use client"
 
 import React from "react";
-
 import { useBedroom } from "../../hooks/useBedroom";
-import { FormType } from "../../types";
 
 import PageTitle from "../../components/PageTitle";
 import FilterSection from "./Filter";
 import SoldedAside from "./Solded";
 import RoomSection from "./Rooms";
+
+export type FormType = 'line' | 'grid';
 
 export default function RoomsPage() {
     const { bedRoomTab } = useBedroom();

@@ -6,22 +6,23 @@ import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
 
-import { CleanType, TypeWithTrace } from "../../types";
-import { getDuration, getTime } from "../../tools";
+import { TypeWithTrace } from "../../types";
+import { getDuration, getTime } from "../../tools/date";
 
 import { Bar } from "../../components/SectionBox";
 import { FaCheck } from "react-icons/fa";
 import { GiBroom } from "react-icons/gi";
 import { ImCross } from "react-icons/im";
 import NoElem from "../../components/NoElem";
+import { CleanType } from "../../types/types";
 
 
 export default function CleaningTable({ list, className }: {
   list: TypeWithTrace<CleanType>[],
   className?: string,
 }) {
-  const { cleanings, cleaning_book } = useDataContext();
-  const cleaningTab = Object.values(cleanings).map(elem => elem[0]);
+  const { cleaning_book } = useDataContext();
+  const cleaningTab = cleaning_book.get.filter(clean => !clean.done);
 
   return (
     <div className={twMerge("flex flex-col gap-2 text-[13px] text-center font-bold", className)}>

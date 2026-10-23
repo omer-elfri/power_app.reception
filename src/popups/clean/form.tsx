@@ -3,25 +3,26 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
-import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
 import Employer from "../../types/employer";
 import BedRoom from "../../types/bedroom";
 
 import MyButton from "../../components/MyButton";
 import LabelInput from "../../components/LabelInput";
-import { roomIds } from "../../configs/room";
+import { useDataContext } from "../../hooks";
 
 export default function CleaningForm({ roomId: defaultRoomId, className }: {
   roomId?: BedRoom.Id,
   className?: string,
 }) {
-  const { cleaners, obsoletRooms } = useDataContext();
-  const { bedRooms, bedRoomTab, clean_room } = useBedroom();
-  const [roomId, setRoomId] = React.useState(defaultRoomId ?? roomIds[0]);
-  const valletSelected = cleaners.reduce((selected, cleaner) =>
-    cleaner.rooms.length < selected.rooms.length ? cleaner : selected, cleaners[0]);
-  const [valletId, setValletId] = React.useState<Employer.Id>(valletSelected.id);
+  const { cleanerCleans, bedroom_table } = useDataContext();
+  const { analysis, bedRooms, bedRoomTab, clean_room } = useBedroom();
+  const [roomId, setRoomId] = React.useState(defaultRoomId ?? bedroom_table.list[0].id);
+
+  const valletSelected = cleanerCleans.reduce((selected, cleaner) => (
+    cleaner.rooms.length < selected.rooms.length ? cleaner : selected
+  ), cleanerCleans[0]);
+  const [valletId, setValletId] = React.useState(valletSelected.id as Employer.Id);
 
   React.useEffect(() => {
     setValletId(valletSelected.id as Employer.Id);
@@ -41,15 +42,15 @@ export default function CleaningForm({ roomId: defaultRoomId, className }: {
       <form onSubmit={cleanHandler} className={twMerge("flex flex-col gap-2 rounded-md p-3 \
         shadow-[inset_0_2px_4px_4px__rgba(0,0,0,0.15)]", className)}>
 
-        { obsoletRooms.length > 0 && (
+        { analysis.obsoletRooms.length > 0 && (
           <div className="flex flex-col gap-2 font-bold bg-red-700/10 px-3 py-2 rounded text-start">
             <h2 className="text-[12px]">Ces chambres sont obsolètes</h2>
-            <p className="text-[10px]">{obsoletRooms.join(", ")}</p>
+            <p className="text-[10px]">{analysis.obsoletRooms.join(", ")}</p>
           </div>
         ) }
 
         <LabelInput label="Chambre" name="roomId" value={roomId} required
-          onChangeText={text => setRoomId(text as BedRoom.Id)}
+          onChangeText={setRoomId}
           options={ bedRoomTab.map(room => ({
             k: room.id, value: `${room.id} ${room.cleaner?.name ?? room.customer?.name ?? ""}`,
             disabled: !!room.cleaner })) }
@@ -57,7 +58,7 @@ export default function CleaningForm({ roomId: defaultRoomId, className }: {
 
         <LabelInput label="Vallet" name="valletId" value={valletId} required
           onChangeText={text => setValletId(text as Employer.Id)}
-          options={ cleaners.map(elem => ({ k: elem.id, value: `${elem.name} - ${elem.rooms.length}` })) }
+          options={ cleanerCleans.map(elem => ({ k: elem.id, value: `${elem.name} - ${elem.rooms.length}` })) }
         />
 
         <MyButton name="clean_ch" disabled={roomId ? !!bedRooms[roomId].cleaner : true}

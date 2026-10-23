@@ -2,20 +2,18 @@
 
 import React from "react";
 import { twMerge } from "tailwind-merge";
+import { DayPicker } from "@daypicker/react";
 import { useDataContext } from "../../hooks";
 import Popup, { CloseBtn, PopupBody } from "..";
 
 import { Title } from "../../components/SectionBox";
 import LabelInput from "../../components/LabelInput";
 
-import { DayPicker } from "@daypicker/react";
 import CleaningTable from "./table";
 import CleaningForm from "./form";
 import { ValletLine } from "./vallet";
-import Employer from "../../types/employer";
 import BedRoom from "../../types/bedroom";
-
-
+import Employer from "../../types/employer";
 
 export default function CleaningPopup({ roomId }: {
   roomId?: BedRoom.Id,

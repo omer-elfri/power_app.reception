@@ -10,14 +10,14 @@ import React from "react";
 
 export default function SessionPopup() {
   const { disconnect } = useAuth();
-  const { addPopup, unPopup } = useDataContext();
+  const { switchPopup, unPopup } = useDataContext();
 
   return (
     <Popup>
       <div onClick={e => e.stopPropagation()} className="grid grid-cols-[150px_150px] gap-15 text-center text-white">
 
         <Button icon={<RiResetLeftFill size={60} />}
-          onClick={() => { unPopup(), addPopup(['CHANGE_PASS'])}}
+          onClick={() => { switchPopup(['CHANGE_PASS'])}}
           className="bg-blue-700">Changer de <br />mot de passe
         </Button>
 

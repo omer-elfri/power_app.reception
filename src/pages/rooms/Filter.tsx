@@ -3,19 +3,18 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
-import { room_ctg_datas } from "../../configs/room_ctg";
-import { colors, FormType, StageId, stages, State, StatusId } from "../../types";
-import BedRoom from "../../types/bedroom";
 import { useDataContext } from "../../hooks";
-import { room_ctg_list, room_list } from "../../configs/types";
+import { colors, State, StatusId } from "../../types";
+import BedRoom from "../../types/bedroom";
 
 import SectionBox, { SeeMore, Title } from "../../components/SectionBox";
 import { GiBroom, GiHamburgerMenu } from "react-icons/gi";
-import { FiGrid } from "react-icons/fi";
 import { FaCalendarAlt, FaTools } from "react-icons/fa";
 import { HiLightningBolt } from "react-icons/hi";
 import { MdPerson } from "react-icons/md";
 import { IoBed } from "react-icons/io5";
+import { FiGrid } from "react-icons/fi";
+import { FormType } from ".";
 
 export default function FilterSection({ form, setForm, datas, setDatas, className }: {
     form: FormType,
@@ -24,24 +23,23 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
     setDatas: State<BedRoom.Type[]>,
     className?: string,
 }) {
-    const { status, setStatus } = useDataContext();
+    const { bedroom_table, bedroom_ctg_table } = useDataContext();
+    const [status, setStatus] = React.useState<StatusId[]>([]);
     const [search, setSearch] = React.useState("");
-    const [stage, setStage] = React.useState<StageId | 'all'>('all');
+    const [stage, setStage] = React.useState<BedRoom.StageId | 'all'>('all');
     const [category, setCategory] = React.useState<BedRoom.Category.Id | 'all'>('all');
 
-    const floorList: StageId[] = React.useMemo(() => {
-        const floorTab = room_list
-           .map(room => (room.stage))
-           .sort((stageA, stageB) => (
-                parseInt(stageA) - parseInt(stageB)));
+    const floorList: BedRoom.StageId[] = React.useMemo(() => {
+        const floorTab = bedroom_table.list.map(room => room.stage)
+           .sort((stageA, stageB) => parseInt(stageA) - parseInt(stageB));
         return [...new Set(floorTab)];
-    }, [room_list]);
+    }, [bedroom_table]);
 
     React.useEffect(() => {
         const res = datas
             .filter((room) => { // search
                 const categoryNames = room.categories
-                    .map(ctgId => room_ctg_datas[ctgId].name);
+                    .map(ctgId =>  bedroom_ctg_table.getId(ctgId)?.name ?? "" );
                 const textToSearch = room.id + " " +
                     (room.customer?.name ?? "") + " " +
                     categoryNames.join(" ");
@@ -125,21 +123,19 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
                 /> 
 
                 <select name="stage" value={stage} onChange={e => {
-                    setStage(e.target.value as StageId);
+                    setStage(e.target.value as BedRoom.StageId);
                 }} className="border-1 !border-gray-600 text-gray-600 text-[11px] font-bold py-2 h-7">
                     <option value="all">Tous les étages</option>
                     { floorList.map((stageId) => (
-                        <option key={stageId} value={stageId}>
-                            { stages[stageId as StageId].name }
-                        </option>
+                        <option key={stageId} value={stageId}> { stageId } </option>
                     )) }
                 </select>
 
                 <select name="category" value={category} onChange={e => {
-                    setCategory(e.target.value as BedRoom.Category.Id);
+                    setCategory(e.target.value as BedRoom.Category.Id | 'all');
                 }} className="border-1 !border-gray-600 text-gray-600 text-[11px] font-bold py-2 h-7">
                     <option value="all">Tous les catégories</option>
-                    { room_ctg_list.map((roomCtg) => (
+                    { bedroom_ctg_table.list.map((roomCtg) => (
                         <option key={roomCtg.id} value={roomCtg.id}>{roomCtg.name}</option>
                     )) }
                 </select>

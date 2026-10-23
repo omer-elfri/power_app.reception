@@ -5,9 +5,6 @@ import { useAuth } from "../../hooks/useAuth";
 
 import { MyInput } from ".";
 import { Bar } from "../../components/SectionBox";
-import { employers_datas } from "../../configs/employer";
-import Employer from "../../types/employer";
-import { State } from "../../types";
 
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaCheck, FaUser } from "react-icons/fa";
@@ -81,12 +78,7 @@ export function ReceptionSelect({ name, value, onTextChange }: {
   value?: string,
   onTextChange?: (text: string) => void,
 }) {
-  const receptionnists = Object.entries(employers_datas)
-    .filter(([_, employer]) => {
-      const rules = employer.rules as Employer.Rule[];
-      return rules.includes(Employer.Rule.RECEPTIONIST);
-    })
-    .map(([id, employer]) => ({ ...employer, id }));
+  const { receptionnists } = useDataContext();
 
   return (
     <select id={name} name={name} required

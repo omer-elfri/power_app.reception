@@ -1,15 +1,18 @@
-import { room_ctg_datas } from "../configs/room_ctg";
-import { roomIds } from "../configs/room";
-import { RoomData } from "../configs/types";
-import { CleanType, CustomerType, PriorityId, ReservationType, RestaurantType, StageId, TypeWithId, TypeWithTrace } from ".";
+import { RoomData } from "../configs/room";
+import { CleanType, CustomerType, ReservationType, RestaurantType } from "./types";
+import { PriorityId, TypeWithTrace } from "./index";
+
+export const stages = [ "Rez de chaussée", "Étage 1", "Étage 2", "Étage 3", "Étage 4", "Étage 5", ] as const;
 
 namespace BedRoom {
-    export type Id = typeof roomIds[number];
+    export type Id = string;
+
+    export type StageId = typeof stages[number];
 
     export type Map = {[k in Id]: BedRoom.Type};
 
     export namespace Category {
-        export type Id = keyof typeof room_ctg_datas;
+        export type Id = string;
 
         export type Type = {
             id: Id,
@@ -19,14 +22,7 @@ namespace BedRoom {
         };
     }
 
-    export type Type = {
-        id: Id,
-        stage: StageId,
-        categories: [
-            Category.Id,
-            ...Category.Id[],
-        ],
-
+    export type Type = RoomData & {
         connected: boolean,
         power: boolean | null,
 
@@ -34,7 +30,6 @@ namespace BedRoom {
         booked: TypeWithTrace<ReservationType> | null,
         cleaner: TypeWithTrace<CleanType> | null,
         restauration: TypeWithTrace<RestaurantType>[],
-        issue: TypeWithTrace<IssueType> | null,
     }
 
     export type IssueType = {
@@ -43,19 +38,14 @@ namespace BedRoom {
         message: string,
     }
 
-    export function create(room: TypeWithId<RoomData>): BedRoom.Type {
-        return ({
-            id: room.id as BedRoom.Id,
-            stage: room.stage,
-            categories: room.categories,
-    
+    export function create(room: RoomData): BedRoom.Type {
+        return ({ ...room,
             connected: false,
             power: null,
 
             customer: null,
             booked: null,
             cleaner: null,
-            issue: null,
             restauration: [],
         });
     }

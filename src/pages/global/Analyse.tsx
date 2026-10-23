@@ -1,8 +1,8 @@
 'use client'
 
-import { useBedroom } from "../../hooks/useBedroom";
 import { PieChart } from '@mui/x-charts/PieChart';
 import { colors } from "../../types";
+import { useBedroom } from "../../hooks/useBedroom";
 
 export default function AnalyseSection() {
   const { analysis } = useBedroom();
@@ -16,7 +16,7 @@ export default function AnalyseSection() {
       value: analysis.coming.free.length,
       color: colors.coming
     },
-    { label: 'Néttoyage - libre',
+    { label: 'Chambres sales',
       value: analysis.cleaning.free.length,
       color: colors.cleaning
     },
@@ -24,7 +24,7 @@ export default function AnalyseSection() {
       value: analysis.issues.length,
       color: colors.issue
     },
-    { label: 'Disponible',
+    { label: 'Prêt à vendre',
       value: analysis.free.length,
       color: '#8997aa30'
     },

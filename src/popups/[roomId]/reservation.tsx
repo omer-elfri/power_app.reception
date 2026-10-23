@@ -4,7 +4,7 @@ import { useDataContext } from "../../hooks";
 import BedRoom from '../../types/bedroom';
 
 import FormAside from '../../components/FormAside';
-import { getFrenchDate, getFrenchDateTime } from '../../tools';
+import { getFrenchDate, getFrenchDateTime } from '../../tools/date';
 import { MyTr } from '../../components/MyTable';
 import { FaCalendarAlt } from 'react-icons/fa';
 import { twMerge } from 'tailwind-merge';

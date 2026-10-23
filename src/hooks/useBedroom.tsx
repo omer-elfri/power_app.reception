@@ -1,24 +1,25 @@
 "use client";
-import React from "react";
 
+import React from "react";
 import { useAuth } from "./useAuth";
 import { useDataContext } from ".";
 
-import { room_datas, roomIds } from "../configs/room";
-import { CheckInType, CustomerType, ReservationType, TypeWithTrace, PriorityId } from "../types";
+import { RoomCtgData } from "../configs/room_ctg";
+
+import { TypeWithTrace, PriorityId, } from "../types";
+import { CheckInType, CustomerType, ReservationType } from "../types/types";
 import Employer from "../types/employer";
 import BedRoom from "../types/bedroom";
-import { getFrenchDate, toTab } from "../tools";
-import { employers_datas } from "../configs/employer";
-import { room_ctg_list, RoomCtgData } from "../configs/types";
-
-export type CheckInProps = Omit<CheckInType, 'status' | 'start' | 'end'> & { night: number };
+import { getFrenchDate } from "../tools/date";
+import { getCommonIds, getUniqueIds, unifyIds } from "../tools";
 
 type AnalysisType = {
     solded: BedRoom.Type[],
+    available: BedRoom.Type[],
     free: BedRoom.Type[],
     powered: BedRoom.Type[],
     issues: BedRoom.Type[],
+    critics: BedRoom.Type[],
     coming: {
         total: BedRoom.Type[],
         sold: BedRoom.Type[],
@@ -28,6 +29,7 @@ type AnalysisType = {
         total: BedRoom.Type[],
         sold: BedRoom.Type[],
         free: BedRoom.Type[],
+        obsolets: BedRoom.Type[],
     },
     categories: (RoomCtgData & {
         topSolded: BedRoom.Type[],
@@ -35,10 +37,12 @@ type AnalysisType = {
     })[],
 }
 
+export type CheckInProps = Omit<CheckInType, 'status' | 'start' | 'end'> & { night: number };
+
 export type BedRoomContext = {
+    analysis: AnalysisType,
     bedRooms: BedRoom.Map,
     bedRoomTab: BedRoom.Type[],
-    analysis: AnalysisType,
 
     switch_power: (roomId: BedRoom.Id, power: boolean | null) => void,
     updateIssue: (roomId: BedRoom.Id, datas: {priority: PriorityId, message: string} | null) => void,
@@ -58,30 +62,17 @@ export type BedRoomContext = {
 
 export function BedRoomProvider({ children }: { children: React.ReactNode }) {
     const { authSession } = useAuth();
-    const { checkError,
-        customer_book, cleaning_book, reservation_book, room_book,
-        todayCustomers, todayBooked, getBookedPeriod,
-        cleanings, customers, restaurant, reservations,
+    const { checkError, isObsolet,
+        employer_table, bedroom_ctg_table,
+        bedroom_table, cleaning_book, customer_book, reservation_book,
+        cleanings, customers, reservations, restaurant,
+        getBookedPeriod, isBookedToday,
     } = useDataContext();
 
-    const [bedRooms, setBedRooms] = React.useState(
-        Object.fromEntries( roomIds.map(roomId => [
-            roomId, {
-                ...room_datas[roomId],
-                id: roomId,
-                connected: false,
-                power: false,
-                customer: null,
-                booked: null,
-                cleaner: null,
-                restauration: [],
-                issue: null,
-            } as BedRoom.Type
-        ]) ) as BedRoom.Map );
+    const [bedRooms, setBedRooms] = React.useState<BedRoom.Map>({});
 
     const bedRoomTab = React.useMemo<BedRoom.Type[]>(() => {
-        return toTab(bedRooms)
-            .sort( (a, b) => parseInt(a.id) - parseInt(b.id) );
+        return Object.values(bedRooms).sort( (a, b) => parseInt(a.name) - parseInt(b.name) );
     }, [bedRooms]);
 
     const updateBedRoom = React.useCallback((
@@ -95,57 +86,65 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
         });
     }, []);
 
-    const analysis = React.useMemo(() => {
-        const solded = bedRoomTab.filter(room => room.customer);
-        const free = bedRoomTab.filter(room => !room.customer);
-        return {
-            solded, free,
-            powered: bedRoomTab.filter(room => room.power),
-            issues: bedRoomTab.filter(room => room.issue),
-            coming: {
-                total: bedRoomTab.filter(room => room.booked),
-                sold: solded.filter(room => room.booked),
-                free: free.filter(room => room.booked),
-            },
-            cleaning: {
-                total: bedRoomTab.filter(room => room.cleaner),
-                sold: solded.filter(room => room.cleaner),
-                free: free.filter(room => room.cleaner),
-            },
-            categories: (() => {
-                return room_ctg_list.map((room_ctg) => {
-                    const topCtgRooms = bedRoomTab.filter(({ categories }) => (
-                        categories[0] === room_ctg.id ) );
-                    return {
-                        ...room_ctg,
-                        topSolded: topCtgRooms.filter(room => room.customer),
-                        topTotal: topCtgRooms,
-                    };
-                });
-            })(),
-        }
-    }, [bedRoomTab]);
-    
 
     React.useEffect(() => {
-        setBedRooms(bedRooms => {
-            return Object.fromEntries( roomIds.map(roomId => {
-                const { connected, power } = bedRooms[roomId];
-                const res = {
-                    ...room_datas[roomId],
-                    id: roomId, connected, power,
-                    customer: todayCustomers[roomId]?.[0] ?? null,
-                    booked: todayBooked[roomId]?.[0] ?? null,
-                    cleaner: cleanings[roomId]?.[0] ?? null,
-                    restauration: restaurant.filter(resto => resto.roomId === roomId),
-                    issue: room_book.lasts[roomId]?.issue ?? null,
-                }
-                return [ roomId, res ];
-            }) ) as BedRoom.Map;
-        })
-    }, [room_book.lasts, todayCustomers, todayBooked, cleanings, restaurant]);
+        setBedRooms(bedRooms => Object.fromEntries( bedroom_table.list.map(room => {
+            const res = {
+                ...bedRooms[room.id],
+                ...bedroom_table.getId(room.id),
+
+                cleaner: cleanings.find(clean => clean.roomId === room.id) ?? null,
+                customer: customers.find(customer => customer.roomId === room.id) ?? null,
+                booked: isBookedToday(room.id),
+                restauration: restaurant.filter(resto => {
+                    const customer = customer_book.get.find(customer => customer.id === resto.customerId);
+                    return ( resto.customerId === customer?.id );
+                }),
+            }
+            return [ room.id, res ];
+        }) ) as BedRoom.Map );
+    }, [bedroom_table, cleanings, customers, isBookedToday, restaurant]);
+
+    const analysis: AnalysisType = React.useMemo(() => {
+        const powered = bedRoomTab.filter(room => room.power);
+        const cleanings = bedRoomTab.filter(room => room.cleaner);
+        const solded = bedRoomTab.filter(room => room.customer);
+        const checkOut = bedRoomTab.filter(room => !room.customer);
+        const bookeds = bedRoomTab.filter(room => room.booked);
+        const issues = bedRoomTab.filter(room => room.issue?.priority === 'high');
+        const obsolets = bedRoomTab.filter(room => isObsolet(room.id));
+        const critics = unifyIds([issues, obsolets]);
+
+        return {
+            powered, solded, issues, critics,
+            free: getUniqueIds(bedRoomTab, unifyIds([ solded, bookeds, cleanings, issues ]) ),
+            available: getUniqueIds(bedRoomTab, unifyIds([ solded, issues ]) ),
+            coming: {
+                total: bookeds,
+                sold: getCommonIds([bookeds, solded]),
+                free: getCommonIds([bookeds, checkOut]),
+            },
+            cleaning: {
+                total: cleanings,
+                sold: getCommonIds([cleanings, solded]),
+                free: getCommonIds([cleanings, checkOut]),
+                obsolets,
+            },
+            categories: bedroom_ctg_table.list.map((room_ctg) => {
+                const topCtgRooms = bedRoomTab.filter(({ categories }) => (
+                    categories[0] === room_ctg.id ) );
+                return {
+                    ...room_ctg,
+                    topSolded: topCtgRooms.filter(room => room.customer),
+                    topTotal: topCtgRooms,
+                };
+            }),
+        }
+    }, [bedRoomTab, bedroom_ctg_table]);
 
 
+
+        
 
     const switch_power = React.useCallback((roomId: BedRoom.Id, power: boolean | null) => {
         checkError(() => {
@@ -159,10 +158,10 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
 
     const updateIssue = React.useCallback((roomId: BedRoom.Id, datas: {priority: PriorityId, message: string} | null) => {
         checkError(() => {
-            room_book.add(roomId, { issue: datas ? { date: new Date(Date.now()), ...datas } : null });
+            console.log("tmp")
+            bedroom_table.update(roomId, { issue: datas ? { date: new Date(Date.now()), ...datas } : null });
         });
-    }, [bedRooms, room_book.add]);
-
+    }, [bedRooms, bedroom_table.update]);
 
     const check_in = React.useCallback((roomId: BedRoom.Id, customer: Omit<CustomerType, 'actions'>, description?: string) => {
         checkError(() => {
@@ -177,15 +176,15 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
     }, [bedRooms, customer_book.add]);
 
     const check_update = React.useCallback((customerId: number, props: Partial<CustomerType>, description?: string) => {
+        const customer = customers[customerId];
         checkError(() => {
-            const customer = customers[customerId];
             if (!customer) throw Error(`Le client est introuvable`);
     
             const action: CheckInType = { status: 'CHECK_UPDATE', roomId: customer.roomId,
                 datas: props, date: new Date(Date.now()) };
             const res: Partial<CustomerType> = { ...props, actions: [ action, ...customer.actions, ] }
             customer_book.update(customerId, res, description);
-        }, `Informations de ${customers[customerId].sexe} ${customers[customerId].name} modifiés avec succès`);
+        }, `Informations de ${customer.sexe} ${customer.name} modifiés avec succès`);
     }, [customers, customer_book.update]);
 
     const check_move = React.useCallback((customerId: number, toRoomId: BedRoom.Id, description?: string) => {
@@ -221,17 +220,19 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
 
 
     const clean_room = React.useCallback((roomId: BedRoom.Id, valletId: Employer.Id, description?: string) => {
-        const vallet = employers_datas[valletId];
+        const vallet = employer_table.getId(valletId);
         checkError(() => {
             const room = bedRooms[roomId];
+            if ( !vallet )
+                throw Error(`Le vallet ${valletId} est introuvable`);
             if ( room.cleaner )
                 throw Error(`La chambre ${roomId} est déjà en nettoyage`);
             cleaning_book.add(roomId, { valletId,
                 sexe: vallet.sexe,
                 name: vallet.name,
             }, description);
-        }, `Le néttoyage de la chambre ${roomId} est attribué à ${vallet.sexe} ${vallet.name}`);
-    }, [bedRooms, cleaning_book.add]);
+        }, `Le néttoyage de la chambre ${roomId} est attribué à ${vallet?.sexe} ${vallet?.name}`);
+    }, [employer_table, bedRooms, cleaning_book.add]);
     
     const done_cleaning = React.useCallback((roomId: BedRoom.Id, description?: string) => {
         checkError(() => {
@@ -243,11 +244,17 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
     }, [bedRooms, cleaning_book.update]);
 
     const cancel_cleaning = React.useCallback((roomId: BedRoom.Id, description?: string) => {
+        const { authSession } = useAuth();
         checkError(() => {
             const room = bedRooms[roomId];
+            if (!authSession)
+                throw Error(`Vous devez être connecté`);
             if ( !room.cleaner )
                 throw Error(`La chambre ${roomId} n'est pas en nettoyage`);
-            cleaning_book.update(room.cleaner.id, { cancel: new Date(Date.now()) }, description);
+            cleaning_book.update(room.cleaner.id, { cancel: {
+                date: new Date(Date.now()),
+                auth_session: authSession.id,
+            } }, description);
         }, `La chambre ${roomId} n'est plus en néttoyage`);
     }, [bedRooms, cleaning_book.update]);
 
@@ -281,11 +288,9 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
         }, `La réservation de la chambre ${room_rsv.roomId} par Mr / Mme ${room_rsv.name} du ${getFrenchDate(room_rsv.start)} au ${getFrenchDate(room_rsv.end)} est annulée`);
     }, [authSession, reservations, reservation_book.update]);
 
-
-
     return (
         <bedRoomContext.Provider value={{
-            bedRooms, bedRoomTab, analysis,
+            analysis, bedRooms, bedRoomTab,
             switch_power, updateIssue,
             check_in, check_update, check_move, check_out,
             clean_room, done_cleaning, cancel_cleaning,
@@ -295,9 +300,6 @@ export function BedRoomProvider({ children }: { children: React.ReactNode }) {
         </bedRoomContext.Provider>
     );
 }
-
-
-
 
 const bedRoomContext = React.createContext<BedRoomContext | null>(null);
 

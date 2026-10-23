@@ -1,12 +1,11 @@
 'use client';
 
 import { twMerge } from "tailwind-merge";
-import { useDataContext } from "../../hooks";
 
-import { employers_datas } from "../../configs/employer";
 import Employer from "../../types/employer";
 import { getString } from "../../tools";
 import { PersonSex2 } from "../../components/PersonSex";
+import { useDataContext } from "../../hooks";
 
 export default function ValletAside() {
   const { cleaners } = useDataContext();
@@ -18,7 +17,8 @@ export default function ValletAside() {
       <div className="flex flex-col shadow-[inset_0_2px_4px_4px__rgba(0,0,0,0.15)] rounded-md p-2">
         { cleaners.map((cleaner, i) =>
           <ValletLine key={cleaner.id} cleanerId={cleaner.id as Employer.Id}
-            className={ (i !== cleaners.length-1) ? "border-b-1" : ""} />
+            className={ (i !== cleaners.length-1) ? "border-b-1" : ""}
+          />
         ) }
       </div>
 
@@ -30,11 +30,12 @@ export function ValletLine({ cleanerId, className }: {
   cleanerId: Employer.Id,
   className?: string,
 }) {
-  const { todayCleaned } = useDataContext();
-  const cleaner = employers_datas[cleanerId];
-  const roomsTotal = todayCleaned.filter(clean => (
-    !clean.cancel && clean.valletId === cleanerId));
+  const { cleaning_book, employer_table } = useDataContext();
+  const cleaner = employer_table.getId(cleanerId);
+  const roomsTotal = cleaning_book.today.filter(clean => clean.valletId === cleanerId);
   const roomsDone = roomsTotal.filter(clean => clean.done);
+
+  if (!cleaner) return null;
 
   return (
     <div className={twMerge("grid grid-cols-[auto_1fr_auto] items-center gap-x-3 p-2 py-3 rounded border-gray-300", className)}>

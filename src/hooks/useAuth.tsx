@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { State, TypeWithTrace } from "../types";
 import Employer from "../types/employer";
-import { employers_datas } from "../configs/employer";
 import BedRoom from "../types/bedroom";
 
 type AuthContextType = {
@@ -22,7 +21,7 @@ type AuthContextType = {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [authSession, setAuthSession] = React.useState<AuthSession | null>({
-        id: 'receptionist1',
+        id: 'Hillary',
         name: 'ADMIN',
     });
     const { pathname } = useLocation();
@@ -54,10 +53,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [authSession]);
 
     const connect = React.useCallback((userId: Employer.Id, password: string) => {
-        const user = employers_datas[userId];
-        if (user.pass !== password)
-            throw new Error("Identifiants incorrects");
-        setAuthSession({ id: userId, name: user.name, });
+        userId;
+        password;
+        // const user = employer_table.getId(userId);
+        // if (user.pass !== password)
+        //     throw new Error("Identifiants incorrects");
+        // setAuthSession({ id: userId, name: user.name, });
     }, []);
 
     const disconnect = React.useCallback(() => setAuthSession(null), []);

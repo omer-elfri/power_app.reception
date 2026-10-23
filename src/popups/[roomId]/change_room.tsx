@@ -22,7 +22,7 @@ export default function ChangeRoom({ room:bedRoom, className }: {
     const submitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         const roomId = e.target.roomId.value as BedRoom.Id;
-        const description = e.target.description.value as BedRoom.Id;
+        const description = e.target.description.value as string;
         const toRoom = bedRooms[roomId];
         if (!bedRoom.customer)
             throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
@@ -43,9 +43,10 @@ export default function ChangeRoom({ room:bedRoom, className }: {
             }>
 
             <LabelInput label="Envoyer à la chambre" name="roomId" options={
-                bedRoomTab.map(room => ({ k: room.id,
+                bedRoomTab.map(room => ({
+                    k: room.id.toString(),
                     value: `${room.id} ${room.customer?.name.toUpperCase() ?? ""}`,
-                    disabled: bedRoom.customer ? !!room.customer : !room.customer,
+                    disabled: !!bedRoom.customer,
                 })) }
             />
 

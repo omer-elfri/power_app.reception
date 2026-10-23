@@ -2,7 +2,8 @@
 
 import { twMerge } from "tailwind-merge";
 
-import { formatPrice, getTime } from "../../tools";
+import { formatPrice } from "../../tools";
+import { getTime } from "../../tools/date";
 import { useDataContext } from "../../hooks";
 
 export default function RestaurationSection() {

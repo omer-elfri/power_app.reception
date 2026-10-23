@@ -1,22 +1,21 @@
 import { Sex } from ".";
-import { employers_datas } from "../configs/employer";
 
 namespace Employer {
-    export type Id = keyof typeof employers_datas;
+    export type Id = string;
 
     export type Type = {
+        id: Id,
         sexe: Sex,
         name: string,
         pass: string,
-        rules: [Rule, ...Rule[]],
+        rules: Rule[],
     }
 
-    export enum Rule {
-        RECEPTIONIST,
-        CLEANER,
-        RESTAURANT,
-        SECURITY,
-    }
+    export type Rule =
+        'RECEPTIONIST'
+        | 'CLEANER'
+        | 'RESTAURANT'
+        | 'SECURITY'
 
     export type AuthSession = string
 }

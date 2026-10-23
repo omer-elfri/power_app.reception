@@ -4,10 +4,12 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 import { State } from '../types';
 
-export default function OngletTab<T extends string>({ onglet, setOnglet, datas, className, subClassName, children }: {
+export default function OngletTab<T extends string>({ onglet, setOnglet, datas,
+  className, subClassName, children
+}: {
   onglet: T,
   setOnglet: (key: T) => void | State<T>,
-  datas: { key: T, icon?: React.ReactNode, value: React.ReactNode }[],
+  datas: { key: T, icon?: React.ReactNode, value: React.ReactNode, style?: string }[],
   children?: React.ReactNode,
   className?: string,
   subClassName?: string,
@@ -19,7 +21,7 @@ export default function OngletTab<T extends string>({ onglet, setOnglet, datas, 
         { datas.map(elem => (
           <div key={elem.key} onClick={() => setOnglet(elem.key)} className={twMerge(
             "flex flex-row gap-2 items-center text-[12px] px-3 py-2 rounded cursor-pointer border-1 border-gray-400",
-            onglet === elem.key ? "bg-blue-500 text-white" : "black")}>
+            onglet === elem.key ? twMerge("bg-blue-500 text-white", elem.style) : "black hover:bg-blue-400/20")}>
             { elem.icon }
             { elem.value }
           </div>

@@ -2,8 +2,9 @@
 
 import React from "react";
 import { twMerge } from "tailwind-merge";
-import { room_ctg_datas } from "../../configs/room_ctg";
+import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
+import { Sex } from "../../types";
 import BedRoom from "../../types/bedroom";
 
 import FormAside from "../../components/FormAside";
@@ -13,21 +14,17 @@ import MyButton from "../../components/MyButton";
 import { FaCheck } from "react-icons/fa";
 import { MdPerson } from "react-icons/md";
 import { FaExchangeAlt } from "react-icons/fa";
-import { Sex } from "../../types";
-import { useDataContext } from "../../hooks";
 
 export default function CheckInForm({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { addPopup, setAlert } = useDataContext();
+    const { addPopup, setAlert, bedroom_ctg_table } = useDataContext();
     const { check_in, check_update, check_out } = useBedroom();
-    const clientName =
-        bedRoom.customer?.name ??
-        bedRoom.booked?.name ?? "";
-    const realPrice =
-        bedRoom.customer?.price
-        ?? room_ctg_datas[ bedRoom.categories[0] ].price;
+    const clientName = bedRoom.customer?.name ?? bedRoom.booked?.name ?? "";
+    const realPrice = bedRoom.customer?.price
+        ?? bedroom_ctg_table.getId( bedRoom.categories[0] ) ?? 0;
+        // ?? room_ctg_datas[ bedRoom.categories[0] ].price;
 
     const handleSubmit = React.useCallback((e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -129,7 +126,7 @@ export default function CheckInForm({ room:bedRoom, className }: {
 
                 <LabelInput label="Infos supplémentaires" name='description'>
                     <textarea id='description'
-                        className="p-2 text-[11px] h-full min-h-30 py-[5px] bg-gray-300/40"
+                        className="p-2 text-[11px] h-full min-h-30 py-[5px] bg-gray-300/20"
                         defaultValue={bedRoom.customer?.description}
                         placeholder="IFU / entreprise / autre description"
                     />
