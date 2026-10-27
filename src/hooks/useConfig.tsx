@@ -1,27 +1,51 @@
 import React from "react";
-import { strToDate } from "../tools/date";
-import { ConfigType } from "../types";
+import { CancelType } from "../types";
+import Employer from "../types/employer";
+import { DB, Key_String } from "../tools/database";
+
+const tables = [
+    'bedroom_table', 'bedroom_ctg_table', 'employer_table',
+    'cleaning_book', 'customer_book', 'reservation_book', 'restaurant_book',
+] as const;
+
+export type TableId = typeof tables[number];
+
+export type ConfigType<T> = T & {
+    id: string,
+    auth_session?: Employer.Id,
+    last_update?: Date,
+    description?: string,
+    disabled?: CancelType,
+}
 
 export type Config<T extends Object> = {
     list: ConfigType<T>[];
     getId: (id: string) => ConfigType<T> | null,
-    update: (id: string, data: Partial<ConfigType<T>>, description?: string) => void;
+    update: (id: string, data: Partial<ConfigType<T>>) => void;
 }
 
-export function useConfig<T extends { id: string }>(table: string, initDatas: T[] = []): Config<T> {
-    const [datas, setDatas] = React.useState<ConfigType<T>[]>(initDatas);
+export function useConfig<T extends { id: string }>(
+    table: TableId,
+    tableObj: Key_String<T>,
+): Config<T> {
+    const [datas, setDatas] = React.useState<ConfigType<T>[]>([]);
 
-    React.useEffect(() => {
-        const stocked = localStorage.getItem(table);
-        if (!stocked) return;
-        const book = strToDate<ConfigType<T>[]>(stocked);
-        if (book) setDatas(book);
+    React.useEffect(() => { // create table
+        (async () => {
+            await DB.createTable<T>(table, {
+                ...tableObj, id: "TEXT PRIMARY KEY",
+            });
+            await readTable();
+        })();
     }, []);
 
-    React.useEffect(() => {
-        if (datas.length === 0) return;
-        localStorage.setItem(table, JSON.stringify(datas));
-    }, [datas]);
+    const readTable = React.useCallback( // read table
+        async (): Promise<ConfigType<T>[]
+    > => {
+        const stockedRows = await DB.readTable<ConfigType<T>>(table);
+        setDatas(stockedRows);
+        return stockedRows;
+    }, []);
 
     const list = React.useMemo(() => {
         return datas.filter(data => !('disabled' in data));
@@ -31,18 +55,13 @@ export function useConfig<T extends { id: string }>(table: string, initDatas: T[
         return datas.find(data => data.id === id) ?? null;
     }, [datas]);
 
-    const update = React.useCallback((
+    const update = React.useCallback(async (
         id: string,
-        data: Partial<ConfigType<T>>,
-        description?: string,
+        data: Omit<Partial<ConfigType<T>>,'id'>,
     ) => {
-        setDatas(list => {
-            const index = list.findIndex(elem => elem.id === id);
-            if (index === -1) throw new Error("Cette donnée est introuvable");
-            return list.map((elem, i) => (i === index)
-                ? { ...elem, ...data, description } : elem);
-        });
+        await DB.update(table, id, { ...data }).then(readTable);
     }, []);
 
     return { list, getId, update, };
 }
+

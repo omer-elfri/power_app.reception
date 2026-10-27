@@ -40,11 +40,11 @@ export function getDuration(start: Date, end: Date) {
     const h = Math.floor((total % 1440) / 60);
     const min = total % 60;
 
-    if (start.getDate() < end.getDate())
-        return getFrenchDate(end).slice(0,6);
-
+    // if (start.getDate() < end.getDate())
+    //     return getFrenchDate(end).slice(0,6);
     if (j) return `${j}j ${h}h`;
-    if (h) return `${getString(h)}:${getString(min)}`;
+    if (j) return getFrenchDate(end).slice(0,6);
+    if (h) return `${getString(h)}h ${getString(min)}`;
     return `${min} min`;
 }
 

@@ -14,14 +14,20 @@ import { RiServiceBellLine }  from "react-icons/ri";
 import { MdOutlineCleaningServices } from "react-icons/md";
 
 export default function GlobalPage() {
-  const { cleaning_book, addPopup, restaurant, } = useDataContext();
+  const { cleaning_book, customer_book, addPopup, restaurant, } = useDataContext();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(18, 0, 0, 0);
 
-  const today = new Date(Date.now());
+  const today = new Date();
   const todayCleaning = cleaning_book.get.filter(
     clean => !clean.done ||
-      clean.date.getDate() === today.getDate() ||
-      clean.done?.getDate() === today.getDate()
+      clean.date.getTime() > yesterday.getTime() ||
+      clean.done?.getTime() > yesterday.getTime()
   ).slice(0,15);
+
+  const customerTab = customer_book.get.filter(customer =>
+    !customer.end || customer.end.getDate() === today.getDate());
 
   return (
     <div className="flex flex-col gap-1 pb-5">
@@ -41,8 +47,8 @@ export default function GlobalPage() {
         </SectionBox>
 
         <SectionBox className="col-span-4">
-          <Title icon={<TbArrowsDoubleNeSw size={20} />} className="mb-3">Mouvements du jour</Title>
-          <MouvementSection />
+          <Title icon={<TbArrowsDoubleNeSw size={20} />} className="mb-3" right={customerTab.length}>Mouvements du jour</Title>
+          <MouvementSection customers={customerTab} />
         </SectionBox>
 
         <SectionBox className="col-span-3 row-span-2 max-h-[650px]"
@@ -53,7 +59,7 @@ export default function GlobalPage() {
 
         <SectionBox className="col-span-7">
           <Title right={restaurant.length} icon={<RiServiceBellLine size={22} />}>Restauration</Title>
-          <RestaurationSection />
+          <RestaurationSection restaurations={restaurant} />
         </SectionBox>
 
       </div>

@@ -45,3 +45,4 @@ export type RoomCtgData = {
     price: number,
     option: 'VENT' | 'CLIM',
 }
+

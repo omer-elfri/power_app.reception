@@ -1,6 +1,7 @@
 'use client'
 
 import { twMerge } from "tailwind-merge";
+import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
 import BedRoom from "../../types/bedroom";
 
@@ -10,7 +11,6 @@ import MyButton from "../../components/MyButton";
 
 import { FaExchangeAlt } from "react-icons/fa";
 import { HiSwitchHorizontal } from "react-icons/hi";
-import { useDataContext } from "../../hooks";
 
 export default function ChangeRoom({ room:bedRoom, className }: {
     room: BedRoom.Type,
@@ -33,27 +33,37 @@ export default function ChangeRoom({ room:bedRoom, className }: {
     }
 
     return (
-        <FormAside title="Changer de chambre"
-            icon={<HiSwitchHorizontal />} onSubmit={submitHandler}
-            subClassName="flex flex-col gap-2" className={twMerge("", className)}
-            right={
-                <MyButton name='change_room' icon={<FaExchangeAlt />} disabled={bedRoom.customer && analysis.free.length === 0 || !bedRoom.customer && analysis.solded.length === 0}
-                    className="!py-1 bg-yellow-700/10 text-yellow-700 border-yellow-700 self-end">Déplacer
-                </MyButton>
-            }>
-
-            <LabelInput label="Envoyer à la chambre" name="roomId" options={
+        <div className="flex flex-row items-center gap-2 bg-white/60 px-3 py-3 font-bold rounded shadow-md w-full">
+            <FaExchangeAlt size={10} />
+            <label className="flex-1">Déplacer vers</label>
+            <LabelInput name="roomId" options={
                 bedRoomTab.map(room => ({
                     k: room.id.toString(),
                     value: `${room.id} ${room.customer?.name.toUpperCase() ?? ""}`,
                     disabled: !!bedRoom.customer,
                 })) }
             />
+            <MyButton name='change_room'
+                disabled={bedRoom.customer && analysis.free.length === 0 || !bedRoom.customer && analysis.solded.length === 0}
+                className="!py-1 bg-yellow-700/10 text-yellow-700 border-1 border-yellow-700 self-end !text-[10px]">Déplacer
+            </MyButton>
+        </div>
 
-            <LabelInput label="Pourquoi ?" name="description" required>
-                <textarea className="h-20" name="description" />
-            </LabelInput>
 
-        </FormAside>
+        // <FormAside bar={false} title="Déplacer vers" right={
+        //     <>
+
+
+        //         <MyButton name='change_room' icon={<FaExchangeAlt />}
+        //             disabled={bedRoom.customer && analysis.free.length === 0 || !bedRoom.customer && analysis.solded.length === 0}
+        //             className="!py-1 bg-yellow-700/10 text-yellow-700 border-1 border-yellow-700 self-end !text-[10px]">Déplacer
+        //         </MyButton>
+
+        //     </>
+        // }
+        //     icon={<HiSwitchHorizontal />} onSubmit={submitHandler}
+        //     className={twMerge("", className)} subClassName="grid grid-cols-[1fr_auto] gap-2">
+
+        // </FormAside>
     );
 }

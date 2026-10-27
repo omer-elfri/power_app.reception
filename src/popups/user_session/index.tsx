@@ -8,26 +8,26 @@ import { useAuth } from "../../hooks/useAuth";
 import { useDataContext } from "../../hooks";
 import React from "react";
 
-export default function SessionPopup() {
+export default function SessionPopup({ className }: {
+  className?: string,
+}) {
   const { disconnect } = useAuth();
   const { switchPopup, unPopup } = useDataContext();
 
   return (
-    <Popup>
-      <div onClick={e => e.stopPropagation()} className="grid grid-cols-[150px_150px] gap-15 text-center text-white">
+    <div onClick={e => e.stopPropagation()} className={twMerge("grid grid-cols-[150px_150px] gap-15 text-center text-white", className)}>
 
-        <Button icon={<RiResetLeftFill size={60} />}
-          onClick={() => { switchPopup(['CHANGE_PASS'])}}
-          className="bg-blue-700">Changer de <br />mot de passe
-        </Button>
+      <Button icon={<RiResetLeftFill size={60} />}
+        onClick={() => { switchPopup(['CHANGE_PASS'])}}
+        className="bg-blue-700">Changer de <br />mot de passe
+      </Button>
 
-        <Button icon={<IoMdPower size={60} />}
-          onClick={() => { unPopup(), disconnect()}}
-          className="bg-red-700">Se déconnecter
-        </Button>
+      <Button icon={<IoMdPower size={60} />}
+        onClick={() => { unPopup(), disconnect()}}
+        className="bg-red-700">Se déconnecter
+      </Button>
 
-      </div>
-    </Popup>
+    </div>
   );
 }
 

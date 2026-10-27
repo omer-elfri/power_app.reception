@@ -8,9 +8,7 @@ type CancelType = {
 };
 
 export type CleanType = {
-    sexe: Sex,
     valletId: Employer.Id,
-    name: string,
 } & ({
     done?: never,
     cancel?: never,

@@ -22,22 +22,6 @@ export type CancelType = {
 }
 
 
-export type TypeWithTrace<T> = T & {
-    id: Id,
-    roomId: BedRoom.Id,
-    auth_session: Employer.Id,
-    date: Date,
-    description?: string,
-}
-
-export type ConfigType<T> = T & {
-    id: string,
-    auth_session?: Employer.Id,
-    last_update?: Date,
-    description?: string,
-    disabled?: CancelType,
-}
-
 export const colors: {[k in (StatusId)]: string} = {
     powered: '#cf0037',
     guest: '#074507',
@@ -53,6 +37,7 @@ export type PopupType =
     [ 'CLEAN', BedRoom.Id? ] |
     [ 'BOOKING', number? ] |
     [ 'ROOM', BedRoom.Id ] |
+    [ 'CHECK_IN', BedRoom.Id ] |
     [ 'LIST', ListStatus? ] |
     [ 'USER' ] |
     [ 'CHANGE_PASS'] |

@@ -6,12 +6,13 @@ import { HiLightningBolt } from "react-icons/hi";
 import { GiBroom } from "react-icons/gi";
 import { FaWifi } from "react-icons/fa";
 
-export default function RoomBox({ room:bedRoom, className }: {
+export default function RoomBox({ room:bedRoom, onClick, className }: {
     room: BedRoom.Type,
+    onClick: () => void,
     className?: string,
 }) {
     return (
-        <div className={twMerge("flex flex-col gap-x-2 gap-y-2 bg-white p-2 rounded-md relative border-1", className)}>
+        <div className={twMerge("flex flex-col gap-x-2 gap-y-2 bg-white p-2 rounded-md relative border-1", className)} onClick={onClick}>
 
             <div className="flex flex-row gap-2 text-gray-700">
                 <h2 className="flex-1 font-bold text-[13px]">{bedRoom.id}</h2>

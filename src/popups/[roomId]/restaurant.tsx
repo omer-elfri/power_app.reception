@@ -28,8 +28,8 @@ export default function Restaurant({ room:bedRoom, className }: {
 
     return (
         <FormAside title="Restauration" right={right}
-            icon={<RiRestaurantFill size={15} />}
-            subClassName="gap-0" className={twMerge("", className)} >
+            icon={<RiRestaurantFill size={15} className="text-green-800" />}
+            className={twMerge("", className)} >
 
             <NoElem Icon={RiServiceBellLine} size={50} text="Aucune commande" className="gap-2" list={roomRestos}>
 

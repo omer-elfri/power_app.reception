@@ -71,3 +71,4 @@ function TableTr({ values, className, onClick }: {
     </div>
   );
 }
+

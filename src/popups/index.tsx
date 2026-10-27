@@ -16,17 +16,20 @@ export default function Popup({ className, children } : {
   );
 }
 
-export function PopupBody({ top, bottom, className, subClassName, children } : {
+export function PopupBody({ top, bottom, className, subClassName, children, onSubmit } : {
   top?: React.ReactNode,
   bottom?: React.ReactNode,
   className?: string,
   subClassName?: string,
   children?: React.ReactNode,
+  onSubmit?: (e: React.SubmitEvent<HTMLFormElement>) => void,
 }) {
-  return (
+  className = twMerge("flex flex-col gap-3 bg-gray-200 rounded-lg \
+      w-full max-w-160 p-5 min-h-80 max-h-[calc(100vh-100px)]", className);
+
+  const res = (
     <div className={twMerge("flex flex-col gap-3 bg-gray-200 rounded-lg \
-      w-full max-w-160 p-5 min-h-80 max-h-[calc(100vh-100px)]", className)}
-      onClick={e => e.stopPropagation()}>
+      w-full max-w-160 p-5 min-h-80 max-h-[calc(100vh-100px)]", className)} onClick={e => e.stopPropagation()}>
 
       { top }
 
@@ -38,6 +41,17 @@ export function PopupBody({ top, bottom, className, subClassName, children } : {
 
     </div>
   );
+
+  if (!onSubmit) return res;
+
+  return (
+    <form className="flex flex-col items-center w-full" onSubmit={e => {
+      e.preventDefault();
+      onSubmit(e);
+    } }>
+      { res }
+    </form>
+  )
 }
 
 

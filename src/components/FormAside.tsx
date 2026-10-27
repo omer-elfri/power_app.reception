@@ -1,25 +1,37 @@
-'use client';
-
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 import { Bar } from './SectionBox';
 
-export default function FormAside({ icon, title, right, className, subClassName, children, onSubmit, bar=true }: {
+type sideDivProps = {
     icon?: React.ReactNode,
-    title: string,
+    title?: React.ReactNode,
     right?: React.ReactNode,
+    bottom?: React.ReactNode,
     className?: string,
     subClassName?: string,
     children?: React.ReactNode,
-    onSubmit?: (e: React.SubmitEvent<HTMLFormElement>) => void,
     bar?: boolean,
+}
+
+export default function FormAside({ onSubmit, className, ...props }: sideDivProps & {
+    onSubmit?: (e: React.SubmitEvent<HTMLFormElement>) => void,
 }) {
     return (
-        <form className={twMerge("bg-white/60 flex flex-col gap-y-2 px-3 py-3 font-bold rounded shadow-md", className)} onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className={twMerge('bg-white/60 px-3 py-3 font-bold rounded shadow-md w-full', className)}>
+            <AsideDiv topClassName='h-full' {...props} />
+        </form>
+    );
+}
 
-            <div className="flex flex-row justify-between items-center flex-wrap gap-2">
+export function AsideDiv({ icon, title, right, bottom, className, topClassName, subClassName, children, bar=true }: sideDivProps & {
+    topClassName?: string,
+}) {
+    return (
+        <div className={twMerge("flex flex-col gap-y-2", topClassName ?? "bg-white/60 px-3 py-3 font-bold rounded shadow-md", className)}>
+
+            <div className="flex flex-row items-center flex-wrap gap-2">
                 { icon }
-                <h2 className="text-[12px] flex-1">{title}</h2>
+                { title && <div className="text-[12px] flex-1">{title}</div> }
                 { right }
             </div>
 
@@ -29,6 +41,9 @@ export default function FormAside({ icon, title, right, className, subClassName,
                 { children }
             </div>
 
-        </form>
+            { bottom }
+
+        </div>
     );
 }
+

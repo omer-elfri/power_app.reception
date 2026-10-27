@@ -13,7 +13,9 @@ import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { IoKeyOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa";
 
-export default function ChangePassPopup() {
+export default function ChangePassPopup({ className }: {
+  className?: string,
+}) {
   const { authSession, connect } = useAuth();
   const { checkError, unPopup } = useDataContext();
   const [curPass, setCurPass] = React.useState("");
@@ -29,11 +31,12 @@ export default function ChangePassPopup() {
     setTimeout(() => {
       checkError(() => {
         connect(authSession!.id, curPass);
-        if (!newPass) throw Error("Rentrez le nouveau mot de passe !");
-        if (newPass.length < 8) throw Error("Le nouveau mot de passe doit doit comporter minimum 8 lettres !");
-        if (newPass !== confPass) throw Error("Les mots de passe indiquées ne correspondent pas !");
+        if (!newPass) throw ['error', "Rentrez le nouveau mot de passe !"];
+        if (newPass.length < 8) throw ['error', "Le nouveau mot de passe doit doit comporter minimum 8 lettres !"];
+        if (newPass !== confPass) throw ['error', "Les mots de passe indiquées ne correspondent pas !"];
+        throw ['sucess', "Mot de passe changée avec succès"];
         // changePassword(userName, newPass);
-      }, `Mot de passe changée avec succès`);
+      });
       setCurPass("");
       setLoading(false);
     }, 1000);

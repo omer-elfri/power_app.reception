@@ -6,15 +6,13 @@ import { getFrenchDateTime } from "../../tools/date";
 
 import { IoArrowUpOutline }  from "react-icons/io5";
 import { FiArrowDownRight, FiArrowUpRight } from "react-icons/fi";
-import { CheckInType } from "../../types/types";
+import { CheckInType, CustomerType } from "../../types/types";
+import { TypeWithTrace } from "../../hooks/useBook";
 
-export default function MouvementSection() {
-  const { addPopup, customer_book } = useDataContext();
-  const today = new Date(Date.now());
-  today.setHours(0,0,0,0);
-
-  const customerTab = customer_book.get.filter(customer =>
-    !customer.end || customer.end.getDate() === today.getDate());
+export default function MouvementSection({ customers:customerTab }: {
+  customers: TypeWithTrace<CustomerType>[],
+}) {
+  const { addPopup } = useDataContext();
 
   return (
     <div className="grid grid-cols-[auto_auto_auto_1fr_minmax(auto,40px)] \

@@ -30,8 +30,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
     const [category, setCategory] = React.useState<BedRoom.Category.Id | 'all'>('all');
 
     const floorList: BedRoom.StageId[] = React.useMemo(() => {
-        const floorTab = bedroom_table.list.map(room => room.stage)
-           .sort((stageA, stageB) => parseInt(stageA) - parseInt(stageB));
+        const floorTab = bedroom_table.list.map(room => room.stage);
         return [...new Set(floorTab)];
     }, [bedroom_table]);
 
@@ -98,23 +97,27 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
             });
         }
         return (
-            <div title={title} className="flex justify-center items-center aspect-square p-3 rounded \
-                bg-gray-400/10 text-gray-600 cursor-pointer" onClick={switchFilter}
+            <div title={title} className="flex group justify-center items-center aspect-square p-3 rounded \
+                bg-gray-400/10 text-gray-600 cursor-pointer [&>*]:group-hover:scale-115" onClick={switchFilter}
                 style={status.includes(value) ? { backgroundColor: color+"20", color } : {}}>
                 { children }
             </div>
         );
     }, [status, setStatus]);
 
+    const right = (
+        <div className="flex flex-row gap-x-1">
+            <button className={twMerge("", (form==="line")?"text-white bg-green-600":"bg-gray-300/50")}
+                onClick={() => setForm('line')}> <GiHamburgerMenu /> </button>
+            <button className={twMerge("", (form==="grid")?"text-white bg-blue-600":"bg-gray-300/50")}
+                onClick={() => setForm('grid')}> <FiGrid /> </button>
+        </div>
+    );
+
     return (
         <SectionBox className={twMerge("", className)} bottom={<SeeMore onClick={restoreFilter} value="Réinitialiser" />}>
 
-            <Title className="mb-2" right={ <div className="flex flex-row gap-x-1">
-                <button className={twMerge("", (form==="line")?"text-white bg-green-600":"bg-gray-300/50")}
-                    onClick={() => setForm('line')}> <GiHamburgerMenu /> </button>
-                <button className={twMerge("", (form==="grid")?"text-white bg-blue-600":"bg-gray-300/50")}
-                    onClick={() => setForm('grid')}> <FiGrid /> </button>
-            </div> }>Filtres</Title>
+            <Title className="mb-2" right={right}>Filtres</Title>
 
             <div className="flex flex-col gap-3">
 

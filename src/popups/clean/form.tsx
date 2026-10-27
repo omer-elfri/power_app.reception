@@ -28,7 +28,7 @@ export default function CleaningForm({ roomId: defaultRoomId, className }: {
     setValletId(valletSelected.id as Employer.Id);
   }, [valletSelected]);
 
-  const cleanHandler = React.useCallback(async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const cleanHandler = React.useCallback(async (e:  React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const roomId: BedRoom.Id = e.target.roomId.value;
     const valletId: Employer.Id = e.target.valletId.value;
@@ -42,10 +42,10 @@ export default function CleaningForm({ roomId: defaultRoomId, className }: {
       <form onSubmit={cleanHandler} className={twMerge("flex flex-col gap-2 rounded-md p-3 \
         shadow-[inset_0_2px_4px_4px__rgba(0,0,0,0.15)]", className)}>
 
-        { analysis.obsoletRooms.length > 0 && (
+        { analysis.cleaning.obsolets.length > 0 && (
           <div className="flex flex-col gap-2 font-bold bg-red-700/10 px-3 py-2 rounded text-start">
             <h2 className="text-[12px]">Ces chambres sont obsolètes</h2>
-            <p className="text-[10px]">{analysis.obsoletRooms.join(", ")}</p>
+            <p className="text-[10px]">{analysis.cleaning.obsolets.map(room => room.name).join(", ")}</p>
           </div>
         ) }
 

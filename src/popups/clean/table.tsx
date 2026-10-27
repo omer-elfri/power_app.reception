@@ -5,16 +5,16 @@ import { twMerge } from "tailwind-merge";
 
 import { useDataContext } from "../../hooks";
 import { useBedroom } from "../../hooks/useBedroom";
+import { TypeWithTrace } from "../../hooks/useBook";
 
-import { TypeWithTrace } from "../../types";
 import { getDuration, getTime } from "../../tools/date";
-
+import { CleanType } from "../../types/types";
 import { Bar } from "../../components/SectionBox";
+import NoElem from "../../components/NoElem";
+
 import { FaCheck } from "react-icons/fa";
 import { GiBroom } from "react-icons/gi";
 import { ImCross } from "react-icons/im";
-import NoElem from "../../components/NoElem";
-import { CleanType } from "../../types/types";
 
 
 export default function CleaningTable({ list, className }: {
@@ -82,7 +82,7 @@ function CleanLine({ clean, className, canCancel, index=-1 }: {
   className?: string,
   canCancel?: boolean,
 }) {
-  const { addPopup } = useDataContext();
+  const { addPopup, getCleaner } = useDataContext();
   const { done_cleaning, cancel_cleaning } = useBedroom();
   return (
       <TableTr index={index} onClick={() => addPopup(['ROOM', clean.roomId])}
@@ -96,7 +96,7 @@ function CleanLine({ clean, className, canCancel, index=-1 }: {
           }}>{clean.roomId}
         </p>
 
-        <p className="text-gray-800">{clean.name}</p>
+        <p className="text-gray-800">{getCleaner(clean.valletId)?.name}</p>
 
         <div className="flex flex-row justify-center items-center gap-2">
 
@@ -112,11 +112,11 @@ function CleanLine({ clean, className, canCancel, index=-1 }: {
           : canCancel ? <div className="flex flex-row flex-wrap gap-1 hidden group-hover:flex" onClick={e => e.stopPropagation()}>
 
             <div className="flex justify-center items-center p-1 size-5 bg-red-700 text-white rounded-full cursor-pointer"
-              onClick={() => cancel_cleaning(clean.roomId)}><ImCross size={10} />
+              onClick={() => cancel_cleaning(clean.id)}><ImCross size={10} />
             </div>
 
             <div className="flex justify-center items-center p-1 size-5 bg-blue-700 text-white rounded-full cursor-pointer"
-              onClick={() => done_cleaning(clean.roomId)}><FaCheck size={10} />
+              onClick={() => done_cleaning(clean.id)}><FaCheck size={10} />
             </div>
 
           </div> : null }

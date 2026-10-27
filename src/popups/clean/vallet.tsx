@@ -30,8 +30,8 @@ export function ValletLine({ cleanerId, className }: {
   cleanerId: Employer.Id,
   className?: string,
 }) {
-  const { cleaning_book, employer_table } = useDataContext();
-  const cleaner = employer_table.getId(cleanerId);
+  const { cleaning_book, getCleaner } = useDataContext();
+  const cleaner = getCleaner(cleanerId);
   const roomsTotal = cleaning_book.today.filter(clean => clean.valletId === cleanerId);
   const roomsDone = roomsTotal.filter(clean => clean.done);
 

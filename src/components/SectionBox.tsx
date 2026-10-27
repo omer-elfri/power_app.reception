@@ -31,7 +31,7 @@ export function Title({ icon, children, className, right, bar }: {
       <div className="flex flex-row gap-2 items-center">
         { icon }
         <div className="flex flex-row gap-2 items-center font-bold text-[12px] uppercase flex-1">{children}</div>
-        <div className="flex flex-row gap-2 text-[12px] font-bold items-center">{right}</div>
+        <div className="flex flex-row gap-2 items-center font-bold text-[12px]">{right}</div>
       </div>
       { bar && <Bar /> }
 

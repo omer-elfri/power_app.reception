@@ -15,18 +15,17 @@ export default function RoomLine({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { cleaning_book, isObsolet, bedroom_ctg_table } = useDataContext();
+    const { cleaning_book, isObsolet, bedroom_ctg_table, getCleaner } = useDataContext();
     const categoryNames = bedRoom.categories
         .map(ctgId => ({ id: ctgId, ...bedroom_ctg_table.getId(ctgId) }) )
         .map(({ name }) => name ).join(", ");
-    if (bedRoom.categories.length === 2) console.log("=>", bedRoom.categories
-        .map(ctgId => ({ id: ctgId, ...bedroom_ctg_table.getId(ctgId) }) ))
     const clientName = bedRoom.customer?.name ?? bedRoom.booked?.name ?? null;
 
     const cleaningState = (() => {
-        const clean = cleaning_book.get.find(clean  => clean.roomId === bedRoom.id);
+        if (bedRoom.cleaner)
+            return getCleaner(bedRoom.cleaner?.valletId)?.name;
+        const clean = cleaning_book.getRoomId(bedRoom.id);
         if (!clean) return "...";
-        if (!clean.done) clean.name;
         return !isObsolet(bedRoom.id) ? "Propre" : 'Sale';
     })();
 

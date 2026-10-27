@@ -2,33 +2,35 @@
 
 import React from "react";
 
-import { State, TypeWithTrace, PopupType } from "../types";
+import { PopupType } from "../types";
 import { CleanType, CustomerType, ReservationType, RestaurantType } from "../types/types";
 import Employer from "../types/employer";
 import BedRoom from "../types/bedroom";
 
-import { LocalBook, useLocalData } from "./useBook";
+import { LocalBook, TypeWithTrace, useLocalData } from "./useBook";
 import { Config, useConfig } from "./useConfig";
-import { RoomData, room_list } from "../configs/room";
-import { room_ctg_list } from "../configs/room_ctg";
-import { employers_datas } from "../configs/employer";
+import { RoomData } from "../configs/room";
+import { Infobulle } from "../components/Alert";
+import { supabase } from "../tools/supabase";
 
 type DataContextType = {
     bedroom_table: Config<RoomData>,
     bedroom_ctg_table: Config<BedRoom.Category.Type>,
     employer_table: Config<Employer.Type>,
 
-    customer_book: LocalBook<CustomerType>,
     cleaning_book: LocalBook<CleanType>,
-    restaurant_book: LocalBook<RestaurantType>,
+    customer_book: LocalBook<CustomerType>,
     reservation_book: LocalBook<ReservationType>,
+    restaurant_book: LocalBook<RestaurantType>,
 
-    alert: ["success" | "error", string] | null,
-    setAlert: State<["success" | "error", string] | null>,
-    checkError: (handler : () => any, message?: string) => void,
+    alerts: Infobulle[],
+    addAlert: (alert: Infobulle) => void,
+    popAlert: () => void,
+    checkError: (handler : () => void) => void,
 
     receptionnists: Employer.Type[],
     cleaners: Employer.Type[],
+    getCleaner: (valletId?: string) => Employer.Type | null,
 
     popupList: PopupType[],
     addPopup: (pop: PopupType) => void,
@@ -54,25 +56,81 @@ type DataContextType = {
 export function DataProvider({ children }: {
     children: React.ReactNode
 }) {
-    const bedroom_table = useConfig<RoomData>('bedroom_table', room_list);
-    const bedroom_ctg_table = useConfig<BedRoom.Category.Type>('bedroom_ctg_table', room_ctg_list);
-    const employer_table = useConfig<Employer.Type>('employer_table', employers_datas);
-
-    const customer_book = useLocalData<CustomerType>('customer_book');
-    const cleaning_book = useLocalData<CleanType>('cleaning_book');
-    const restaurant_book = useLocalData<RestaurantType>('restaurant_book');
-    const reservation_book = useLocalData<ReservationType>('reservation_book');
-
-    const [today, setToday] = React.useState(new Date(Date.now()));
+    const [today, setToday] = React.useState(new Date());
     const [popupList, setPopupList] = React.useState<PopupType[]>([]);
-    const [alert, setAlert] = React.useState<['success' | 'error', string] | null>(null);
+    const [alerts, setAlerts] = React.useState<Infobulle[]>([]);
+
+    const bedroom_table = useConfig<RoomData>('bedroom_table', {
+        'id': "TEXT NOT NULL",
+        'name': "TEXT NOT NULL",
+        'categories': "TEXT NOT NULL",
+        'stage': "TEXT NOT NULL",
+        'issue': "TEXT"
+    });
+    const bedroom_ctg_table = useConfig<BedRoom.Category.Type>('bedroom_ctg_table', {
+        'id': "TEXT NOT NULL",
+        'name': "TEXT NOT NULL",
+        'price': "REAL NOT NULL",
+        'option': "TEXT NOT NULL CHECK (option IN ('VENT', 'CLIM'))"
+    });
+    const employer_table = useConfig<Employer.Type>('employer_table', {
+        'id': "TEXT NOT NULL",
+        'sexe': "TEXT NOT NULL",
+        'name': "TEXT NOT NULL",
+        'pass': "TEXT NOT NULL",
+        'rules': "TEXT NOT NULL"
+    });
+
+    const cleaning_book = useLocalData<CleanType>('cleaning_book', {
+        valletId: "TEXT NOT NULL",
+        done: "TEXT",
+        cancel: "TEXT",
+    });
+    const customer_book = useLocalData<CustomerType>('customer_book', {
+        sexe: "TEXT",
+        name: "TEXT NOT NULL",
+        tel: "INTEGER",
+        town: "TEXT",
+        price: "INTEGER NOT NULL",
+        end: "TEXT",
+        enterprise: "TEXT",
+        ifu: "INTEGER",
+        actions: "TEXT NOT NULL",
+    });
+    const reservation_book = useLocalData<ReservationType>('reservation_book', {
+        name: "TEXT NOT NULL",
+        start: "TEXT NOT NULL",
+        end: "TEXT NOT NULL",
+        cancel: "TEXT",
+    });
+    const restaurant_book = useLocalData<RestaurantType>('restaurant_book', {
+        customerId: "TEXT NOT NULL",
+        time: "TEXT NOT NULL",
+        client: "TEXT NOT NULL",
+        article: "TEXT NOT NULL",
+        price: "INTEGER NOT NULL",
+        paid: "INTEGER NOT NULL",
+        cancel: "TEXT",
+    });
+
+    const addAlert = React.useCallback((alert: Infobulle) => {
+        setAlerts(alerts => [ alert, ...alerts ]);
+    }, []);
+
+    const popAlert = React.useCallback(() => {
+        setAlerts(([_, ...alerts]) => alerts);
+    }, []);
 
     React.useEffect(() => {
         const id = setInterval(() => {
-            setToday( new Date(Date.now()) );
+            setToday( new Date() );
         }, 3*60*60*1000);
         return () => clearInterval(id);
     }, []);
+
+    React.useEffect(() => {
+        supabase;
+    }, [today]);
 
     const receptionnists: Employer.Type[] = React.useMemo(() => {
         return employer_table.list.filter(employer => (
@@ -84,13 +142,14 @@ export function DataProvider({ children }: {
             employer.rules as Employer.Rule[]).includes('CLEANER'));
     }, [employer_table]);
 
-    const checkError = React.useCallback((handler : () => any, message?: string) => {
-        try {
-            handler();
-            if (message) setAlert(['success', message]);
-        }
-        catch (e) {
-            setAlert(['error', e instanceof Error ? e.message : String(e)]);
+    const getCleaner = React.useCallback((valletId?: Employer.Id) => {
+        return cleaners.find(cleaner => cleaner.id === valletId) ?? null;
+    }, [cleaners]);
+
+    const checkError = React.useCallback((handler : () => void) => {
+        try { handler(); }
+        catch (alert) {
+            addAlert(alert as Infobulle);
         }
     }, []);
 
@@ -151,8 +210,8 @@ export function DataProvider({ children }: {
 
     const isObsolet = React.useCallback((roomId: BedRoom.Id) => {
         const obsoletDay = new Date(Date.now() - 3*24*60*60*1000);
-        const cleaned = cleaning_book.get.find(clean => clean.roomId === roomId);
-        const customer = customer_book.get.find(customer => customer.roomId === roomId);
+        const cleaned = cleaning_book.getRoomId(roomId);
+        const customer = customer_book.getRoomId(roomId);
 
         if (!cleaned) return true;
         if (!cleaned.done) return false;
@@ -206,9 +265,10 @@ export function DataProvider({ children }: {
 
             receptionnists,
             cleaners,
+            getCleaner,
 
             popupList, addPopup, switchPopup, unPopup,
-            alert, setAlert, checkError,
+            alerts, addAlert, popAlert, checkError,
 
             cleanings,
             customers,

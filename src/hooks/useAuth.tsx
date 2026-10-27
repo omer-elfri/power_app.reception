@@ -3,18 +3,13 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { State, TypeWithTrace } from "../types";
+import { State } from "../types";
 import Employer from "../types/employer";
-import BedRoom from "../types/bedroom";
 
 type AuthContextType = {
     isAuth: () => AuthSession,
     connect: (userId: Employer.Id, password: string) => void,
     disconnect: () => void,
-    addTrace: <T extends Object>(
-        id: number, roomId: BedRoom.Id,
-        data: T, description?: string
-    ) => TypeWithTrace<T>,
     authSession: AuthSession | null,
     setAuthSession: State<AuthSession | null>,
 };
@@ -69,23 +64,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return authSession;
     }, [authSession]);
 
-    const addTrace = React.useCallback(<T extends Object>(
-        id: number, roomId: BedRoom.Id, data: T, description?: string
-    ): TypeWithTrace<T> => {
-        if (!authSession) throw Error("Vous devez vous connecté");
-        return ({ ...data, id, roomId,
-            description,
-            date: new Date(Date.now()),
-            auth_session: authSession.id,
-        });
-    }, [isAuth]);
-
     return (
         <authContext.Provider value={{
             isAuth,
             connect,
             disconnect,
-            addTrace,
             authSession,
             setAuthSession,
         }}> { children }

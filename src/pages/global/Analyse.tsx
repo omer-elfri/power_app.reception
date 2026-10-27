@@ -21,7 +21,7 @@ export default function AnalyseSection() {
       color: colors.cleaning
     },
     { label: 'Hors service',
-      value: analysis.issues.length,
+      value: analysis.issues.filter(room => room.issue?.priority === 'high').length,
       color: colors.issue
     },
     { label: 'Prêt à vendre',

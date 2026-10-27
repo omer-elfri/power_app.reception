@@ -59,7 +59,7 @@ export default function ActivitySection() {
         name="Chambre" subName="en néttoyage"
         color={colors.cleaning}
         onClick={() =>  addPopup(['LIST', 'clean'])}
-        infobulle={analysis.obsoletRooms.length > 0 && <MdWarning
+        infobulle={analysis.cleaning.obsolets.length > 0 && <MdWarning
           title="Certaines chambres sont obsolètes"
           className="text-yellow-600" />}
       />

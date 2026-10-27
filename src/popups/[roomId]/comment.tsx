@@ -40,18 +40,20 @@ export default function CommentBox({ room:bedRoom, className }: {
   );
 
   return (
-    <FormAside title="Commentaire" bar={false} right={rigth}
+    <FormAside title="Signaler un problème"
       className={twMerge('', className)} onSubmit={e => {
         e.preventDefault();
         checkError(() => {
           const message = e.target.message.value;
-          if (message === '') throw new Error("Rentrez un commentaire");
-          updateIssue(bedRoom.id, {priority, message});
+          if (message === '') throw ['error', "Rentrez un commentaire"];
+          updateIssue(bedRoom.id, { priority, message });
         });
       }}>
 
+      { rigth }
+
       <textarea name="message" defaultValue={bedRoom.issue?.message}
-        className='pt-3 pb-2 h-30 !border-none bg-gray-300/30 px-3 text-[12px]'
+        className='shadow-[inset_0_1px_1px_1px_rgba(0,0,0,0.15)] px-3 pt-3 pb-2 h-50 !border-none bg-gray-300/20 text-[12px]'
       />
 
       { !bedRoom.issue ? (

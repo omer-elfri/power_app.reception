@@ -10,19 +10,13 @@ export default function MyButton({ icon, iconRight, name, children, onClick, cla
     className?: string,
     disabled?: boolean,
 }) {
-    if (iconRight) return (
+    return (
         <button type='submit' name={name} onClick={onClick} disabled={disabled}
-            className={twMerge("bg-blue-400/30 text-[10px]", className)}>
+            className={twMerge("bg-blue-400/30 text-[10px] hover:scale-95", className)}>
             { icon }
-            { children && <span className="w-full text-left">{children}</span>}
+            { children && <span className="w-full text-center">{children}</span> }
             { iconRight }
         </button>
     );
-    return (
-        <button type='submit' name={name} onClick={onClick} disabled={disabled}
-            className={twMerge("bg-blue-400/30 text-[10px]", className)}>
-            { icon }
-            { children && <span className="w-full text-center">{children}</span> }
-        </button>
-    );
 }
+

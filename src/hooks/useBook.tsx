@@ -1,71 +1,94 @@
 import React from "react";
 import { useAuth } from "./useAuth";
+import { TableId } from "./useConfig";
 
-import { strToDate } from "../tools/date";
-import { Id, TypeWithTrace } from "../types";
+import { Id } from "../types";
 import BedRoom from "../types/bedroom";
+import Employer from "../types/employer";
+import { DB, Key_String } from "../tools/database";
+
+export type TypeWithTrace<T> = T & {
+    id: Id,
+    roomId: BedRoom.Id,
+    auth_session: Employer.Id,
+    date: Date,
+    description?: string,
+}
 
 export type LocalBook<T extends Object> = {
     get: TypeWithTrace<T>[];
     getId: (id: Id) => TypeWithTrace<T> | null,
+    getRoomId: (roomId: BedRoom.Id) => TypeWithTrace<T> | null,
     add: (roomId: BedRoom.Id, data: T, description?: string) => void;
     update: (id: number, data: Partial<TypeWithTrace<T>>, description?: string) => void;
     today: TypeWithTrace<T>[];
 }
 
-export function useLocalData<T extends Object>(table: string): LocalBook<T> {
-    const { addTrace } = useAuth();
+export function useLocalData<T extends Object>(table: TableId, tableObj: Key_String<T>): LocalBook<T> {
+    const { isAuth } = useAuth();
     const [datas, setDatas] = React.useState<TypeWithTrace<T>[]>([]);
 
-    React.useEffect(() => {
-        const stocked = localStorage.getItem(table);
-        if (!stocked) return;
-        const book = strToDate<TypeWithTrace<T>[]>(stocked)
-            ?.sort((a, b) => b.date.getTime() - a.date.getTime());
-        if (book) setDatas(book);
+    React.useEffect(() => { // create table
+        (async () => {
+            await DB.createTable<Key_String<TypeWithTrace<T>>>(
+                table, { ...tableObj, 
+                id: "INTEGER PRIMARY KEY AUTOINCREMENT",
+                roomId: "TEXT NOT NULL",
+                auth_session: "TEXT NOT NULL",
+                date: "TEXT NOT NULL",
+                description: "TEXT",
+            } );
+            await readTable();
+        })();
     }, []);
 
-    React.useEffect(() => {
-        if (datas.length === 0) return;
-        localStorage.setItem(table, JSON.stringify(datas));
-    }, [datas]);
-
     const get = React.useMemo(() => {
-        return datas.filter(data => !('cancel' in data));
+        return datas.filter(data => !('cancel' in data) || !data.cancel);
     }, [datas]);
 
     const getId = React.useCallback((id: Id) => {
         return datas.find(data => data.id === id) ?? null;
     }, [datas]);
 
-    const add = React.useCallback((
-        roomId: BedRoom.Id, data: T,
-        description?: string
-    ) => {
-        setDatas(list => {
-            const id = list.length === 0 ? 0 : list[0].id + 1;
-            const res = addTrace(id, roomId, data, description);
-            return [res, ...list];
-        });
-    }, [addTrace]);
+    const getRoomId = React.useCallback((roomId: BedRoom.Id) => {
+        return get.find(data => data.roomId === roomId) ?? null;
+    }, [get]);
 
-    const update = React.useCallback((
-        id: number,
+    const readTable = React.useCallback( // read table
+        async (): Promise<TypeWithTrace<T>[]
+    > => {
+        let stockedRows = await DB.readTable<TypeWithTrace<T>>(table)
+        stockedRows.sort((a, b) => b.date.getTime() - a.date.getTime());
+        setDatas(stockedRows);
+        return stockedRows;
+    }, []);
+
+    const add = React.useCallback(async (
+        roomId: BedRoom.Id,
+        data: T,
+        description?: string,
+    ) => {
+        await DB.insert_ignore<TypeWithTrace<T>>(table, {
+            ...data, roomId,
+            date: new Date(),
+            auth_session: isAuth().id,
+            description,
+        } as Omit<TypeWithTrace<T>, 'id'> ).then(readTable);
+    }, [datas, isAuth]);
+
+    const update = React.useCallback(async (
+        id: Id,
         data: Partial<TypeWithTrace<T>>,
         description?: string,
     ) => {
-        setDatas(list => {
-            const index = list.findIndex(elem => elem.id === id);
-            if (index === -1) throw new Error("Cette donnée est introuvable");
-            return list.map((elem, i) => (i === index)
-                ? { ...elem, ...data, description } : elem);
-        });
-    }, []);
+        await DB.update<TypeWithTrace<T>>(table, id, { ...data, description }).then(readTable);
+    }, [datas]);
 
     const today = React.useMemo(() => {
-        const today = new Date(Date.now());
+        const today = new Date();
         return get.filter(elem => elem.date.getDate() === today.getDate());
     }, [get]);
 
-    return { get, getId, add, update, today };
+    return { get, getId, getRoomId, add, update, today };
 }
+
