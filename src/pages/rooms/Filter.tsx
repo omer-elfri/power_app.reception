@@ -23,7 +23,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
     setDatas: State<BedRoom.Type[]>,
     className?: string,
 }) {
-    const { bedroom_table, bedroom_ctg_table } = useDataContext();
+    const { bedroom_table, bedroom_categories } = useDataContext();
     const [status, setStatus] = React.useState<StatusId[]>([]);
     const [search, setSearch] = React.useState("");
     const [stage, setStage] = React.useState<BedRoom.StageId | 'all'>('all');
@@ -37,11 +37,10 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
     React.useEffect(() => {
         const res = datas
             .filter((room) => { // search
-                const categoryNames = room.categories
-                    .map(ctgId =>  bedroom_ctg_table.getId(ctgId)?.name ?? "" );
+                const categoryName = room.category.name;
                 const textToSearch = room.id + " " +
                     (room.customer?.name ?? "") + " " +
-                    categoryNames.join(" ");
+                    categoryName;
                 const textToSearchFormated = textToSearch.toLowerCase()
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                 const searchFormated = search.toLowerCase()
@@ -54,13 +53,13 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
             })
             .filter((room) => { // category
                 if (category === 'all') return room;
-                return ( room.categories.includes(category) );
+                return room.category.id === category;// ( room.categories.includes(category) );
             })
             .filter((room) => { // status
                 if (status.includes('powered') && !room.power
                     || status.includes('sold') && !room.customer
                     || status.includes('free') && room.customer
-                    || status.includes('cleaning') && !room.cleaner
+                    || status.includes('cleaning') && !room.clean
                     || status.includes('coming') && !room.booked
                     || status.includes('issue') && !room.issue)
                     return false;
@@ -138,7 +137,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
                     setCategory(e.target.value as BedRoom.Category.Id | 'all');
                 }} className="border-1 !border-gray-600 text-gray-600 text-[11px] font-bold py-2 h-7">
                     <option value="all">Tous les catégories</option>
-                    { bedroom_ctg_table.list.map((roomCtg) => (
+                    { bedroom_categories.map((roomCtg) => (
                         <option key={roomCtg.id} value={roomCtg.id}>{roomCtg.name}</option>
                     )) }
                 </select>

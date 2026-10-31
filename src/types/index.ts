@@ -1,6 +1,5 @@
 import { ListStatus } from "../popups/list";
 import BedRoom from "./bedroom";
-import Employer from "./employer";
 
 export type State<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -15,11 +14,6 @@ export type Sex = 'Mr' | 'Mme';
 export type PriorityId = 'low' | 'medium' | 'high';
 
 export type StatusId = 'powered' | 'guest' | 'coming' | 'cleaning' | 'issue' | 'restaurant' | 'sold' | 'free';
-
-export type CancelType = {
-    date: Date,
-    auth_session?: Employer.Id,
-}
 
 
 export const colors: {[k in (StatusId)]: string} = {
@@ -43,3 +37,10 @@ export type PopupType =
     [ 'CHANGE_PASS'] |
     [ 'VALLET', BedRoom.Id ] ;
 
+
+const tables = [
+    'bedroom_table', 'bedroom_ctg_table', 'employer_table',
+    'cleaning_book', 'customer_book', 'reservation_book', 'restaurant_book',
+] as const;
+
+export type TableId = typeof tables[number];

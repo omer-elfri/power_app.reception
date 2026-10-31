@@ -14,7 +14,7 @@ type sideDivProps = {
 }
 
 export default function FormAside({ onSubmit, className, ...props }: sideDivProps & {
-    onSubmit?: (e: React.SubmitEvent<HTMLFormElement>) => void,
+    onSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void,
 }) {
     return (
         <form onSubmit={onSubmit} className={twMerge('bg-white/60 px-3 py-3 font-bold rounded shadow-md w-full', className)}>

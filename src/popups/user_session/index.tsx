@@ -1,12 +1,12 @@
 'use client';
 
-import Popup from "..";
-import { RiResetLeftFill } from "react-icons/ri";
-import { IoMdPower } from "react-icons/io";
+import React from "react";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "../../hooks/useAuth";
 import { useDataContext } from "../../hooks";
-import React from "react";
+
+import { RiResetLeftFill } from "react-icons/ri";
+import { IoMdPower } from "react-icons/io";
 
 export default function SessionPopup({ className }: {
   className?: string,

@@ -15,17 +15,13 @@ export default function RoomLine({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { cleaning_book, isObsolet, bedroom_ctg_table, getCleaner } = useDataContext();
-    const categoryNames = bedRoom.categories
-        .map(ctgId => ({ id: ctgId, ...bedroom_ctg_table.getId(ctgId) }) )
-        .map(({ name }) => name ).join(", ");
+    const { isObsolet } = useDataContext();
     const clientName = bedRoom.customer?.name ?? bedRoom.booked?.name ?? null;
 
     const cleaningState = (() => {
-        if (bedRoom.cleaner)
-            return getCleaner(bedRoom.cleaner?.valletId)?.name;
-        const clean = cleaning_book.getRoomId(bedRoom.id);
-        if (!clean) return "...";
+        if (bedRoom.clean)
+            return bedRoom.clean?.valet.name;
+        if (!bedRoom.lastClean) return "...";
         return !isObsolet(bedRoom.id) ? "Propre" : 'Sale';
     })();
 
@@ -49,7 +45,7 @@ export default function RoomLine({ room:bedRoom, className }: {
                 <div className="self-center">{issueIcon}</div>
             </div>
 
-            <div> {categoryNames} </div>
+            <div> {bedRoom.category.name} </div>
 
             <div className={twMerge("flex flex-row items-center gap-2", bedRoom.customer ? "text-black" : "text-gray-400")}>
                 { bedRoom.customer
@@ -64,8 +60,8 @@ export default function RoomLine({ room:bedRoom, className }: {
                 <span className="">{bedRoom.power ? "Allumée" : "Éteinte"}</span>
             </div>
 
-            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.cleaner ? "text-black" : isObsolet(bedRoom.id) ? "text-red-600" : "text-gray-400")}>
-                <GiBroom size={14} className={bedRoom.cleaner ? "text-blue-600" : ""} />
+            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.clean ? "text-black" : isObsolet(bedRoom.id) ? "text-red-600" : "text-gray-400")}>
+                <GiBroom size={14} className={bedRoom.clean ? "text-blue-600" : ""} />
                 <span className="">{cleaningState}</span>
             </div>
 

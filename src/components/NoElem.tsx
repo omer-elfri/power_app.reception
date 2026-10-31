@@ -9,7 +9,7 @@ export default function NoElem({ className, Icon, size=40, text, list, children,
   className?: string,
   text: string,
   list: any[],
-  children: React.ReactNode,
+  children?: React.ReactNode,
 }) {
   if (list.length > 0) return children;
 
@@ -20,7 +20,7 @@ export default function NoElem({ className, Icon, size=40, text, list, children,
         
         { bar && <hr className='w-full border-gray-400/40' /> }
         <div className={twMerge('flex flex-col justify-center items-center gap-4 \
-          text-gray-500/50 text-[12px] font-bold w-full h-full', className)}>
+          text-gray-500/50 text-[12px] font-bold w-full h-full', )}>
           { Icon && <Icon size={size} /> }
           <span>{text}</span>
         </div>

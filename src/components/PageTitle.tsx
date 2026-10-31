@@ -18,6 +18,8 @@ export default function PageTitle({ className, children }: {
     const { pathname } = useLocation();
     const { addPopup } = useDataContext();
 
+    if (!authSession) return null;
+
     return (
         <div className={twMerge("flex flex-row justify-between items-center gap-3 pt-5 pb-2 sticky top-0 bg-white/70 backdrop-blur-md z-30", className)}>
 
@@ -41,7 +43,7 @@ export default function PageTitle({ className, children }: {
 
             <div className="flex justify-center items-center gap-1 p-1 pr-3 rounded-full bg-blue-500/30 cursor-pointer" onClick={() => addPopup(['USER'])}>
                 <IoPersonCircle size={23} className="text-blue-600" />
-                <span className="font-bold text-[13px] uppercase">{authSession?.name}</span>
+                <span className="font-bold text-[13px] uppercase">{authSession.name}</span>
             </div>
             
             { children }

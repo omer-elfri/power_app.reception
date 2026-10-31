@@ -2,22 +2,22 @@
 
 import { twMerge } from 'tailwind-merge';
 
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
 import BedRoom from '../../types/bedroom';
 
 import { MdWarning } from 'react-icons/md';
-import FormAside from '../../components/FormAside';
+import { AsideDiv } from '../../components/FormAside';
 import { useDataContext } from '../../hooks';
 
 export default function IssueSide({ roomId:bedRoomId }: {
   roomId: BedRoom.Id,
 }) {
   const { isObsolet, addPopup } = useDataContext();
-  const { bedRooms } = useBedroom();
+  const { bedRooms } = useRequest();
   const bedRoom = bedRooms[bedRoomId];
 
   return (
-    <FormAside icon={<MdWarning size={15} className="text-gray-600" title="A besoin de néttoyage" />}
+    <AsideDiv icon={<MdWarning size={15} className="text-gray-600" title="A besoin de néttoyage" />}
       title="A votre attention" subClassName='flex flex-row flex-wrap gap-2'>
 
       { bedRoom.issue && <p className={twMerge("rounded px-2 py-1 text-[11px]",
@@ -33,6 +33,6 @@ export default function IssueSide({ roomId:bedRoomId }: {
         </div>
       ) }
 
-    </FormAside>
+    </AsideDiv>
   );
 }

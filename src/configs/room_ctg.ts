@@ -1,48 +1,40 @@
 import BedRoom from "../types/bedroom";
 
-export const room_ctg_list = [
+export const room_ctg_list: BedRoom.Category.Type[] = [
     {
-        'id': "economic",
+        'id': "ECN",
         'name': "Économique",
         'price': 10500,
         'option': "VENT",
     },
     {
-        'id': "standard",
+        'id': "STD",
         'name': "Standard",
         'price': 12500,
         'option': "CLIM",
     },
     {
-        'id': "executive",
+        'id': "EXC",
         'name': "Exécutive",
         'price': 18500,
         'option': "CLIM",
     },
     {
-        'id': "executive_plus",
+        'id': "EXC+",
         'name': "Exécutive Plus",
         'price': 25500,
         'option': "CLIM",
     },
     {
-        'id': "mini_suite",
+        'id': "MIN_SUT",
         'name': "Mini Suite",
         'price': 35500,
         'option': "CLIM",
     },
     {
-        'id': "suite",
+        'id': "SUT",
         'name': "Suite 1 Chambre",
         'price': 45500,
         'option': "CLIM",
     },
-] as const satisfies RoomCtgData[];
-
-export type RoomCtgData = {
-    id: BedRoom.Category.Id,
-    name: string,
-    price: number,
-    option: 'VENT' | 'CLIM',
-}
-
+];

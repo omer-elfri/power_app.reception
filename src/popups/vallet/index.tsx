@@ -2,7 +2,7 @@
 
 import { PopupBody } from "..";
 import { useDataContext } from "../../hooks";
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
 import BedRoom from "../../types/bedroom";
 import Employer from "../../types/employer";
 import { getString } from "../../tools";
@@ -10,13 +10,15 @@ import { getString } from "../../tools";
 import { Title } from "../../components/SectionBox";
 import { PersonSex2 } from "../../components/PersonSex";
 import { twMerge } from "tailwind-merge";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function ValletPopup({ roomId:bedRoomId, className }: {
   roomId: BedRoom.Id,
   className?: string,
 }) {
-  const { unPopup, cleaners, cleaning_book } = useDataContext();
-  const { clean_room } = useBedroom();
+  const { cleaners } = useAuth();
+  const { unPopup, cleaning_book } = useDataContext();
+  const { clean_room } = useRequest();
     
   return (
     <PopupBody top={<Title className="text-white">
@@ -26,7 +28,7 @@ export default function ValletPopup({ roomId:bedRoomId, className }: {
       subClassName="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-5 overflow-visible">
 
       { cleaners.map(cleaner => {
-        const roomsTotal = cleaning_book.today.filter(clean => clean.valletId === cleaner.id);
+        const roomsTotal = cleaning_book.today.filter(clean => clean.valet_id === cleaner.id);
         const roomsDone = roomsTotal.filter(clean => clean.done);
         return (
           <div key={cleaner.id} className="grid grid-rows-[1fr_auto] gap-2 p-4 bg-white rounded relative animate-1 cursor-pointer hover:scale-105 transition-transform duration-700 ease-in-out"

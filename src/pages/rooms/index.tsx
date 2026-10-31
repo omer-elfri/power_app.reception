@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react";
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
 
 import PageTitle from "../../components/PageTitle";
 import FilterSection from "./Filter";
@@ -11,7 +11,7 @@ import RoomSection from "./Rooms";
 export type FormType = 'line' | 'grid';
 
 export default function RoomsPage() {
-    const { bedRoomTab } = useBedroom();
+    const { bedRoomTab } = useRequest();
     const [form, setForm] = React.useState<FormType>('line');
     const [filteredRooms, setFilteredRooms] = React.useState(bedRoomTab);
 
@@ -25,7 +25,7 @@ export default function RoomsPage() {
                 <div className="flex flex-col gap-5 sticky top-18 self-start">
                     <FilterSection form={form} setForm={setForm}
                         datas={bedRoomTab} setDatas={setFilteredRooms} />
-                    <SoldedAside />
+                    <SoldedAside className="min-h-40" />
                 </div>
 
                 <RoomSection form={form} rooms={filteredRooms} />

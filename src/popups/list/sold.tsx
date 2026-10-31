@@ -24,11 +24,11 @@ export default function SoldTab({ datas }: {
         <MyTh Icon={IoRestaurantOutline} value="Restaurant" />
       ]}>
         { room => [
-          <span>{getFrenchDateTime(room.customer!.date)}</span>,
+          <span>{getFrenchDateTime(room.customer!.created_date)}</span>,
           <RoomId value={room.id} />,
           <PersonSex2 sexe={room.customer!.sexe}>{room.customer!.name}</PersonSex2>,
           <span>{room.customer!.description}</span>,
-          <span>{room.restauration.reduce((res, resto) => res + resto.price, 0)}</span>,
+          // <span>{room.restauration.reduce((res, resto) => res + resto.price, 0)}</span>,
         ] }
       </TheTable>
 

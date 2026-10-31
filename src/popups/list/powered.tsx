@@ -25,7 +25,7 @@ export default function PowerTab({ datas }: {
         { room => [
           <RoomId value={room.id} />,
           <span className=''>{room.customer?.name ?? ""}</span>,
-          <span className=''>{room.cleaner?.name ?? ""}</span>,
+          <span className=''>{room.clean?.valet.name ?? ""}</span>,
           <div className='flex flex-row justify-center'>
             <FaWifi size={15} className={ room.connected ? 'text-red-700' : 'text-gray-600/50'} />
           </div>,

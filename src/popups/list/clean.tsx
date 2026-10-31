@@ -1,6 +1,6 @@
 'use client';
 
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
 import { useDataContext } from "../../hooks";
 import BedRoom from '../../types/bedroom';
 import { getFrenchDateTime } from '../../tools/date';
@@ -10,7 +10,7 @@ import { PersonSex2} from '../../components/PersonSex';
 import { MyTh, RoomId, TheTable } from "./table";
 
 import { IoBedOutline } from "react-icons/io5";
-import { FaCheck, FaRegClock, FaWifi } from 'react-icons/fa';
+import { FaCheck, FaRegClock } from 'react-icons/fa';
 import { MdOutlineDescription, MdOutlinePerson2, MdWarning } from 'react-icons/md';
 import { PiBroomBold } from 'react-icons/pi';
 import { ImCross } from "react-icons/im";
@@ -19,8 +19,7 @@ import { BiBed } from "react-icons/bi";
 export function CleanTab({ datas }: {
   datas: BedRoom.Type[],
 }) {
-  const { cleanings } = useDataContext();
-  const { analysis, cancel_cleaning, done_cleaning } = useBedroom();
+  const { analysis, cancel_cleaning, done_cleaning } = useRequest();
 
   return (
     <div className="flex flex-col gap-3 min-h-full">
@@ -44,23 +43,24 @@ export function CleanTab({ datas }: {
           <MyTh Icon={MdOutlineDescription} value="Action" />,
         ]}>
           { room => {
-            const clean = cleanings.find(clean => clean.roomId === room.id);
+            const { cleaning_book } = useDataContext();
+            const clean = cleaning_book.getRoomId(room.id);
             if (!clean) return []
             return [
-              <span>{getFrenchDateTime(clean.date)}</span>,
+              <span>{getFrenchDateTime(clean.created_date)}</span>,
               <RoomId value={room.id} />,
-              <PersonSex2 sexe={room.cleaner!.sexe}>{room.cleaner!.name}</PersonSex2>,
+              <PersonSex2 sexe={room.clean!.valet.sexe}>{room.clean!.valet.name}</PersonSex2>,
               room.customer ? <PersonSex2 sexe={room.customer.sexe}>{room.customer.name}</PersonSex2> : <div />,
               <span className="text-[11px] text-gray-600">En néttoyage</span>,
 
               <div className="flex flex-row flex-wrap gap-3 invisible group-hover:visible" onClick={e => e.stopPropagation()}>
               
                 <div className="flex justify-center items-center p-1 size-5 bg-red-700 text-white rounded-full cursor-pointer"
-                  onClick={() => cancel_cleaning(room.cleaner!.id)}><ImCross size={10} />
+                  onClick={() => cancel_cleaning(room.clean!.id)}><ImCross size={10} />
                 </div>
     
                 <div className="flex justify-center items-center p-1 size-5 bg-blue-700 text-white rounded-full cursor-pointer"
-                  onClick={() => done_cleaning(room.cleaner!.id)}><FaCheck size={10} />
+                  onClick={() => done_cleaning(room.clean!.id)}><FaCheck size={10} />
                 </div>
     
               </div>

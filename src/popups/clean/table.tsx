@@ -4,8 +4,8 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 
 import { useDataContext } from "../../hooks";
-import { useBedroom } from "../../hooks/useBedroom";
-import { TypeWithTrace } from "../../hooks/useBook";
+import { useRequest } from "../../hooks/useRequest";
+import { TypeWithTrace } from "../../hooks/bd/useBook";
 
 import { getDuration, getTime } from "../../tools/date";
 import { CleanType } from "../../types/types";
@@ -22,7 +22,7 @@ export default function CleaningTable({ list, className }: {
   className?: string,
 }) {
   const { cleaning_book } = useDataContext();
-  const cleaningTab = cleaning_book.get.filter(clean => !clean.done);
+  const cleaningTab = cleaning_book.list.filter(clean => !clean.done);
 
   return (
     <div className={twMerge("flex flex-col gap-2 text-[13px] text-center font-bold", className)}>
@@ -46,7 +46,7 @@ export default function CleaningTable({ list, className }: {
 
           { list.length > 0 && <>
             <p className="flex flex-row gap-2 col-span-4 text-left mt-3 text-[12px]">
-              <span className="flex-1"> { list.length !== cleaning_book.get.length ? "Aujourd'hui" : "Toutes" }</span>
+              <span className="flex-1"> { list.length !== cleaning_book.list.length ? "Aujourd'hui" : "Toutes" }</span>
               <span>{list.length} chambres</span>
             </p>
             <div className="flex flex-col"> { list.map((clean, i) =>
@@ -83,30 +83,30 @@ function CleanLine({ clean, className, canCancel, index=-1 }: {
   canCancel?: boolean,
 }) {
   const { addPopup, getCleaner } = useDataContext();
-  const { done_cleaning, cancel_cleaning } = useBedroom();
+  const { done_cleaning, cancel_cleaning } = useRequest();
   return (
-      <TableTr index={index} onClick={() => addPopup(['ROOM', clean.roomId])}
+      <TableTr index={index} onClick={() => addPopup(['ROOM', clean.room_id])}
           className={twMerge(className, "group hover:bg-blue-400/20 cursor-pointer")}>
 
-        <p className="text-gray-600">{getTime(clean.date)}</p>
+        <p className="text-gray-600">{getTime(clean.created_date)}</p>
 
         <p className="text-[12px] cursor-pointer hover:underline"
           onClick={() => {
-            addPopup(['ROOM', clean.roomId]);
-          }}>{clean.roomId}
+            addPopup(['ROOM', clean.room_id]);
+          }}>{clean.room_id}
         </p>
 
-        <p className="text-gray-800">{getCleaner(clean.valletId)?.name}</p>
+        <p className="text-gray-800">{getCleaner(clean.valet_id)?.name}</p>
 
         <div className="flex flex-row justify-center items-center gap-2">
 
           { clean.done ? <>
-            { getDuration(clean.date, clean.done) }
+            { getDuration(clean.created_date, clean.done) }
             {/* { getTime(clean.done) } */}
             <FaCheck size={9} title="Fait" className="absolute bottom-1 right-2 text-green-700" />
           </>
 
-          : clean.cancel ?
+          : clean.cancel_date ?
             <span title="annulée" className="text-gray-400">annulé</span>
 
           : canCancel ? <div className="flex flex-row flex-wrap gap-1 hidden group-hover:flex" onClick={e => e.stopPropagation()}>

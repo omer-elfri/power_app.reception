@@ -5,7 +5,7 @@ import "./App.css";
 
 import { DataProvider } from "./hooks";
 import { AuthProvider } from "./hooks/useAuth";
-import { BedRoomProvider } from "./hooks/useBedroom";
+import { RequestProvider } from "./hooks/useRequest";
 
 import App from "./App";
 
@@ -14,9 +14,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <BrowserRouter>
     <AuthProvider>
       <DataProvider>
-        <BedRoomProvider>
+        <RequestProvider>
           <App />
-        </BedRoomProvider>
+        </RequestProvider>
       </DataProvider>
     </AuthProvider>
   </BrowserRouter>

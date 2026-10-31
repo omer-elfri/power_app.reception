@@ -34,7 +34,7 @@ export function FreeTab({ datas }: {
           return [
             <span>{ customer?.end ? getFrenchDateTime(customer.end) : "..." }</span>,
             <RoomId value={room.id} />,
-            <span>{ room.cleaner?.name ?? "..." }</span>,
+            <span>{ room.clean?.valet.name ?? "..." }</span>,
 
             <div className='flex flex-row justify-end'>
               { room.issue && <IssueLabel issue={room.issue} /> }

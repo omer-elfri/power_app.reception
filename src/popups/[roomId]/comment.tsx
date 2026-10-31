@@ -7,7 +7,7 @@ import { PriorityId, State } from '../../types';
 import BedRoom from '../../types/bedroom';
 import { MdError, MdWarning } from "react-icons/md";
 import FormAside from '../../components/FormAside';
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
 import { useDataContext } from '../../hooks';
 
 export default function CommentBox({ room:bedRoom, className }: {
@@ -15,7 +15,7 @@ export default function CommentBox({ room:bedRoom, className }: {
   className?: string,
 }) {
   const { checkError } = useDataContext();
-  const { updateIssue } = useBedroom();
+  const { updateIssue } = useRequest();
   const [priority, setPriority] = React.useState<PriorityId>(bedRoom.issue?.priority ?? 'low');
 
   const rigth = (
@@ -43,7 +43,7 @@ export default function CommentBox({ room:bedRoom, className }: {
     <FormAside title="Signaler un problème"
       className={twMerge('', className)} onSubmit={e => {
         e.preventDefault();
-        checkError(() => {
+        checkError(async () => {
           const message = e.target.message.value;
           if (message === '') throw ['error', "Rentrez un commentaire"];
           updateIssue(bedRoom.id, { priority, message });

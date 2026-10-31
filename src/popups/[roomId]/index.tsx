@@ -4,7 +4,7 @@ import React from "react";
 import { CloseBtn, PopupBody } from "..";
 
 import { useDataContext } from '../../hooks';
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
 import BedRoom from '../../types/bedroom';
 
 import { Title } from "../../components/SectionBox";
@@ -21,10 +21,10 @@ import { IoBed } from "react-icons/io5";
 import RoomStatus from "../../components/RoomStatus";
 import OngletTab, { OngletType } from "../../components/OngletTab";
 import { MdWarning } from "react-icons/md";
-import CheckInForm, { CheckInComment } from "./check_in";
+import CheckInForm, { CheckInComment, SubmitButtons } from "./check_in";
 import MyButton from "../../components/MyButton";
-import { FaCheck, FaExchangeAlt } from "react-icons/fa";
-import FormAside from "../../components/FormAside";
+import { FaCheck } from "react-icons/fa";
+import { twMerge } from "tailwind-merge";
 
 const ongletList: OngletType[] = [
   {
@@ -46,8 +46,8 @@ export default function RoomPopup({ roomId:bedRoomId, className }: {
   roomId: BedRoom.Id,
   className?: string,
 }) {
-  const { isObsolet, cleaning_book, addAlert, switchPopup, addPopup, cleanings } = useDataContext();
-  const { bedRooms, check_in, check_update, bedRoomTab, check_out } = useBedroom();
+  const { isObsolet, cleaning_book, switchPopup } = useDataContext();
+  const { bedRooms, bedRoomTab, check_in } = useRequest();
   const bedRoom = bedRooms[bedRoomId];
   const onglets = React.useMemo(() => bedRoom.customer ? ongletList : ongletList.slice(1,3), [bedRoom]);
   const [onglet, setOnglet] = React.useState(onglets[0].key);
@@ -59,54 +59,23 @@ export default function RoomPopup({ roomId:bedRoomId, className }: {
   const title = (
     <Title bar icon={<IoBed size={16} />} right={<CloseBtn />} className='text-gray-500'>
       <span>CH</span>
-      <select className="!border-0 text-black text-[15px]" value={bedRoom.id} onChange={e => switchPopup(['ROOM', e.target.value as BedRoom.Id])}>
+      <select className="!border-0 text-black text-[15px]" value={bedRoom.id} onChange={e => switchPopup(['ROOM', e.target.value])}>
         { bedRoomTab.map(room => <option key={room.id}>{room.name}</option>) }
       </select>
       <RoomStatus room={bedRoom} />
     </Title>
   );
 
-
-
-    //     bottom={<SubmitButtons className="self-end" room={bedRoom} />} onSubmit={e => {
-    //   e.preventDefault();
-    //   const sexe = e.target.sexe.value as Sex;
-    //   const name = e.target.fullname.value as string;
-    //   const description = e.target.description.value as string;
-    //   const price = e.target.price.value as number;
-    //   const tel = e.target.tel.value as number;
-    //   const town = e.target.town.value as string;
-
-    //   if (e.target.check_in) {
-    //       if (name === "") {
-    //           addAlert(['error', "Vous devez renseigner le nom du client"]);
-    //           throw Error("Vous devez renseigner le nom du client");
-    //       }
-    //       check_in(bedRoom.id, { sexe, name, tel, town, price }, description);
-    //   }
-    //   if (e.target.check_update) {
-    //       if (!bedRoom.customer) throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
-    //       check_update(bedRoom.customer.id, { sexe, name, tel, town }, description);
-    //   }
-    // }}
-
-    React.useEffect(() => {
-      console.log("cleanings", cleanings)
-      console.log("cleaning_book", cleaning_book.get.filter(c => !c.done))
-    }, [cleanings, cleaning_book])
-  
   const LeftSide = React.useCallback(({ children }: {
     children?: React.ReactNode,
   }) => {
-    const lastClean = cleaning_book.getRoomId(bedRoom.id);
-    console.log('lastClean', lastClean)
     return (
       <div className="grid grid-cols-[3fr_4fr] gap-3 flex-1">
         
         <div className="flex flex-col gap-3">
           { ( bedRoom.issue || isObsolet(bedRoomId) ) &&
             <IssueSide roomId={bedRoom.id} /> }
-          <CleaningBox roomId={bedRoom.id} clean={lastClean} />
+          <CleaningBox roomId={bedRoom.id} />
           <ReservationTab room={bedRoom} className="flex-1" />
         </div>
 
@@ -119,7 +88,13 @@ export default function RoomPopup({ roomId:bedRoomId, className }: {
   }, [bedRoom, isObsolet, cleaning_book]);
 
   return (
-    <PopupBody top={title} className='min-h-160'>
+    <PopupBody top={title} className={twMerge('derh-160', className)} bottom={
+      onglet === 'register' && (
+        <div className="flex flex-row justify-end items-center gap-3">
+          <SubmitButtons room={bedRoom} />
+        </div>
+      )
+    }>
 
         <OngletTab onglet={onglet} setOnglet={setOnglet} datas={onglets}>
 
@@ -143,29 +118,27 @@ export default function RoomPopup({ roomId:bedRoomId, className }: {
 
           { onglet === 'register' && (
               <LeftSide>
+                <form className="flex flex-col gap-y-3" onSubmit={e => {
+                  e.preventDefault();
+                  const sexe = e.target.sexe.value;
+                  const fullname = e.target.fullname.value;
+                  const tel = e.target.tel.value;
+                  const town = e.target.town.value;
+                  const reason = e.target.reason.value;
+                  const price = e.target.price.value;
+                  
+                  check_in(bedRoomId, { sexe, name: fullname, tel, town, reason, price });
+                }}>
                   <CheckInForm room={bedRoom} />
                   <CheckInComment room={bedRoom} className="flex-1" />
 
-                  <div className="flex flex-row justify-end items-center gap-3">
-                    <MyButton name='check_out' icon={<FaExchangeAlt />}
-                        onClick={() => {
-                            if (!bedRoom.customer) throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
-                            check_out(bedRoom.customer.id);
-                            if (!bedRoom.cleaner) addPopup(['VALLET', bedRoom.id]);
-                        }}
-                        className="bg-transparent border-1 text-red-700 border-red-700 !py-1 !px-1">Check out
-                    </MyButton>
-                    <MyButton name="check_in" iconRight={<FaCheck className="" />}
-                        className="bg-blue-500 !py-1 text-white uppercase self-end">Check in
-                    </MyButton>
-                  </div>
+                </form>
               </LeftSide>
           ) }
 
           { onglet === 'room' && (
               <LeftSide>
-                <CommentBox room={bedRoom} className='col-span-full' />
-                <FormAside bar={false} className='flex-1' />
+                <CommentBox room={bedRoom} className='col-span-full row-span-2 h-full' />
               </LeftSide>
           ) }
 

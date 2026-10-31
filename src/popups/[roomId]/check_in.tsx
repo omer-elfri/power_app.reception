@@ -2,16 +2,14 @@
 
 import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../hooks";
-import { useBedroom } from "../../hooks/useBedroom";
-import { Sex } from "../../types";
+import { useRequest } from "../../hooks/useRequest";
 import BedRoom from "../../types/bedroom";
 
 import LabelInput from "../../components/LabelInput";
 import MyButton from "../../components/MyButton";
 import { FaCheck, FaExchangeAlt } from "react-icons/fa";
-import { Title } from "../../components/SectionBox";
 import { MdPerson } from "react-icons/md";
-import FormAside, { AsideDiv } from "../../components/FormAside";
+import { AsideDiv } from "../../components/FormAside";
 
 const style = "!border-gray-400 h-8 shadow-[inset_0_1px_1px_1px_rgba(0,0,0,0.15)]";
 
@@ -19,38 +17,11 @@ export default function CheckInForm({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { addPopup, addAlert, bedroom_ctg_table } = useDataContext();
-    const { check_in, check_update } = useBedroom();
     const clientName = bedRoom.customer?.name ?? bedRoom.booked?.name ?? "";
-    const realPrice = bedRoom.customer?.price
-        ?? bedroom_ctg_table.getId( bedRoom.categories[0] )?.price ?? 0;
+    const realPrice = bedRoom.customer?.price ?? bedRoom.category.price;
 
     return (
-        <AsideDiv icon={<MdPerson />} title="Enrégistrement"
-            className={twMerge("", className)}
-            // bottom={<SubmitButtons room={bedRoom} />}
-        //     onSubmit={e => {
-        //     e.preventDefault();
-        //     const sexe = e.target.sexe.value as Sex;
-        //     const name = e.target.fullname.value as string;
-        //     const description = e.target.description.value as string;
-        //     const price = e.target.price.value as number;
-        //     const tel = e.target.tel.value as number;
-        //     const town = e.target.town.value as string;
-
-        //     if (e.target.check_in) {
-        //         if (name === "") {
-        //             addAlert(['error', "Vous devez renseigner le nom du client"]);
-        //             throw Error("Vous devez renseigner le nom du client");
-        //         }
-        //         check_in(bedRoom.id, { sexe, name, tel, town, price }, description);
-        //     }
-        //     if (e.target.check_update) {
-        //         if (!bedRoom.customer) throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
-        //         check_update(bedRoom.customer.id, { sexe, name, tel, town }, description);
-        //     }
-        // }}
-        >
+        <AsideDiv icon={<MdPerson />} title="Enrégistrement" className={twMerge("", className)}>
 
             <div className="grid grid-cols-6 gap-x-2 gap-y-2 text-[12px]">
 
@@ -67,8 +38,7 @@ export default function CheckInForm({ room:bedRoom, className }: {
                     inputClassName={twMerge("uppercase", style)}
                 />
 
-                <LabelInput label="Téléphone"
-                    name="tel" type="tel"
+                <LabelInput label="Téléphone" name="tel" type="tel"
                     defaultValue={bedRoom.customer?.tel?.toString()}
                     placeholder="01 .. .. .. .."
                     className="col-span-3"
@@ -84,7 +54,7 @@ export default function CheckInForm({ room:bedRoom, className }: {
 
                 <LabelInput label="Raison du séjour" name="reason"
                     className="col-span-4"
-                    defaultValue={''}
+                    defaultValue={bedRoom.customer?.reason}
                     inputClassName={twMerge("text-[12px] py-[5px]", style)}
                 />
 
@@ -128,16 +98,16 @@ export function SubmitButtons({ room:bedRoom, className }: {
     room: BedRoom.Type,
 }) {
     const { addPopup } = useDataContext();
-    const { check_out } = useBedroom();
+    const { check_out } = useRequest();
 
     return (
         <div className={twMerge("grid grid-cols-2 gap-2", className)}>
 
-            <MyButton name='check_out' icon={<FaExchangeAlt />}
+            <MyButton name='check_out' icon={<FaExchangeAlt />} disabled={!bedRoom.customer}
                 onClick={() => {
                     if (!bedRoom.customer) throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
                     check_out(bedRoom.customer.id);
-                    if (!bedRoom.cleaner) addPopup(['VALLET', bedRoom.id]);
+                    if (!bedRoom.clean) addPopup(['VALLET', bedRoom.id]);
                 }}
                 className="bg-transparent border-1 text-red-700 border-red-700 !py-1">Check out
             </MyButton>

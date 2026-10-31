@@ -18,7 +18,7 @@ export default function RoomBox({ room:bedRoom, onClick, className }: {
                 <h2 className="flex-1 font-bold text-[13px]">{bedRoom.id}</h2>
 
                 { !bedRoom.connected && <FaWifi size={14} /> }
-                { bedRoom.cleaner && <GiBroom size={14} className="text-blue-600" /> }
+                { bedRoom.clean && <GiBroom size={14} className="text-blue-600" /> }
 
                 { (bedRoom.issue?.priority === 'high') ? 
                     <MdError size={15} className="text-red-600" /> :

@@ -1,21 +1,21 @@
 import { Sex } from ".";
 
 namespace Employer {
-    export type Id = string;
+    export type Id = number;
 
     export type Type = {
-        id: Id,
+        id: number,
         sexe: Sex,
         name: string,
-        pass: string,
         rules: Rule[],
+        auth_user_id?: string,
     }
 
     export type Rule =
-        'RECEPTIONIST'
-        | 'CLEANER'
-        | 'RESTAURANT'
-        | 'SECURITY'
+        'receptionnist'
+        | 'cleaner'
+        | 'cooker'
+        | 'security'
 
     export type AuthSession = string
 }

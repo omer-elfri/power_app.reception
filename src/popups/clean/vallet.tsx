@@ -6,9 +6,10 @@ import Employer from "../../types/employer";
 import { getString } from "../../tools";
 import { PersonSex2 } from "../../components/PersonSex";
 import { useDataContext } from "../../hooks";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function ValletAside() {
-  const { cleaners } = useDataContext();
+  const { cleaners } = useAuth();
 
   return (
     <div className="flex flex-col gap-3">
@@ -16,7 +17,7 @@ export default function ValletAside() {
 
       <div className="flex flex-col shadow-[inset_0_2px_4px_4px__rgba(0,0,0,0.15)] rounded-md p-2">
         { cleaners.map((cleaner, i) =>
-          <ValletLine key={cleaner.id} cleanerId={cleaner.id as Employer.Id}
+          <ValletLine key={cleaner.id} valetId={cleaner.id as Employer.Id}
             className={ (i !== cleaners.length-1) ? "border-b-1" : ""}
           />
         ) }
@@ -26,13 +27,13 @@ export default function ValletAside() {
   );
 }
 
-export function ValletLine({ cleanerId, className }: {
-  cleanerId: Employer.Id,
+export function ValletLine({ valetId, className }: {
+  valetId: Employer.Id,
   className?: string,
 }) {
   const { cleaning_book, getCleaner } = useDataContext();
-  const cleaner = getCleaner(cleanerId);
-  const roomsTotal = cleaning_book.today.filter(clean => clean.valletId === cleanerId);
+  const cleaner = getCleaner(valetId);
+  const roomsTotal = cleaning_book.today.filter(clean => clean.valet_id === valetId);
   const roomsDone = roomsTotal.filter(clean => clean.done);
 
   if (!cleaner) return null;

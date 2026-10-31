@@ -1,39 +1,34 @@
 'use client'
 
 import { twMerge } from "tailwind-merge";
-import { useDataContext } from "../../hooks";
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
 import BedRoom from "../../types/bedroom";
 
-import FormAside from "../../components/FormAside";
 import LabelInput from "../../components/LabelInput";
 import MyButton from "../../components/MyButton";
-
 import { FaExchangeAlt } from "react-icons/fa";
-import { HiSwitchHorizontal } from "react-icons/hi";
 
 export default function ChangeRoom({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { addPopup } = useDataContext();
-    const { analysis, bedRooms, bedRoomTab, check_move } = useBedroom();
+    const { analysis, bedRoomTab } = useRequest();
 
-    const submitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const roomId = e.target.roomId.value as BedRoom.Id;
-        const description = e.target.description.value as string;
-        const toRoom = bedRooms[roomId];
-        if (!bedRoom.customer)
-            throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
-        if (toRoom.customer)
-            throw Error(`La chambre ${roomId} est déjà occupée`);
-        check_move(bedRoom.customer.id, roomId, description);
-        addPopup(['ROOM', roomId]);
-    }
+    // const submitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
+    //     e.preventDefault();
+    //     const roomId = e.target.roomId.value as BedRoom.Id;
+    //     const description = e.target.description.value as string;
+    //     const toRoom = bedRooms[roomId];
+    //     if (!bedRoom.customer)
+    //         throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
+    //     if (toRoom.customer)
+    //         throw Error(`La chambre ${roomId} est déjà occupée`);
+    //     check_move(bedRoom.customer.id, roomId, description);
+    //     addPopup(['ROOM', roomId]);
+    // }
 
     return (
-        <div className="flex flex-row items-center gap-2 bg-white/60 px-3 py-3 font-bold rounded shadow-md w-full">
+        <div className={twMerge("flex flex-row items-center gap-2 bg-white/60 px-3 py-3 font-bold rounded shadow-md w-full", className)}>
             <FaExchangeAlt size={10} />
             <label className="flex-1">Déplacer vers</label>
             <LabelInput name="roomId" options={

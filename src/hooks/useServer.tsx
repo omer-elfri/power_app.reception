@@ -1,7 +1,7 @@
 'use client'
 
 import React from "react";
-import { useBedroom } from '../hooks/useBedroom';
+import { useRequest } from '../hooks/useRequest';
 
 import { invoke } from "@tauri-apps/api/core";
 import { sendNotification } from "@tauri-apps/plugin-notification";
@@ -9,7 +9,7 @@ import { listen } from "@tauri-apps/api/event";
 import BedRoom from "../types/bedroom";
 
 export function useServer() {
-    const { switch_power } = useBedroom();
+    const { switch_power } = useRequest();
 
     React.useEffect(() => {
         (async () => {

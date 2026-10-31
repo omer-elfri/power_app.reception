@@ -2,45 +2,33 @@ import Employer from "../types/employer";
 
 export const employers_datas = [
     {
-        id: "Hillary",
         sexe: 'Mme',
         name: "Hillary",
-        pass: "1234",
-        rules: [ 'RECEPTIONIST', ],
+        rules: [ 'receptionnist', ],
     },
     {
-        id: "Romuald",
         sexe: 'Mr',
         name: "Romuald",
-        pass: "1234",
-        rules: [ 'RECEPTIONIST', ],
+        rules: [ 'receptionnist', ],
     },
     {
-        id: "Théophane",
         sexe: 'Mr',
         name: "Théophane",
-        pass: "1234",
-        rules: [ 'CLEANER', ],
+        rules: [ 'cleaner', ],
     },
     {
-        id: "Albérique",
         sexe: 'Mme',
         name: "Albérique",
-        pass: "1234",
-        rules: [ 'CLEANER', ],
+        rules: [ 'cleaner', ],
     },
     {
-        id: "Alexis",
         sexe: 'Mr',
         name: "Alexis",
-        pass: "1234",
-        rules: [ 'CLEANER', 'SECURITY', ],
+        rules: [ 'cleaner', 'security', ],
     },
     {
-        id: "Le vieux",
         sexe: 'Mr',
         name: "Le vieux",
-        pass: "1234",
-        rules: [ 'SECURITY', ],
+        rules: [ 'security', ],
     },
 ] as Employer.Type[];

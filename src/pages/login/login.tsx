@@ -78,10 +78,10 @@ export function ReceptionSelect({ name, value, onTextChange }: {
   value?: string,
   onTextChange?: (text: string) => void,
 }) {
-  const { receptionnists } = useDataContext();
+  const { receptionnists } = useAuth();
 
   return (
-    <select id={name} name={name} required
+    <select id={name} name={name} //required
       value={value} onChange={e => onTextChange?.(e.target.value)}
       className="!border-none h-8 text-[14px] flex-1 uppercase font-bold text-gray-600">
       { receptionnists.map(employer => (

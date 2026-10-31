@@ -2,7 +2,7 @@
 
 import { useDataContext } from "../../hooks";
 import { twMerge } from "tailwind-merge";
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
 
 import { getFrenchDate, getTime } from "../../tools/date";
 import NoElem from "../../components/NoElem";
@@ -12,11 +12,9 @@ export default function BookingInfos({ className, setBookId }: {
   className?: string,
   setBookId: State<number | undefined>,
 }) {
-  const { addPopup, reservations } = useDataContext();
-  const { cancel_book } = useBedroom();
-  const list = reservations
-    .sort((a, b) => a.start.getDate() - b.start.getDate());
-  const dateReservations = Object.groupBy(list, rsv => getFrenchDate(rsv.start));
+  const { addPopup, reservation_book } = useDataContext();
+  const { cancel_book } = useRequest();
+  const dateReservations = Object.groupBy(reservation_book.list, rsv => getFrenchDate(rsv.start_date));
   const reservationList = Object.entries(dateReservations);
 
   return (
@@ -35,12 +33,12 @@ export default function BookingInfos({ className, setBookId }: {
               { room_rsvs?.map(rsv =>
                 <TableTr key={rsv.id} className="hover:bg-blue-400/20 cursor-pointer"
                   onClick={() => setBookId(rsv.id)} values={[
-                  <p>{getTime(rsv.date)}</p>,
-                  <p className="text-black text-[12px] a" onClick={() => addPopup(['ROOM', rsv.roomId])}>{rsv.roomId}</p>,
+                  <p>{getTime(rsv.created_date)}</p>,
+                  <p className="text-black text-[12px] a" onClick={() => addPopup(['ROOM', rsv.room_id])}>{rsv.room_id}</p>,
                   <p className="uppercase">{rsv.name}</p>,
-                  <p>{getFrenchDate(rsv.start).slice(0,6)}</p>,
-                  <p>{rsv.end ? getFrenchDate(rsv.end).slice(0,6) : "..."}</p>,
-                  rsv.cancel
+                  <p>{getFrenchDate(rsv.start_date).slice(0,6)}</p>,
+                  <p>{rsv.end_date ? getFrenchDate(rsv.end_date).slice(0,6) : "..."}</p>,
+                  rsv.cancel_date
                   ? <p className="text-gray-500/50">annulée</p>
                   : <p className="text-red-700 hover:underline cursor-pointer"
                       onClick={() => cancel_book(rsv.id)}>annuler</p>,

@@ -14,18 +14,20 @@ import CleaningForm from "./form";
 import { ValletLine } from "./vallet";
 import BedRoom from "../../types/bedroom";
 import Employer from "../../types/employer";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function CleaningPopup({ roomId, className }: {
   roomId?: BedRoom.Id,
   className?: string,
 }) {
-  const { cleaning_book, cleaners } = useDataContext();
+  const { cleaners } = useAuth();
+  const { cleaning_book } = useDataContext();
   const [selectedDate, setSelectedDate] = React.useState<Date>();
 
-  const cleanedAtDate = cleaning_book.get.filter(clean => {
+  const cleanedAtDate = cleaning_book.list.filter(clean => {
     if (!selectedDate) return true;
     return (
-      clean.date.getDate() === selectedDate.getDate() ||
+      clean.created_date.getDate() === selectedDate.getDate() ||
       clean.done?.getDate() === selectedDate.getDate()
     );
   });
@@ -51,7 +53,7 @@ export default function CleaningPopup({ roomId, className }: {
 
         <div className="grid grid-cols-3 gap-3 px-2 py-3 col-span-full sticky bottom-0 bg-white">
           { cleaners.map((cleaner, i) =>
-            <ValletLine key={cleaner.id} cleanerId={cleaner.id as Employer.Id}
+            <ValletLine key={cleaner.id} valetId={cleaner.id as Employer.Id}
               className={twMerge("p-2", (i !== cleaners.length-1) ? "border-r-1" : "")} />
           ) }
         </div>

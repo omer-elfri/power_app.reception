@@ -2,10 +2,14 @@
 
 import { PieChart } from '@mui/x-charts/PieChart';
 import { colors } from "../../types";
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
+import SectionBox, { Title } from '../../components/SectionBox';
+import { twMerge } from 'tailwind-merge';
 
-export default function AnalyseSection() {
-  const { analysis } = useBedroom();
+export default function AnalyseSection({ className }: {
+  className?: string,
+}) {
+  const { analysis, bedRoomTab } = useRequest();
 
   const data = [
     { label: 'Vendu',
@@ -30,7 +34,10 @@ export default function AnalyseSection() {
     },
   ];
   return (
-    <div className="flex flex-col w-full gap-3">
+    <SectionBox className={twMerge("", className)}
+      top={<Title>Analyse</Title>}
+      subClassName="w-full gap-3">
+
       <PieChart
         className="self-center"
         width={140}
@@ -39,7 +46,11 @@ export default function AnalyseSection() {
         series={[{
           innerRadius: 20,
           outerRadius: 70,
-          data,
+          data: bedRoomTab.length > 0 ? data : [{
+            label: 'Chargement...',
+            value: 1,
+            color: '#8997aa30'
+          }],
           // arcLabel: 'value',
           paddingAngle: 1,
           cornerRadius: 5,
@@ -58,6 +69,7 @@ export default function AnalyseSection() {
           </tr> ) }
         </tbody>
       </table>
-    </div>
+
+    </SectionBox>
   );
 }

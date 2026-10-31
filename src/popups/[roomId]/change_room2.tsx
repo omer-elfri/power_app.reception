@@ -2,7 +2,7 @@
 
 import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../hooks";
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
 import BedRoom from "../../types/bedroom";
 
 import FormAside from "../../components/FormAside";
@@ -17,18 +17,17 @@ export default function ChangeRoom2({ room:bedRoom, className }: {
     className?: string,
 }) {
     const { addPopup } = useDataContext();
-    const { analysis, bedRooms, bedRoomTab, check_move } = useBedroom();
+    const { analysis, bedRooms, bedRoomTab, check_move } = useRequest();
 
     const submitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         const roomId = e.target.roomId.value as BedRoom.Id;
-        const description = e.target.description.value as string;
         const toRoom = bedRooms[roomId];
         if (!bedRoom.customer)
             throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
         if (toRoom.customer)
             throw Error(`La chambre ${roomId} est déjà occupée`);
-        check_move(bedRoom.customer.id, roomId, description);
+        check_move(bedRoom.customer.id, roomId);
         addPopup(['ROOM', roomId]);
     }
 

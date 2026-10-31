@@ -1,4 +1,4 @@
-import { TypeWithTrace } from "../hooks/useBook";
+import { TypeWithTrace } from "../hooks/bd/useBook";
 import { TypeWithId } from "../types";
 
 export function uniqueId<T extends Record<string, any>>(
@@ -88,53 +88,5 @@ export function getPerIdBook2
         }
     }
     return res;
-}
-
-
-
-
-
-export function parseValue(value: unknown): unknown {
-  if (typeof value !== 'string') return value;
-
-  // Objet ou tableau JSON
-  try {
-    const parsed: unknown = JSON.parse(value);
-
-    if (typeof parsed === 'object' && parsed !== null) {
-      return parsed;
-    }
-  } catch {}
-
-  // Date ISO
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-    const date = new Date(value);
-    if (!Number.isNaN(date.getTime())) return date;
-  }
-
-  return value;
-}
-
-export function parseRow<T extends object>(row: Record<string, unknown>): T {
-  return Object.fromEntries(
-    Object.entries(row).map(([key, value]) => [
-      key,
-      parseValue(value),
-    ])
-  ) as T;
-}
-
-export function parseSqlValues(values: any[]): any[] {
-  return values.map(value => {
-    if (value === undefined) return null;
-
-    if (value instanceof Date)
-      return value.toISOString();
-
-    if (typeof value === 'object' && value !== null)
-      return JSON.stringify(value);
-
-    return value;
-  });
 }
 

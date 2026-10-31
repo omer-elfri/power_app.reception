@@ -4,18 +4,15 @@ import React, { useEffect } from 'react';
 import { CloseBtn, PopupBody } from "..";
 
 import { useDataContext } from "../../hooks";
-import { useBedroom } from "../../hooks/useBedroom";
+import { useRequest } from "../../hooks/useRequest";
 import BedRoom from '../../types/bedroom';
 import { getString } from '../../tools';
 
-// import { CleanTab, FreeTab, IssueTab, PowerTab, SoldTab } from './tabs';
 import OngletTab from '../../components/OngletTab';
 import { Title } from "../../components/SectionBox";
-import NoElem from '../../components/NoElem';
 
 import { IoBed } from "react-icons/io5";
 import { PiBroomBold } from 'react-icons/pi';
-import { BiBed } from 'react-icons/bi';
 import PowerTab from './powered';
 import { FreeTab } from './free';
 import SoldTab from './sold';
@@ -32,7 +29,7 @@ export default function ListPopup({ status, className }: {
 }) {
   const [onglet, setOnglet] = React.useState<ListStatus>(status ?? 'powered');
   const { addPopup, switchPopup } = useDataContext();
-  const { analysis } = useBedroom();
+  const { analysis } = useRequest();
 
   const options: {[k in ListStatus] : { value: string, rooms: BedRoom.Type[], style?: string }} = {
     'powered': { value: "Alimentées", rooms: analysis.powered, },

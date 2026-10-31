@@ -3,7 +3,7 @@
 import { twMerge } from "tailwind-merge";
 import BedRoom from "../../types/bedroom";
 
-import FormAside from "../../components/FormAside";
+import { AsideDiv } from "../../components/FormAside";
 import { RiRestaurantFill, RiServiceBellLine } from "react-icons/ri";
 
 import { formatPrice } from "../../tools";
@@ -15,8 +15,9 @@ export default function Restaurant({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { restaurant } = useDataContext();
-    const roomRestos = restaurant.filter(resto => resto.customerId === bedRoom.customer?.id);
+    const { customer_book, restaurant_book } = useDataContext();
+    const roomRestos = restaurant_book.list
+        .filter(resto => resto.customer_id === bedRoom.customer?.id);
     const totalPrice = roomRestos.reduce((res, resto) => res + resto.price, 0);
 
     const right = (
@@ -27,7 +28,7 @@ export default function Restaurant({ room:bedRoom, className }: {
     );
 
     return (
-        <FormAside title="Restauration" right={right}
+        <AsideDiv title="Restauration" right={right}
             icon={<RiRestaurantFill size={15} className="text-green-800" />}
             className={twMerge("", className)} >
 
@@ -35,15 +36,16 @@ export default function Restaurant({ room:bedRoom, className }: {
 
                 <div className="flex flex-col">
                     { roomRestos.map(resto => <MyTr key={resto.id} color="bg-blue-400/20"
-                        className="grid-cols-[auto_1fr_auto] px-2 text-[11px] text-gray-600">
+                        className="grid-cols-[auto_1fr_auto_auto] px-2 text-[11px] text-gray-600">
                         <p>{resto.article}</p>
-                        <p>{resto.client}</p>
+                        <p>{customer_book.getId(resto.customer_id)?.name}</p>
+                        <p>{customer_book.getId(resto.customer_id)?.room_id}</p>
                         <p>{formatPrice(resto.price)}</p>
                     </MyTr>) }
                 </div>
 
             </NoElem>
-        </FormAside>
+        </AsideDiv>
     );
 }
 

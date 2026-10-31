@@ -1,8 +1,6 @@
-import { RoomData } from "../configs/room";
 import { CleanType, CustomerType, ReservationType, RestaurantType } from "./types";
 import { PriorityId } from "./index";
-import { TypeWithTrace } from "../hooks/useBook";
-import { RoomCtgData } from "../configs/room_ctg";
+import { TypeWithTrace } from "../hooks/bd/useBook";
 import Employer from "./employer";
 
 export const stages = [ "Rez de chaussée", "Étage 1", "Étage 2", "Étage 3", "Étage 4", "Étage 5", ] as const;
@@ -17,17 +15,12 @@ namespace BedRoom {
     export namespace Category {
         export type Id = string;
 
-        export type Type = RoomCtgData;
-    }
-
-    export type Type = RoomData & {
-        connected: boolean,
-        power: boolean | null,
-
-        customer: TypeWithTrace<CustomerType> | null,
-        booked: TypeWithTrace<ReservationType> | null,
-        cleaner: TypeWithTrace<Employer.Type & CleanType> | null,
-        restauration: TypeWithTrace<RestaurantType>[],
+        export type Type = {
+            id: BedRoom.Category.Id,
+            name: string,
+            price: number,
+            option: 'VENT' | 'CLIM',
+        };
     }
 
     export type IssueType = {
@@ -36,18 +29,35 @@ namespace BedRoom {
         message: string,
     }
 
-    export function create(room: RoomData): BedRoom.Type {
-        return ({ ...room,
-            connected: false,
-            power: null,
-
-            customer: null,
-            booked: null,
-            cleaner: null,
-            restauration: [],
-        });
+    export type RoomData = {
+        id: BedRoom.Id,
+        name: string,
+        category_id: BedRoom.Category.Id,
+        stage: BedRoom.StageId,
+        issue: BedRoom.IssueType | null,
     }
-    
+
+    export type RoomData2 = RoomData & {
+        category: BedRoom.Category.Type,
+        lastClean: TypeWithTrace<CleanType> | null,
+    }
+
+    export type Type = RoomData2 & {
+        connected: boolean,
+        power: boolean | null,
+
+        clean: TypeWithTrace<CleanType> & {
+            valet: Employer.Type,
+        } | null,
+        customer: TypeWithTrace<CustomerType> & {
+            restaurant: TypeWithTrace<RestaurantType>[],
+        } | null,
+        booked: TypeWithTrace<ReservationType> | null,
+        reservations: TypeWithTrace<ReservationType>[],
+        restaurations: TypeWithTrace<RestaurantType>[],
+    }
+
 }
 
 export default BedRoom;
+

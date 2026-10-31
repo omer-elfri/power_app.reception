@@ -12,6 +12,7 @@ import { LuEyeClosed, LuMoveLeft } from "react-icons/lu";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { IoKeyOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa";
+import { twMerge } from "tailwind-merge";
 
 export default function ChangePassPopup({ className }: {
   className?: string,
@@ -43,7 +44,7 @@ export default function ChangePassPopup({ className }: {
   }, []);
 
   return (
-    <Popup className="">
+    <Popup className={twMerge("", className)}>
       {/* <PopupBody top={<h1 className="font-bold text-[16px]">Modifier mon mot de passe</h1>}> */}
       <div onClick={e => e.stopPropagation()} className="grid grid-cols-[150px_150px] gap-15">
 

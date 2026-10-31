@@ -1,24 +1,16 @@
 import { Id, Sex } from '.';
+import { TypeWithTrace } from '../hooks/bd/useBook';
 import BedRoom from './bedroom';
 import Employer from './employer';
 
-type CancelType = {
-    date: Date,
-    auth_session?: Employer.Id,
-};
+export type CleanProps = {
+    valet_id: Employer.Id,
+    done?: Date,
+}
+export type CleanType = CleanProps & {
+    valet: Employer.Type,
+}
 
-export type CleanType = {
-    valletId: Employer.Id,
-} & ({
-    done?: never,
-    cancel?: never,
-} | {
-    done: Date,
-    cancel?: never,
-} | {
-    done?: never,
-    cancel: CancelType,
-})
 
 export type CustomerType = {
     sexe?: Sex,
@@ -26,6 +18,7 @@ export type CustomerType = {
     tel?: number,
     town?: string,
     price: number,
+    reason?: string,
     end?: Date,
     enterprise?: string,
     ifu?: number,
@@ -34,7 +27,7 @@ export type CustomerType = {
 
 export type CheckInType = {
     date: Date,
-    roomId: BedRoom.Id,
+    room_id: BedRoom.Id,
 } & ({
     status: 'CHECK_IN',
     datas: { customer: Omit<CustomerType, 'actions'> },
@@ -51,18 +44,21 @@ export type CheckInType = {
 
 export type ReservationType = {
     name: string,
-    start: Date,
-    end: Date,
-    cancel?: CancelType,
+    start_date: Date,
+    end_date: Date,
 }
 
-export type RestaurantType = {
-    customerId: Id,
-    time: Date,
-    client: string,
+
+
+
+
+export type RestaurantProps = {
+    customer_id: Id,
     article: string,
     price: number,
     paid: boolean,
-    cancel?: CancelType,
+}
+export type RestaurantType = RestaurantProps & {
+    customer: TypeWithTrace<CustomerType>,
 }
 

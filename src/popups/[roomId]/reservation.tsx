@@ -1,16 +1,15 @@
 'use client';
 
+import { twMerge } from 'tailwind-merge';
 import { useDataContext } from "../../hooks";
 import BedRoom from '../../types/bedroom';
+import { getFrenchDate } from '../../tools/date';
 
-import FormAside from '../../components/FormAside';
-import { getFrenchDate, getFrenchDateTime } from '../../tools/date';
+import { AsideDiv } from '../../components/FormAside';
 import { MyTr } from '../../components/MyTable';
-import { FaCalendarAlt } from 'react-icons/fa';
-import { twMerge } from 'tailwind-merge';
 import NoElem from '../../components/NoElem';
 import MyButton from "../../components/MyButton";
-import { useBedroom } from "../../hooks/useBedroom";
+import { FaCalendarAlt } from 'react-icons/fa';
 
 export function BookButton({ className }: {
   className?: string,
@@ -29,13 +28,11 @@ export default function ReservationTab({ room:bedRoom, className }: {
   room: BedRoom.Type,
   className?: string,
 }) {
-  const { addPopup, reservations } = useDataContext();
-  const roomReservations = reservations
-    .filter(rsv => rsv.roomId === bedRoom.id)
-    .sort((a, b) => b.start.getTime() - a.start.getTime());
+  const { addPopup, reservation_book } = useDataContext();
+  const roomReservations = reservation_book.getRooms(bedRoom.id);
 
   return (
-    <FormAside icon={<FaCalendarAlt size={14} className='text-purple-700' />} title="Réservations" className={twMerge('min-h-30', className)} right={<BookButton className="self-end" />}>
+    <AsideDiv icon={<FaCalendarAlt size={14} className='text-purple-700' />} title="Réservations" className={twMerge('min-h-30', className)} right={<BookButton className="self-end" />}>
 
       <NoElem Icon={FaCalendarAlt} text="Aucune réservation" list={roomReservations} className="min-h-30">
 
@@ -48,15 +45,15 @@ export default function ReservationTab({ room:bedRoom, className }: {
             <MyTr key={rsv.id} onClick={() => addPopup(['BOOKING', rsv.id])}
               className="grid-cols-4 group py-1 cursor-pointer hover:bg-blue-400/10 text-[11px]">
               <p>{rsv.name}</p>
-              <p>{rsv.roomId}</p>
-              <p>{getFrenchDate(rsv.start).slice(0,6)}</p>
-              <p>{getFrenchDate(rsv.end).slice(0,6)}</p>
+              <p>{rsv.room_id}</p>
+              <p>{getFrenchDate(rsv.start_date).slice(0,6)}</p>
+              <p>{getFrenchDate(rsv.end_date).slice(0,6)}</p>
             </MyTr>
           ) }
         </div>
 
       </NoElem>
 
-    </FormAside>
+    </AsideDiv>
   );
 }

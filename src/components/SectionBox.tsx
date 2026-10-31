@@ -2,14 +2,16 @@ import { twMerge } from "tailwind-merge";
 import { FaArrowRight }  from "react-icons/fa";
 import MyButton from "./MyButton";
 
-export default function SectionBox({ className, subClassName, children, bottom }: {
+export default function SectionBox({ className, subClassName, children, top, bottom }: {
   className?: string,
   subClassName?: string,
   children?: React.ReactNode,
+  top?: React.ReactNode,
   bottom?: React.ReactNode,
 }) {
   return (
     <div className={twMerge("flex flex-col gap-2 border-1 border-gray-400/50 shadow-md px-5 py-3 rounded-sm bg-gray-100/30", className)}>
+      { top }
       <div className={twMerge("flex flex-col gap-2 overflow-hidden flex-1", subClassName)}>
         { children }
       </div>
