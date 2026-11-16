@@ -1,7 +1,8 @@
+'use client'
+
 import React from "react";
 import { twMerge } from "tailwind-merge";
-import { useDataContext } from "../hooks";
-
+import { useVisual } from "../hooks/useVisual";
 import { MdWarning } from "react-icons/md";
 import { FaCheckCircle } from "react-icons/fa";
 
@@ -10,7 +11,7 @@ export type Infobulle = ["sucess" | "warning" | "error", string, string?];
 export default function Alert({ className }: {
   className?: string,
 }) {
-  const { alerts, popAlert } = useDataContext();
+  const { alerts, popAlert } = useVisual();
 
   React.useEffect(() => {
       if (alerts.length === 0) return;

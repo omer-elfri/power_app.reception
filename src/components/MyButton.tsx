@@ -4,17 +4,17 @@ import { twMerge } from "tailwind-merge";
 export default function MyButton({ icon, iconRight, name, children, onClick, className, disabled }: {
     icon?: React.ReactNode,
     iconRight?: React.ReactNode,
-    children?: string,
+    children?: React.ReactNode,
     onClick?: () => void,
     name?: string,
     className?: string,
     disabled?: boolean,
 }) {
     return (
-        <button type='submit' name={name} onClick={onClick} disabled={disabled}
-            className={!disabled ? twMerge("bg-blue-400/30 text-[10px] hover:scale-95", className) : ''}>
+        <button type='submit' name={name} value={name} onClick={onClick} disabled={disabled}
+            className={!disabled ? twMerge("bg-blue-400/30 text-[10px] hover:scale-95", className) : 'border-1'}>
             { icon }
-            { children && <span className="w-full text-center">{children}</span> }
+            { children && <span className="w-full">{children}</span> }
             { iconRight }
         </button>
     );

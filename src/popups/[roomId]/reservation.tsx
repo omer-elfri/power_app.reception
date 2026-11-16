@@ -10,16 +10,17 @@ import { MyTr } from '../../components/MyTable';
 import NoElem from '../../components/NoElem';
 import MyButton from "../../components/MyButton";
 import { FaCalendarAlt } from 'react-icons/fa';
+import { useVisual } from '../../hooks/useVisual';
 
 export function BookButton({ className }: {
   className?: string,
 }) {
-  const { addPopup } = useDataContext();
+  const { addPopup } = useVisual();
 
   return (
     <MyButton
       className={twMerge('!text-[10px] bg-purple-500 text-white !px-2 !py-1 gap-x-1 hover:scale-95', className)}
-      onClick={() => addPopup(['BOOKING'])}>Réserver
+      onClick={() => addPopup(['RESERVATION'])}>Réserver
     </MyButton>
   );
 }
@@ -28,7 +29,8 @@ export default function ReservationTab({ room:bedRoom, className }: {
   room: BedRoom.Type,
   className?: string,
 }) {
-  const { addPopup, reservation_book } = useDataContext();
+  const { addPopup } = useVisual();
+  const { reservation_book } = useDataContext();
   const roomReservations = reservation_book.getRooms(bedRoom.id);
 
   return (
@@ -42,7 +44,7 @@ export default function ReservationTab({ room:bedRoom, className }: {
 
         <div className='flex flex-col flex-1'>
           { roomReservations.map(rsv =>
-            <MyTr key={rsv.id} onClick={() => addPopup(['BOOKING', rsv.id])}
+            <MyTr key={rsv.id} onClick={() => addPopup(['RESERVATION', rsv.id])}
               className="grid-cols-4 group py-1 cursor-pointer hover:bg-blue-400/10 text-[11px]">
               <p>{rsv.name}</p>
               <p>{rsv.room_id}</p>

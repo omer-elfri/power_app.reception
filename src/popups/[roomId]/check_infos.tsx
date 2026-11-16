@@ -1,41 +1,34 @@
-'use client'
-
 import { twMerge } from "tailwind-merge";
-import { useDataContext } from "../../hooks";
-import { useRequest } from "../../hooks/useRequest";
 import { getFrenchDateTime } from "../../tools/date";
 import BedRoom from "../../types/bedroom";
 
-import { AsideDiv } from "../../components/FormAside";
+import AsideForm from "../../components/FormAside";
 import LabelValue from "../../components/LabelValue";
-import MyButton from "../../components/MyButton";
 import NoElem from "../../components/NoElem";
-
 import { MdPerson } from "react-icons/md";
+import { formatPrice } from "../../tools";
 import { FaExchangeAlt } from "react-icons/fa";
+import MyButton from "../../components/MyButton";
+import { useRequest } from "../../hooks/useRequest";
+import { useVisual } from "../../hooks/useVisual";
 
-export default function CheckInInfos({ room:bedRoom, className }: {
+export default function CheckInfos({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { addPopup } = useDataContext();
+    const { addPopup } = useVisual();
     const { check_out } = useRequest();
-
     return (
-        <AsideDiv icon={<MdPerson className="text-gray-500" />} title="Informations client"
-            right={
+        <AsideForm icon={<MdPerson className="text-gray-500" />} title="Informations client"
+            className={twMerge("", className)} subClassName="gap-3" right={
                 <MyButton name='check_out' icon={<FaExchangeAlt />}
-                    onClick={() => {
-                        if (!bedRoom.customer) throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
-                        check_out(bedRoom.customer.id);
-                        if (!bedRoom.clean) addPopup(['VALLET', bedRoom.id]);
-                    }}
                     className="bg-transparent border-1 text-red-700 border-red-700 !py-1 !px-1 !text-[10px]">Check out
                 </MyButton>
-            }
-            className={twMerge("", className)} subClassName="gap-3"
-            // bottom={<SubmitButtons room={bedRoom} />}
-            >
+            } onSubmit={async () => {
+                await check_out(bedRoom.id);
+                if (!bedRoom.cleaning)
+                    addPopup(['VALLET', bedRoom.id]);
+            }}>
             <NoElem list={bedRoom.customer ? [1] : []} text="Aucun client">
 
                 <div className="flex flex-col gap-2">
@@ -43,15 +36,15 @@ export default function CheckInInfos({ room:bedRoom, className }: {
                     <LabelValue label="Client">{bedRoom.customer?.sexe} {bedRoom.customer?.name}</LabelValue>
                     <LabelValue label="Téléphone">{bedRoom.customer?.tel}</LabelValue>
                     <LabelValue label="Ville">{bedRoom.customer?.town}</LabelValue>
-                    <LabelValue label="Prix unitaire">{bedRoom.customer?.price}</LabelValue>
+                    <LabelValue label="Prix unitaire">{formatPrice(bedRoom.customer?.price ?? 0)}</LabelValue>
                     <LabelValue label="Informations supplémentaires"
                         className="flex-wrap min-h-10">
-                        {bedRoom.customer?.description}
+                        {bedRoom.customer?.description || '...'}
                     </LabelValue>
                 </div>
 
             </NoElem>
-        </AsideDiv>
+        </AsideForm>
     );
 }
 

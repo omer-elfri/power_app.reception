@@ -1,4 +1,4 @@
-import { ListStatus } from "../popups/list";
+import { FilterOption } from "../popups/bedroom";
 import BedRoom from "./bedroom";
 
 export type State<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -28,11 +28,14 @@ export const colors: {[k in (StatusId)]: string} = {
 } as const;
 
 export type PopupType =
-    [ 'CLEAN', BedRoom.Id? ] |
-    [ 'BOOKING', number? ] |
+    [ 'BEDROOM', (FilterOption | null)? ] |
+    [ 'CLEANING', Id? ] |
+    [ 'RESERVATION', Id? ] |
+    [ 'RESTAURANT', Id? ] |
+
+    [ 'ROOM_RESTO', Id ] |
     [ 'ROOM', BedRoom.Id ] |
     [ 'CHECK_IN', BedRoom.Id ] |
-    [ 'LIST', ListStatus? ] |
     [ 'USER' ] |
     [ 'CHANGE_PASS'] |
     [ 'VALLET', BedRoom.Id ] ;

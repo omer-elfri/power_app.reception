@@ -11,28 +11,27 @@ import { FaCheck, FaUser } from "react-icons/fa";
 import { LuEyeClosed } from "react-icons/lu";
 import { IoKeyOutline } from "react-icons/io5";
 import { RiUser6Line } from "react-icons/ri";
-import { useDataContext } from "../../hooks";
+import { useVisual } from "../../hooks/useVisual";
 
 export default function LogIn() {
-  const { checkError } = useDataContext();
+  const { checkError } = useVisual();
   const { connect } = useAuth();
-  const [userName, setUserName] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPass, setShowPass] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const loginHandler = React.useCallback(async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const loginHandler = React.useCallback(async (
+    e: React.SubmitEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
-    const username = e.target.username.value;
-    const password = e.target.password.value;
-
     setLoading(true);
-    setTimeout(() => {
-      connect(username, password);
+    (async () => {
+      await connect(email, password);
       setPassword("");
       setLoading(false);
-    }, 1000);
-  }, []);
+    })();
+  }, [email, password]);
 
   const forgetPass= React.useCallback(() => {
     checkError(() => {
@@ -48,7 +47,7 @@ export default function LogIn() {
       </div>
 
       <MyInput label="Utilisateur" icon={<RiUser6Line />}>
-          <ReceptionSelect name='username' value={userName} onTextChange={setUserName} />
+          <ReceptionSelect name='email' value={email} onTextChange={setEmail} />
       </MyInput>
 
       <MyInput label="Mot de passe" icon={<IoKeyOutline />}>
@@ -64,7 +63,7 @@ export default function LogIn() {
 
       <Bar className="mb-1" />
 
-      <button type="submit" disabled={loading} className="border-none self-end px-3 py-1 rounded bg-green-600 text-white">
+      <button type="submit" disabled={email === '' || password === '' || loading} className="border-none self-end px-3 py-1 rounded bg-green-600 text-white">
         <span className="text-[14px] font-bold">Valider</span> <FaCheck />
       </button>
 
@@ -80,12 +79,16 @@ export function ReceptionSelect({ name, value, onTextChange }: {
 }) {
   const { receptionnists } = useAuth();
 
+  React.useEffect(() => {
+    onTextChange?.(receptionnists.at(0)?.email ?? "");
+  }, [receptionnists]);
+
   return (
-    <select id={name} name={name} //required
-      value={value} onChange={e => onTextChange?.(e.target.value)}
+    <select id={name} name={name} value={value} required
+      onChange={e => onTextChange?.(e.target.value)}
       className="!border-none h-8 text-[14px] flex-1 uppercase font-bold text-gray-600">
       { receptionnists.map(employer => (
-        <option key={employer.id} value={employer.id}>{employer.name}</option>
+        <option key={employer.id} value={employer.email}>{employer.name}</option>
       )) }
     </select>
   );

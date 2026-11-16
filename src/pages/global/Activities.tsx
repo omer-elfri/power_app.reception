@@ -2,7 +2,7 @@
 
 import { twMerge } from "tailwind-merge";
 import { useRequest } from "../../hooks/useRequest";
-import { useDataContext } from "../../hooks";
+import { useVisual } from "../../hooks/useVisual";
 import { colors } from "../../types";
 import { getString } from "../../tools";
 
@@ -18,7 +18,7 @@ import { TbChefHatFilled } from "react-icons/tb";
 export default function ActivitySection({ className }: {
   className?: string,
 }) {
-  const { addPopup } = useDataContext();
+  const { addPopup } = useVisual();
   const { analysis } = useRequest();
 
   return (
@@ -31,7 +31,7 @@ export default function ActivitySection({ className }: {
           value={analysis.powered.length}
           name="Chambres" subName="alimentées"
           color={colors.powered}
-          onClick={() => addPopup(['LIST', 'powered'])}
+          onClick={() => addPopup(['BEDROOM', 'powered'])}
         />
         <ActivityBox
           icon={ <div className="flex flex-row">
@@ -42,14 +42,14 @@ export default function ActivitySection({ className }: {
           value={analysis.solded.length}
           name="Chambres" subName="vendues"
           color={colors.sold}
-          onClick={() =>  addPopup(['LIST', 'sold'])}
+          onClick={() =>  addPopup(['BEDROOM', 'solded'])}
         />
         <ActivityBox
           icon={<IoBed size={35} />}
           value={analysis.available.length}
           name="Chambres" subName="disponibles"
           color={colors.free}
-          onClick={() =>  addPopup(['LIST', 'free'])}
+          onClick={() =>  addPopup(['BEDROOM', 'free'])}
           infobulle={analysis.issues.length > 0 && <MdWarning
             title={`${getString(analysis.issues.length)} chambre(s) sont problématiques`}
             className="text-yellow-600" />}
@@ -59,24 +59,24 @@ export default function ActivitySection({ className }: {
           value={analysis.coming.total.length}
           name="Réservations" subName="aujourd'hui"
           color={colors.coming}
-          onClick={() =>  addPopup(['BOOKING'])}
+          onClick={() =>  addPopup(['RESERVATION'])}
         />
         <ActivityBox
           icon={<MdCleaningServices size={30} />}
           value={analysis.cleaning.total.length}
           name="Chambre" subName="en néttoyage"
           color={colors.cleaning}
-          onClick={() =>  addPopup(['LIST', 'clean'])}
+          onClick={() =>  addPopup(['CLEANING'])}
           infobulle={analysis.cleaning.obsolets.length > 0 && <MdWarning
             title="Certaines chambres sont obsolètes"
             className="text-yellow-600" />}
         />
         <ActivityBox bar={false}
           icon={<TbChefHatFilled size={30} />}
-          value={analysis.restaurant.total.length}
+          value={analysis.restaurant.unPaid.length}
           name="Restaurations" subName="impayées"
           color={colors.issue}
-          onClick={() =>  addPopup(['LIST', 'issue'])}
+          onClick={() =>  addPopup(['RESTAURANT'])}
         />
         {/* <ActivityBox bar={false}
           icon={<FaTools size={30} />}

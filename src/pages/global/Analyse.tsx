@@ -5,6 +5,7 @@ import { colors } from "../../types";
 import { useRequest } from "../../hooks/useRequest";
 import SectionBox, { Title } from '../../components/SectionBox';
 import { twMerge } from 'tailwind-merge';
+import { getString } from '../../tools';
 
 export default function AnalyseSection({ className }: {
   className?: string,
@@ -65,7 +66,7 @@ export default function AnalyseSection({ className }: {
               <div className="w-[10px] rounded-full aspect-square" style={{ backgroundColor: color }} />
             </td>
             <td className="text-[12px] text-gray-600">{label}</td>
-            <td className="text-[12px] text-right pl-1">{value}</td>
+            <td className="text-[12px] text-right pl-1">{getString(value)}</td>
           </tr> ) }
         </tbody>
       </table>

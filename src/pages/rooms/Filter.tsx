@@ -53,13 +53,13 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
             })
             .filter((room) => { // category
                 if (category === 'all') return room;
-                return room.category.id === category;// ( room.categories.includes(category) );
+                return room.category_id === category;// ( room.categories.includes(category) );
             })
             .filter((room) => { // status
                 if (status.includes('powered') && !room.power
                     || status.includes('sold') && !room.customer
                     || status.includes('free') && room.customer
-                    || status.includes('cleaning') && !room.clean
+                    || status.includes('cleaning') && !room.cleaning
                     || status.includes('coming') && !room.booked
                     || status.includes('issue') && !room.issue)
                     return false;

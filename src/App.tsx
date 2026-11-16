@@ -3,74 +3,30 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 import { Route, Routes } from "react-router-dom";
-import { useServer } from "./hooks/useServer";
-import { useDataContext } from "./hooks";
+import { useVisual } from "./hooks/useVisual";
 
 import LoginPage from "./pages/login";
 import GlobalPage from "./pages/global";
 import RoomsPage from "./pages/rooms";
+import Alert from "./components/Alert";
 
-import BookingPopup from "./popups/booking";
-import CleaningPopup from "./popups/clean";
+import Popup from "./popups";
 import RoomPopup from "./popups/[roomId]";
-import ListPopup from "./popups/list";
 import ValletPopup from "./popups/vallet";
 import SessionPopup from "./popups/user_session";
 import ChangePassPopup from "./popups/user_session/change_pass";
-
-import Alert from "./components/Alert";
-import Popup from "./popups";
-import { useAuth } from "./hooks/useAuth";
-// import { supabase } from "./tools/supabase";
-// import { parseDates } from "./tools/date";
+import ReservationTab from "./popups/reservation";
+import CleanTab from "./popups/clean";
+import BedRoomTab from "./popups/bedroom";
+import RestaurantTab from "./popups/restaurant";
+import RoomRestoPopup from "./popups/restaurant/[id]";
 
 export default function App() {
-  const { loading } = useAuth();
-  useServer();
-  // const { bedroom_table, employer_table } = useDataContext();
-
-  // React.useEffect(() => {
-  //     (async () => {
-  //         const { data } = await supabase
-  //             .from('employer_table').select('*')
-  //             .overlaps('rules', ['receptionnist', 'cleaner']);
-  //         if (!data) return null;
-  //         const res = parseDates(data);
-  //         employer_table.set(res);
-  //     })();
-  // }, []);
-
-  // React.useEffect(() => {
-  //     (async () => {
-  //         const { data } = await supabase
-  //             .from('bedroom_table')
-  //             .select(`*,
-  //               category:bedroom_ctg_table(*),
-  //               cleans:cleaning_book(*),
-  //               customer:customer_book(*,
-  //                 restaurant:restaurant_book(*)
-  //               ),
-  //               reservations:reservation_book(*),
-  //               restaurations:restaurant_book(*)
-  //             `);
-  //         // console.log("data", data);
-  //         if (!data) return null;
-
-
-  //         bedroom_table.set(tableData => (
-  //           data.map(elem => ({
-  //             connected: false,
-  //             power: null,
-  //             ...tableData.find(({ id }) => id === elem.id),
-  //             ...elem,
-  //           }))
-  //         ))
-  //     })();
-  // }, []);
+  const { loading } = useVisual();
+  // useServer();
 
   return (
     <div className={twMerge("flex flex-col items-center w-screen max-h-screen px-5 py-2 min-w-200")}>
-
       <Alert />
 
       <div className="flex flex-col w-full max-w-210">
@@ -83,60 +39,38 @@ export default function App() {
 
       <CurrentPopup />
       <ConnexionStatus />
+      { loading && <Loading /> }
+    </div>
+  );
+}
 
-      { loading && (
-        <div className="flex justify-center items-center p-3 fixed inset-0 bg-black/10 backdrop-blur-[2px] z-102">
-          <p className="font-bold text-black text-[14px] uppercase">Chargement ...</p>
-        </div>
-      ) }
-
+function Loading() {
+  return (
+    <div className="flex justify-center items-center p-3 fixed inset-0 bg-black/10 backdrop-blur-[2px] z-102">
+      <p className="font-bold text-black text-[14px] uppercase">Chargement ...</p>
     </div>
   );
 }
 
 function CurrentPopup() {
-  const { popupList } = useDataContext();
-  const popup = popupList[0];
+  const { popupList } = useVisual();
+  const popup = popupList.at(0);
 
-  if (!popup) return null;
+  if (!popup) return;
+
   return <Popup>{
-    popup[0] === 'CLEAN' ? <CleaningPopup roomId={popup[1]} /> :
-    popup[0] === 'BOOKING' ? <BookingPopup bookId={popup[1]} /> :
-    popup[0] === 'LIST' ? <ListPopup status={popup[1]} /> :
+    popup[0] === 'BEDROOM' ? <BedRoomTab status={popup[1]} /> :
+    popup[0] === 'CLEANING' ? <CleanTab /> :
+    popup[0] === 'RESERVATION' ? <ReservationTab id={popup[1]} /> :
+    popup[0] === 'RESTAURANT' ? <RestaurantTab id={popup[1]} /> :
+    
+    popup[0] === 'ROOM_RESTO' ? <RoomRestoPopup id={popup[1]} /> :
     popup[0] === 'ROOM' ? <RoomPopup roomId={popup[1]} /> :
     popup[0] === 'VALLET' ? <ValletPopup roomId={popup[1]} /> :
     popup[0] === 'CHANGE_PASS' ? <ChangePassPopup /> :
     popup[0] === 'USER' ? <SessionPopup /> : null }
   </Popup>
 }
-
-
-// export function ConnexionStatus({ className }: {
-//   className?: string,
-// }) {
-//   const [q, setQ] = React.useState(true);
-
-//   React.useEffect(() => {
-//     const id = setTimeout(() => setQ(false), 2000);
-//     return () => clearTimeout(id);
-//   }, []);
-
-//   return (
-//     <div className={twMerge("flex flex-col items-center", className)}>
-
-//       {/* <div className="fixed bottom-5 bg-yellow-800/30 backdrop-blur-md px-5 py-3 min-w-[500px] text-center text-white rounded font-bold uppercase">
-//         <span className="w-full text-yellow-800">Aucune connexion à internet</span>
-//       </div> */}
-
-//       <div className={twMerge("fixed bg-green-800/30 backdrop-blur-md px-5 py-3 min-w-[500px] text-center text-white rounded font-bold uppercase \
-//         shadow animate-1 cursor-pointer hover:scale-102 transition-transform duration-200 ease-in-out", q ? "bottom-[20px]" : "bottom-[-100px]")}>
-//         <span className="w-full text-green-800">Connecté à internet</span>
-//       </div>
-
-//     </div>
-//   );
-// }
-
 
 export function ConnexionStatus({ className }: {
     className?: string,
@@ -172,9 +106,6 @@ export function ConnexionStatus({ className }: {
                 online
                     ? "bg-green-800/30 text-green-800"
                     : "bg-yellow-800/30 text-yellow-800",
-                // show
-                //     ? "translate-y-0 opacity-100"
-                //     : "translate-y-[150%] opacity-0",
                 show
                     ? "translate-y-0 opacity-100"
                     : "translate-y-[calc(100%+20px)] opacity-0"

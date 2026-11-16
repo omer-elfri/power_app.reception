@@ -3,16 +3,16 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "../../hooks/useAuth";
-import { useDataContext } from "../../hooks";
 
 import { RiResetLeftFill } from "react-icons/ri";
 import { IoMdPower } from "react-icons/io";
+import { useVisual } from "../../hooks/useVisual";
 
 export default function SessionPopup({ className }: {
   className?: string,
 }) {
   const { disconnect } = useAuth();
-  const { switchPopup, unPopup } = useDataContext();
+  const { switchPopup, unPopup } = useVisual();
 
   return (
     <div onClick={e => e.stopPropagation()} className={twMerge("grid grid-cols-[150px_150px] gap-15 text-center text-white", className)}>

@@ -1,5 +1,4 @@
 import { twMerge } from "tailwind-merge";
-import { useDataContext } from "../hooks";
 
 import RoomStatus from "./RoomStatus";
 import { PersonSex2 } from "./PersonSex";
@@ -10,17 +9,18 @@ import { HiLightningBolt } from "react-icons/hi";
 import { GiBroom } from "react-icons/gi";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdError, MdWarning } from "react-icons/md";
+import { useRequest } from "../hooks/useRequest";
 
 export default function RoomLine({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { isObsolet } = useDataContext();
+    const { isObsolet } = useRequest();
     const clientName = bedRoom.customer?.name ?? bedRoom.booked?.name ?? null;
 
     const cleaningState = (() => {
-        if (bedRoom.clean)
-            return bedRoom.clean?.valet.name;
+        if (bedRoom.cleaning)
+            return bedRoom.cleaning?.valet.name;
         if (!bedRoom.lastClean) return "...";
         return !isObsolet(bedRoom.id) ? "Propre" : 'Sale';
     })();
@@ -60,8 +60,8 @@ export default function RoomLine({ room:bedRoom, className }: {
                 <span className="">{bedRoom.power ? "Allumée" : "Éteinte"}</span>
             </div>
 
-            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.clean ? "text-black" : isObsolet(bedRoom.id) ? "text-red-600" : "text-gray-400")}>
-                <GiBroom size={14} className={bedRoom.clean ? "text-blue-600" : ""} />
+            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.cleaning ? "text-black" : isObsolet(bedRoom.id) ? "text-red-600" : "text-gray-400")}>
+                <GiBroom size={14} className={bedRoom.cleaning ? "text-blue-600" : ""} />
                 <span className="">{cleaningState}</span>
             </div>
 

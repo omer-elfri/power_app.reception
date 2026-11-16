@@ -1,0 +1,44 @@
+'use client'
+
+import { twMerge } from "tailwind-merge";
+import { useRequest } from "../../hooks/useRequest";
+import BedRoom from "../../types/bedroom";
+
+import LabelInput from "../../components/LabelInput";
+import MyButton from "../../components/MyButton";
+import { FaExchangeAlt } from "react-icons/fa";
+import { useVisual } from "../../hooks/useVisual";
+
+export default function CheckMove({ room:bedRoom, className }: {
+    room: BedRoom.Type,
+    className?: string,
+}) {
+    const { switchPopup } = useVisual();
+    const { analysis, bedRoomTab, check_move } = useRequest();
+
+    return (
+        <form onSubmit={e => {
+            e.preventDefault();
+            const toRoomId = e.target.toRoomId.value;
+            check_move(bedRoom.id, toRoomId);
+            switchPopup(['ROOM', bedRoom.id]);
+        }}
+            className={twMerge("flex flex-row items-center gap-2 bg-white/60 px-3 py-3 font-bold rounded shadow-md w-full", className)}>
+            <FaExchangeAlt size={10} />
+            <label className="flex-1">Déplacer vers</label>
+
+            <LabelInput name="toRoomId" options={
+                bedRoomTab.map(room => ({
+                    k: room.id.toString(),
+                    value: `${room.id} ${room.customer?.name.toUpperCase() ?? ""}`,
+                    disabled: !!room.customer,
+                })) } />
+
+            <MyButton name='change_room'
+                disabled={bedRoom.customer && analysis.free.length === 0 || !bedRoom.customer && analysis.solded.length === 0}
+                className="!py-1 bg-yellow-700/10 text-yellow-700 border-1 border-yellow-700 self-end !text-[10px]">Déplacer
+            </MyButton>
+
+        </form>
+    );
+}

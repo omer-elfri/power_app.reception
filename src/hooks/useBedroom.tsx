@@ -6,7 +6,7 @@ import { useDataContext } from ".";
 import { RestaurantType } from "../types/types";
 import BedRoom from "../types/bedroom";
 import { getCommonIds, getUniqueIds, unifyIds } from "../tools";
-import { TypeWithTrace } from "./bd/useBook";
+import { TypeWithTrace } from "./useBook";
 
 export type AnalysisType = {
     solded: BedRoom.Type[],
@@ -15,21 +15,21 @@ export type AnalysisType = {
     powered: BedRoom.Type[],
     issues: BedRoom.Type[],
     critics: BedRoom.Type[],
-    coming: {
-        total: BedRoom.Type[],
-        sold: BedRoom.Type[],
-        free: BedRoom.Type[],
-    },
     cleaning: {
         total: BedRoom.Type[],
         sold: BedRoom.Type[],
         free: BedRoom.Type[],
         obsolets: BedRoom.Type[],
     },
+    coming: {
+        total: BedRoom.Type[],
+        sold: BedRoom.Type[],
+        free: BedRoom.Type[],
+    },
     restaurant: {
+        total: TypeWithTrace<RestaurantType>[],
         paid: TypeWithTrace<RestaurantType>[],
         unPaid: TypeWithTrace<RestaurantType>[],
-        total: TypeWithTrace<RestaurantType>[],
     },
     categories: (BedRoom.Category.Type & {
         topSolded: BedRoom.Type[],
@@ -42,14 +42,14 @@ export type AnalysisData = {
     bedRooms: BedRoom.Map;
     bedRoomTab: BedRoom.Type[];
     updateBedRoom: (roomId: BedRoom.Id, props: Partial<BedRoom.Type>) => void;
+    isObsolet: (roomId: string) => boolean,
 }
 
 export function useAnalysis(): AnalysisData {
     const {
-        bedroom_table, restaurant_book, bedroom_categories,
-        isBookedToday, isObsolet,
-
-        cleaning_book, customer_book, getCleaner,
+        bedroom_table, bedroom_categories,
+        cleaning_book, customer_book, restaurant_book,
+        isBookedToday,
     } = useDataContext();
 
     const [bedRooms, setBedRooms] = React.useState<BedRoom.Map>({});
@@ -71,24 +71,36 @@ export function useAnalysis(): AnalysisData {
     }, []);
 
 
+    const isObsolet = React.useCallback((roomId: BedRoom.Id) => {
+        const obsoletDay = new Date(Date.now() - 3*24*60*60*1000);
+        const room = bedRooms[roomId];
+        if (!room) return false;
+        const cleaned = room?.cleaning ?? room?.lastClean;
+        const customer = customer_book.getRoomId(roomId);
+
+        if (!cleaned) return false;
+        if (!cleaned.done) return false;
+        if (cleaned.done < obsoletDay) return true;
+        if (customer?.end && cleaned.done < customer.end) return true;
+        return false;
+    }, [bedRooms, customer_book]);
+    
+
+
     React.useEffect(() => {
         setBedRooms(bedRooms => Object.fromEntries( bedroom_table.list.map(room => {
-            const lastClean = room.lastClean?.id ? room.lastClean : null;
             const cleaning = cleaning_book.getRoomId(room.id, cl => !cl.done) ?? null;
+            const lastClean = room.lastClean?.id ? room.lastClean : null;
             const customer = customer_book.getRoomId(room.id, cu => !cu.end) ?? null;
             const roomRestos = restaurant_book.list.filter(({ customer }) => customer.room_id === room.id);
-            const customerRestos = restaurant_book.list.filter(({ customer }) => customer.id === customer?.id);
             const res: BedRoom.Type = {
-                ...bedRooms[room.id], ...room,
-                lastClean,
-                clean: cleaning ? { ...cleaning,
-                    valet: getCleaner(cleaning.valet_id)!,
-                } : null,
+                ...(bedRooms[room.id] ?? {}), ...room,
+                cleaning,
                 customer: customer ? { ...customer,
                     restaurant: roomRestos,
                 } : null,
+                lastClean,
                 booked: isBookedToday(room.id),
-                restaurations: customerRestos,
             }
             return [ room.id, res ];
         }) ) as BedRoom.Map );
@@ -98,29 +110,28 @@ export function useAnalysis(): AnalysisData {
 
     const analysis: AnalysisType = React.useMemo(() => {
         const powered = bedRoomTab.filter(room => room.power);
-        const isCleanings = bedRoomTab.filter(room => room.clean);
+        const inCleaning = bedRoomTab.filter(room => room.cleaning);
         const solded = bedRoomTab.filter(room => room.customer);
         const checkOut = bedRoomTab.filter(room => !room.customer);
         const bookeds = bedRoomTab.filter(room =>  isBookedToday(room.id) );
         const issues = bedRoomTab.filter(room => room.issue?.priority === 'high');
         const obsolets = bedRoomTab.filter(room => isObsolet(room.id));
         const critics = unifyIds([issues, obsolets]);
-        console.log('obsolets', obsolets)
 
         return {
             powered, solded, issues, critics,
-            free: getUniqueIds(bedRoomTab, unifyIds([ solded, bookeds, isCleanings, issues ]) ),
+            free: getUniqueIds(bedRoomTab, unifyIds([ solded, bookeds, inCleaning, issues ]) ),
             available: getUniqueIds(bedRoomTab, unifyIds([ solded, issues ]) ),
+            cleaning: {
+                total: inCleaning,
+                sold: getCommonIds([inCleaning, solded]),
+                free: getCommonIds([inCleaning, checkOut]),
+                obsolets,
+            },
             coming: {
                 total: bookeds,
                 sold: getCommonIds([bookeds, solded]),
                 free: getCommonIds([bookeds, checkOut]),
-            },
-            cleaning: {
-                total: isCleanings,
-                sold: getCommonIds([isCleanings, solded]),
-                free: getCommonIds([isCleanings, checkOut]),
-                obsolets,
             },
             restaurant: {
                 paid: restaurant_book.list.filter(resto => resto.paid),
@@ -128,8 +139,8 @@ export function useAnalysis(): AnalysisData {
                 total: restaurant_book.list,
             },
             categories: bedroom_categories.map((room_ctg) => {
-                const topCtgRooms = bedRoomTab.filter(({ category }) => (
-                    category.id === room_ctg.id ) );
+                const topCtgRooms = bedRoomTab.filter(({ category_id }) => (
+                    category_id === room_ctg.id ) );
                 return {
                     ...room_ctg,
                     topSolded: topCtgRooms.filter(room => room.customer),
@@ -140,6 +151,6 @@ export function useAnalysis(): AnalysisData {
     }, [bedRoomTab, bedroom_categories, isObsolet, restaurant_book]);
 
 
-    return ({ analysis, bedRooms, bedRoomTab, updateBedRoom });
+    return ({ analysis, bedRooms, bedRoomTab, updateBedRoom, isObsolet, });
 }
 

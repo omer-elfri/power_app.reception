@@ -1,22 +1,21 @@
 'use client'
 
+import React from "react";
 import { twMerge } from "tailwind-merge";
-import { useDataContext } from "../../hooks";
-import { useRequest } from "../../hooks/useRequest";
 import BedRoom from "../../types/bedroom";
 
-import LabelInput from "../../components/LabelInput";
-import MyButton from "../../components/MyButton";
-import { FaCheck, FaExchangeAlt } from "react-icons/fa";
-import { MdPerson } from "react-icons/md";
 import { AsideDiv } from "../../components/FormAside";
+import LabelInput from "../../components/LabelInput";
+import { FaRegComment } from "react-icons/fa";
+import { MdPerson } from "react-icons/md";
 
-const style = "!border-gray-400 h-8 shadow-[inset_0_1px_1px_1px_rgba(0,0,0,0.15)]";
+const style = "!border-gray-400 h-8";
 
-export default function CheckInForm({ room:bedRoom, className }: {
+export default function CheckForm({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
+    const [_, setFullName] = React.useState("");
     const clientName = bedRoom.customer?.name ?? bedRoom.booked?.name ?? "";
     const realPrice = bedRoom.customer?.price ?? bedRoom.category.price;
 
@@ -34,6 +33,7 @@ export default function CheckInForm({ room:bedRoom, className }: {
 
                 <LabelInput required label="Nom de famille" name="fullname"
                     placeholder="ABOU John" defaultValue={clientName}
+                    onChangeText={setFullName}
                     className="col-span-4"
                     inputClassName={twMerge("uppercase", style)}
                 />
@@ -77,52 +77,16 @@ export function CheckInComment({ room:bedRoom, className }: {
     className?: string,
 }) {
     return (
-        <AsideDiv icon={<MdPerson />} title="Commentaire"
-            className={twMerge("", className)} >
+        <AsideDiv icon={<FaRegComment />} title="Commentaire" className={twMerge("", className)} >
 
-            <LabelInput label="Infos supplémentaires" name='description'>
-                <textarea id='description'
-                    className={twMerge("p-2 text-[11px] h-full min-h-30 py-[5px] bg-gray-200/20", style)}
-                    defaultValue={bedRoom.customer?.description}
-                    placeholder="IFU / entreprise / autre description"
-                />
-            </LabelInput>
+            <LabelInput type='textarea' label="Infos supplémentaires" name='description'
+                className={twMerge("text-[11px] min-h-30 bg-gray-200/20", style)}
+                inputClassName=""
+                defaultValue={bedRoom.customer?.description}
+                // placeholder="IFU / entreprise / autre description"
+            />
 
         </AsideDiv>
-    );
-}
-
-
-export function SubmitButtons({ room:bedRoom, className }: {
-    className?: string,
-    room: BedRoom.Type,
-}) {
-    const { addPopup } = useDataContext();
-    const { check_out } = useRequest();
-
-    return (
-        <div className={twMerge("grid grid-cols-2 gap-2", className)}>
-
-            <MyButton name='check_out' icon={<FaExchangeAlt />} disabled={!bedRoom.customer}
-                onClick={() => {
-                    if (!bedRoom.customer) throw Error(`La chambre ${bedRoom.id} n'est pas occupée`);
-                    check_out(bedRoom.customer.id);
-                    if (!bedRoom.clean) addPopup(['VALLET', bedRoom.id]);
-                }}
-                className="bg-transparent border-1 text-red-700 border-red-700 !py-1">Check out
-            </MyButton>
-
-            { !bedRoom.customer
-            ? <>
-                <MyButton name="check_in" icon={<FaCheck className="" />}
-                    className="bg-blue-500 !py-1 text-white uppercase">Check in
-                </MyButton>
-            </> : <>
-                <MyButton name="check_update" iconRight={<FaCheck className="" />}
-                    className="bg-green-700/20 text-green-700 border-1 border-green-700 !py-0">Modifier
-                </MyButton>
-            </>  }
-        </div>
     );
 }
 

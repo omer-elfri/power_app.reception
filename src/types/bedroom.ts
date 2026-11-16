@@ -1,7 +1,7 @@
 import { CleanType, CustomerType, ReservationType, RestaurantType } from "./types";
 import { PriorityId } from "./index";
-import { TypeWithTrace } from "../hooks/bd/useBook";
-import Employer from "./employer";
+import { TypeWithTrace } from "../hooks/useBook";
+import { ConfigType } from "../hooks/useConfig";
 
 export const stages = [ "Rez de chaussée", "Étage 1", "Étage 2", "Étage 3", "Étage 4", "Étage 5", ] as const;
 
@@ -38,7 +38,7 @@ namespace BedRoom {
     }
 
     export type RoomData2 = RoomData & {
-        category: BedRoom.Category.Type,
+        category: ConfigType<BedRoom.Category.Type>,
         lastClean: TypeWithTrace<CleanType> | null,
     }
 
@@ -46,15 +46,11 @@ namespace BedRoom {
         connected: boolean,
         power: boolean | null,
 
-        clean: TypeWithTrace<CleanType> & {
-            valet: Employer.Type,
-        } | null,
+        cleaning: TypeWithTrace<CleanType> | null,
         customer: TypeWithTrace<CustomerType> & {
             restaurant: TypeWithTrace<RestaurantType>[],
         } | null,
         booked: TypeWithTrace<ReservationType> | null,
-        reservations: TypeWithTrace<ReservationType>[],
-        restaurations: TypeWithTrace<RestaurantType>[],
     }
 
 }

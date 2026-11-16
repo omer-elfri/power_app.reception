@@ -1,128 +1,76 @@
 'use client';
 
-import React from "react";
 import { twMerge } from "tailwind-merge";
 
-import { useDataContext } from "../../hooks";
 import { useRequest } from "../../hooks/useRequest";
-import { TypeWithTrace } from "../../hooks/bd/useBook";
+import { getFrenchDateTime } from "../../tools/date";
 
-import { getDuration, getTime } from "../../tools/date";
-import { CleanType } from "../../types/types";
-import { Bar } from "../../components/SectionBox";
 import NoElem from "../../components/NoElem";
+import { AsideDiv } from "../../components/FormAside";
+import { MyTr } from "../../components/MyTable";
+import { BiBed } from "react-icons/bi";
+import { useVisual } from "../../hooks/useVisual";
 
-import { FaCheck } from "react-icons/fa";
-import { GiBroom } from "react-icons/gi";
-import { ImCross } from "react-icons/im";
-
-
-export default function CleaningTable({ list, className }: {
-  list: TypeWithTrace<CleanType>[],
+export default function LastCleanedAside({ className }: {
   className?: string,
 }) {
-  const { cleaning_book } = useDataContext();
-  const cleaningTab = cleaning_book.list.filter(clean => !clean.done);
+  const { addPopup } = useVisual();
+  const { bedRoomTab, isObsolet } = useRequest();
+
+  const roomStages = Object.entries(Object.groupBy(bedRoomTab, room => room.stage));
+  const gridStyle = "w-full grid grid-cols-[50px_40px_1fr_60px_50px] gap-2 py-2 font-bold text-[12px] text-gray-600";
 
   return (
-    <div className={twMerge("flex flex-col gap-2 text-[13px] text-center font-bold", className)}>
+    <AsideDiv no_bar title="Derniers néttoyages" className={twMerge("", className)}>
 
-      <TableTr className="py-0">
-        <p>Heure</p><p>Chambre</p><p>Vallet</p><p>État</p>
-      </TableTr> <Bar />
+      <NoElem text="Aucun élément" Icon={BiBed} className="text-[15px] pr-3 overflow-auto" list={bedRoomTab}>
 
-      <NoElem Icon={GiBroom} list={list} text="Aucun élément trouvé">
-        <div className="overflow-auto flex flex-col gap-2">
+        <MyTr className={twMerge(gridStyle, "text-gray-800 text-[11px] border-y-1 border-gray-400/50 py-[5px]")}>
+          <span>Assignée</span>
+          <span>CH</span>
+          <span>Vallet</span>
+          <span>Statut</span>
+          <span>Fin</span>
+        </MyTr>
 
-          { cleaningTab.length > 0 && <>
-            <p className="flex flex-row gap-2 col-span-4 text-left mt-3 text-[12px]">
-              <span className="flex-1">En cours</span>
-              <span>{cleaningTab.length} chambres</span>
-            </p>
-            <div className="flex flex-col"> { cleaningTab.map((clean, i) =>
-              <CleanLine key={clean.id} index={i} clean={clean} canCancel /> ) }
+        <div className="flex flex-col overflow-auto">
+          { roomStages.map(([stage, rooms]) => <div key={stage}>
+
+            <div className={twMerge("col-span-full grid grid-cols-[10px_auto_1fr] items-center gap-2 py-2 font-bold text-[12px] text-gray-600")}>
+              <hr className="text-gray-400/70" />
+              <span className="text-gray-800">{stage}</span>
+              {/* <hr className="text-gray-400/70" /> */}
             </div>
-          </>  }
 
-          { list.length > 0 && <>
-            <p className="flex flex-row gap-2 col-span-4 text-left mt-3 text-[12px]">
-              <span className="flex-1"> { list.length !== cleaning_book.list.length ? "Aujourd'hui" : "Toutes" }</span>
-              <span>{list.length} chambres</span>
-            </p>
-            <div className="flex flex-col"> { list.map((clean, i) =>
-              <CleanLine key={clean.id} index={i} clean={clean} /> ) }
-            </div>
-          </>  }
+            { rooms.map(room => {
+              const clean = room.cleaning ?? room.lastClean;
+              return (
+                <MyTr key={room.id} onClick={() => addPopup(['VALLET', room.id])}
+                  className={twMerge("text-[11px] text-center border-b-1 border-gray-400/30 hover:bg-blue-300/20 cursor-pointer", gridStyle)}>
+                  <p className="text-[11px]">{ room.lastClean ? getFrenchDateTime(room.lastClean.created_date) : "..." }</p>
+                  <p className={room.lastClean ? "text-black text-[12px]" : ""}>{room.id}</p>
+                  <p className="text-[11px]">{ room.lastClean?.valet.name ?? "..." }</p>
+                  <div className="flex flex-row justify-center text-center">
+                    { !clean ? "..." : !clean.done ?
+                      <div className="bg-blue-300/20 border-1 text-center border-blue-800 text-blue-900 text-[10px] px-[4px] py-[0px] rounded">en cours</div>
+                    : isObsolet(room.id) ?
+                      <div className="bg-red-300/20 border-1 text-center border-red-800 text-red-900 text-[10px] px-[4px] py-[0px] rounded">sale</div>
+                    :
+                      <div className="bg-green-300/20 border-1 text-center border-green-800 text-green-900 text-[10px] px-[4px] py-[0px] rounded">propre</div>
+                    }
+                  </div>
+                  <p className="text-[11px]">{ room.lastClean?.done ? getFrenchDateTime(room.lastClean.done) : "..." }</p>
+                </MyTr>
+              )}
+            ) }
 
+          </div> )}
         </div>
+
+
       </NoElem>
 
-
-    </div>
+    </AsideDiv>
   );
 }
 
-function TableTr({ className, children, index=-1, onClick }: {
-  children: React.ReactNode[];
-  index?: number,
-  className?: string,
-  onClick?: () => void,
-}) {
-  return (
-      <div className={twMerge("grid grid-cols-[50px_60px_1fr_70px] items-center gap-x-3 py-2 relative text-[11px]",
-        className, index%2===0 ? "bg-blue-700/8" : "")} onClick={onClick}>
-        { children }
-      </div>
-  )
-}
-
-function CleanLine({ clean, className, canCancel, index=-1 }: {
-  clean: TypeWithTrace<CleanType>,
-  index?: number,
-  className?: string,
-  canCancel?: boolean,
-}) {
-  const { addPopup, getCleaner } = useDataContext();
-  const { done_cleaning, cancel_cleaning } = useRequest();
-  return (
-      <TableTr index={index} onClick={() => addPopup(['ROOM', clean.room_id])}
-          className={twMerge(className, "group hover:bg-blue-400/20 cursor-pointer")}>
-
-        <p className="text-gray-600">{getTime(clean.created_date)}</p>
-
-        <p className="text-[12px] cursor-pointer hover:underline"
-          onClick={() => {
-            addPopup(['ROOM', clean.room_id]);
-          }}>{clean.room_id}
-        </p>
-
-        <p className="text-gray-800">{getCleaner(clean.valet_id)?.name}</p>
-
-        <div className="flex flex-row justify-center items-center gap-2">
-
-          { clean.done ? <>
-            { getDuration(clean.created_date, clean.done) }
-            {/* { getTime(clean.done) } */}
-            <FaCheck size={9} title="Fait" className="absolute bottom-1 right-2 text-green-700" />
-          </>
-
-          : clean.cancel_date ?
-            <span title="annulée" className="text-gray-400">annulé</span>
-
-          : canCancel ? <div className="flex flex-row flex-wrap gap-1 hidden group-hover:flex" onClick={e => e.stopPropagation()}>
-
-            <div className="flex justify-center items-center p-1 size-5 bg-red-700 text-white rounded-full cursor-pointer"
-              onClick={() => cancel_cleaning(clean.id)}><ImCross size={10} />
-            </div>
-
-            <div className="flex justify-center items-center p-1 size-5 bg-blue-700 text-white rounded-full cursor-pointer"
-              onClick={() => done_cleaning(clean.id)}><FaCheck size={10} />
-            </div>
-
-          </div> : null }
-
-        </div>
-
-      </TableTr>
-  )
-}

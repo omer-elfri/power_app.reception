@@ -2,7 +2,7 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 
 export default function LabelInput({
-    onChangeText, label, type="text", name, value, options, className, inputClassName, children, required, defaultValue, ...props
+    onChangeText, label, type="text", name, value, options, className, inputClassName, children, required,  defaultValue, placeholder, ...props
 }: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & {
     label?: string,
     name?: string,
@@ -10,7 +10,6 @@ export default function LabelInput({
     required?: boolean,
     className?: string,
     inputClassName?: string,
-    // subClassName?: string,
     children?: React.ReactNode,
     type?: string,
     defaultValue?: string,
@@ -32,16 +31,16 @@ export default function LabelInput({
     );
 
     if (type === 'textarea') res = (
-        <textarea name={name} id={name} value={value} defaultValue={defaultValue}
+        <textarea name={name} id={name} value={value} defaultValue={defaultValue} placeholder={placeholder}
             className={twMerge("shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)] h-20 \
-                px-2 py-1 text-[12px] font-bold text-gray-800 !border-gray-400", inputClassName)}
+                px-2 py-1 text-[11px] font-bold text-gray-800 !border-gray-400 flex-1", inputClassName)}
             onChange={e => onChangeText?.(e.target.value)}
         />
     );
 
     res ??= (
         <input id={name} name={name} type={type} value={value} defaultValue={defaultValue}
-            onChange={e => onChangeText?.(e.target.value)} {...props}
+            onChange={e => onChangeText?.(e.target.value)} placeholder={placeholder} {...props}
             className={twMerge("w-full font-bold text-[11px] px-3 h-7", inputClassName)}
         />
     );

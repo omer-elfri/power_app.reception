@@ -2,40 +2,53 @@
 
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import { State } from '../types';
 
 export type OngletType<T=string> = {
   key: T,
   icon?: React.ReactNode,
-  value: React.ReactNode,
+  value?: React.ReactNode,
   style?: string,
   rightIcon?: React.ReactNode,
   disabled?: boolean,
+  tabStyle?: string,
 }
 
-export default function OngletTab<T extends string>({
-  onglet, setOnglet, datas,
-  className, subClassName, children
-}: {
-  onglet: T,
-  setOnglet: (key: T) => void | State<T>,
-  datas: OngletType<T>[],
-  children?: React.ReactNode,
+type OngletDivProps<T> = {
+  datas: [OngletType<T>, ...OngletType<T>[]],
   className?: string,
   subClassName?: string,
+  children?: (data: OngletType<T>) => React.ReactNode,
+}
+
+export default function OngletDiv<T extends string>({ ...props }: OngletDivProps<T> & {
+  onglet?: OngletType<T>, setOnglet?: (elem: OngletType<T>) => void
 }) {
+  const [onglet, setOnglet] = React.useState(props.datas[0]);
+
+  return (
+    <OngletDiv1 {...props}
+      onglet={props.onglet ?? onglet}
+      setOnglet={props.setOnglet ?? setOnglet}
+    />
+  );
+}
+
+function OngletDiv1<T extends string>({
+  datas, className, subClassName, children,
+  onglet, setOnglet,
+}: OngletDivProps<T> & { onglet: OngletType<T>, setOnglet: (elem: OngletType<T>) => void }) {
 
   const OngletTab = React.useCallback(({ elem }: {
     elem: OngletType<T>,
   }) => {
     return (
-      <div key={elem.key} onClick={!elem.disabled ? () => setOnglet(elem.key) : undefined} className={twMerge(
-        "flex flex-row gap-2 items-center text-[12px] px-3 py-2 rounded cursor-pointer border-1 border-gray-400",
-        onglet === elem.key ? twMerge("bg-blue-500 text-white", elem.style) : "black hover:bg-blue-400/20")}>
+      <div key={elem.key} className={twMerge(
+          "flex flex-row gap-2 items-center text-[12px] px-3 py-2 rounded cursor-pointer border-1 border-gray-400 text-gray-600",
+          onglet.key === elem.key ? twMerge("bg-blue-500 text-white", elem.style, elem.tabStyle) : "black hover:bg-blue-400/20")}
+        onClick={() => { !elem.disabled ? setOnglet(elem) : undefined }}>
         { elem.icon }
-        { elem.value }
-        <div className='flex-1' />
-        { elem.rightIcon }
+        <div className='flex-1'>{ elem.value ?? elem.key }</div>
+        <div className=''>{ elem.rightIcon }</div>
       </div>
     );
   }, [onglet]);
@@ -48,7 +61,7 @@ export default function OngletTab<T extends string>({
       </div>
 
       <div className={twMerge('flex flex-col gap-2 flex-1 overflow-auto', subClassName)}>
-        { children }
+        { children?.(onglet) }
       </div>
 
     </div>

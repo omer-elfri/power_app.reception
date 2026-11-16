@@ -4,11 +4,11 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 import { useLocation, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { useDataContext } from "../hooks";
 
 import { IoPersonCircle } from "react-icons/io5";
 import { FaCalendarAlt } from "react-icons/fa";
 import { GiBroom } from "react-icons/gi";
+import { useVisual } from "../hooks/useVisual";
 
 export default function PageTitle({ className, children }: {
     className?: string,
@@ -16,7 +16,7 @@ export default function PageTitle({ className, children }: {
 }) {
     const { authSession } = useAuth();
     const { pathname } = useLocation();
-    const { addPopup } = useDataContext();
+    const { addPopup } = useVisual();
 
     if (!authSession) return null;
 
@@ -33,11 +33,11 @@ export default function PageTitle({ className, children }: {
                 <Link to="/rooms" className={twMerge("text-gray-500 pb-3", pathname.startsWith('/rooms') ? "border-b-2 text-red-700 border-red-700" : "")}>Chambres</Link>
             </div>
 
-            <button className="bg-blue-500 text-white" onClick={() => addPopup(['CLEAN'])}>
+            <button className="bg-blue-500 text-white" onClick={() => addPopup(['CLEANING'])}>
                 <GiBroom /> <span>Néttoyage</span>
             </button>
 
-            <button className="bg-purple-500 text-white" onClick={() => addPopup(['BOOKING'])}>
+            <button className="bg-purple-500 text-white" onClick={() => addPopup(['RESERVATION'])}>
                 <FaCalendarAlt /> <span>Réservation</span>
             </button>
 

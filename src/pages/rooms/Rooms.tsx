@@ -1,8 +1,7 @@
 "use client"
 
 import React from "react";
-
-import { useDataContext } from "../../hooks";
+import { useVisual } from "../../hooks/useVisual";
 import BedRoom from "../../types/bedroom";
 
 import SectionBox, { Title } from "../../components/SectionBox";
@@ -44,7 +43,7 @@ function StageAside({ form, stage, rooms, className }: {
     rooms: BedRoom.Type[],
     className?: string,
 }) {
-    const { addPopup } = useDataContext();
+    const { addPopup } = useVisual();
 
     if (form === "line") return (
         <SectionBox className={className} subClassName="min-h-30 pb-3">

@@ -2,7 +2,7 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 import { IconType } from 'react-icons/lib';
 
-export default function NoElem({ className, Icon, size=40, text, list, children, bar=false }: {
+export default function NoElem({ Icon, size=40, text="Aucun élément", list, className, children, bar=false }: {
   bar?: boolean,
   Icon?: IconType,
   size?: number,
@@ -14,19 +14,10 @@ export default function NoElem({ className, Icon, size=40, text, list, children,
   if (list.length > 0) return children;
 
   return (
-    <div className={twMerge('flex flex-col justify-center items-center gap-4 w-full h-[90%]', className)}>
-
-      { (list.length > 0) ? children : <>
-        
-        { bar && <hr className='w-full border-gray-400/40' /> }
-        <div className={twMerge('flex flex-col justify-center items-center gap-4 \
-          text-gray-500/50 text-[12px] font-bold w-full h-full', )}>
-          { Icon && <Icon size={size} /> }
-          <span>{text}</span>
-        </div>
-
-      </> }
-
+    <div className={twMerge('flex flex-col justify-center items-center gap-4 \
+      text-gray-500/50 text-[12px] font-bold w-full h-full', className, bar && "border-t-1 border-gray-400/40")}>
+      { Icon && <Icon size={size} /> }
+      <span>{text}</span>
     </div>
   );
 }

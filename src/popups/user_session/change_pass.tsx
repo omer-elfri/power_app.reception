@@ -1,7 +1,6 @@
 'use client'
 
 import React from "react";
-import { useDataContext } from "../../hooks";
 import { useAuth } from "../../hooks/useAuth";
 
 import Popup from "..";
@@ -13,12 +12,13 @@ import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { IoKeyOutline } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
+import { useVisual } from "../../hooks/useVisual";
 
 export default function ChangePassPopup({ className }: {
   className?: string,
 }) {
   const { authSession, connect } = useAuth();
-  const { checkError, unPopup } = useDataContext();
+  const { checkError, unPopup } = useVisual();
   const [curPass, setCurPass] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
@@ -31,7 +31,7 @@ export default function ChangePassPopup({ className }: {
     setLoading(true);
     setTimeout(() => {
       checkError(() => {
-        connect(authSession!.id, curPass);
+        connect(authSession!.email ?? "", curPass);
         if (!newPass) throw ['error', "Rentrez le nouveau mot de passe !"];
         if (newPass.length < 8) throw ['error', "Le nouveau mot de passe doit doit comporter minimum 8 lettres !"];
         if (newPass !== confPass) throw ['error', "Les mots de passe indiquées ne correspondent pas !"];

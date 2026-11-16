@@ -2,14 +2,13 @@
 
 import { twMerge } from "tailwind-merge";
 import BedRoom from "../../types/bedroom";
+import { formatPrice } from "../../tools";
+import { useDataContext } from "../../hooks";
 
 import { AsideDiv } from "../../components/FormAside";
-import { RiRestaurantFill, RiServiceBellLine } from "react-icons/ri";
-
-import { formatPrice } from "../../tools";
 import { MyTr } from "../../components/MyTable";
 import NoElem from "../../components/NoElem";
-import { useDataContext } from "../../hooks";
+import { RiRestaurantFill, RiServiceBellLine } from "react-icons/ri";
 
 export default function Restaurant({ room:bedRoom, className }: {
     room: BedRoom.Type,

@@ -1,4 +1,4 @@
-import { TypeWithTrace } from "../hooks/bd/useBook";
+import { TypeWithTrace } from "../hooks/useBook";
 import { TypeWithId } from "../types";
 
 export function uniqueId<T extends Record<string, any>>(

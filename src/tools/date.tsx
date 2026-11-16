@@ -2,7 +2,7 @@ import { getString } from ".";
 
 export function getFrenchDate(date: Date) {
     return date.toLocaleDateString("fr-FR", {
-        day: "numeric",
+        day: "2-digit",
         month: "long",
         year: "numeric",
     });
@@ -48,7 +48,7 @@ export function getDuration(start: Date, end: Date) {
     return `${min} min`;
 }
 
-export function strToDate<T>(stocked: string) {
+export function strToDate<T extends Object>(stocked: string): T {
     const jsonDatas: T = JSON.parse(stocked, (_, value) => {
         if (typeof value === "string" &&
             /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(value) )
@@ -60,16 +60,22 @@ export function strToDate<T>(stocked: string) {
 
 
 
-
 export function parseDates<T>(obj: T): T {
     if (Array.isArray(obj))
         return obj.map(parseDates) as T;
 
-    if (obj === null || typeof obj !== 'object')
+    if (obj === null || typeof obj !== 'object') {
+        if (typeof obj === 'string' && /^[\[{]/.test(obj.trim())) {
+            try {
+                return parseDates(JSON.parse(obj)) as T;
+            } catch {}
+        }
         return obj;
+    }
 
     return Object.fromEntries(
-        Object.entries(obj).map(([key, value]) => [ key,
+        Object.entries(obj).map(([key, value]) => [
+            key,
             value != null && typeof value === 'string' &&
             /(^date$|_date$|_at$|^start$|^end|^done$)/i.test(key) &&
             !isNaN(Date.parse(value))
@@ -78,70 +84,3 @@ export function parseDates<T>(obj: T): T {
         ])
     ) as T;
 }
-
-
-
-
-
-
-
-// export function parseValue(value: unknown): unknown {
-//   if (typeof value !== 'string') return value;
-
-//   // Objet ou tableau JSON
-//   try {
-//     const parsed: unknown = JSON.parse(value);
-
-//     if (typeof parsed === 'object' && parsed !== null) {
-//       return parsed;
-//     }
-//   } catch {}
-
-//   // Date ISO
-//   if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-//     const date = new Date(value);
-//     if (!Number.isNaN(date.getTime())) return date;
-//   }
-
-//   return value;
-// }
-
-// export function parseRow<T extends object>(row: Record<string, unknown>): T {
-//   return Object.fromEntries(
-//     Object.entries(row).map(([key, value]) => [
-//       key,
-//       parseValue(value),
-//     ])
-//   ) as T;
-// }
-
-// export function parseDates<T>(value: T): T {
-//   if (typeof value === 'string') {
-//     const date = new Date(value);
-
-//     if (
-//       /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value) &&
-//       !isNaN(date.getTime())
-//     ) {
-//       return date as T;
-//     }
-
-//     return value;
-//   }
-
-//   if (Array.isArray(value)) {
-//     return value.map(item => parseDates(item)) as T;
-//   }
-
-//   if (value !== null && typeof value === 'object') {
-//     if (value instanceof Date) return value;
-
-//     return Object.fromEntries(
-//       Object.entries(value).map(([key, val]) => [
-//         key,
-//         parseDates(val)
-//       ])
-//     ) as T;
-//   }
-
-//   return value;

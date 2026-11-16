@@ -44,18 +44,18 @@ export function Title({ icon, children, className, right, bar }: {
 export function Bar({ className }: {
   className?: string,
 }) {
-  return <hr className={twMerge("text-gray-400/50", className)} />;
+  return <hr className={twMerge("text-gray-400/50", className)} />
 }
 
 export function SeeMore({ onClick, value }: {
   onClick?: () => void,
   value?: string,
 }) {
-  return (<>
+  return (
     <MyButton iconRight={<FaArrowRight />} onClick={onClick}
-      className="bg-transparent border-t-1 text-left text-blue-600 border-gray-500/30 !p-0 !pt-2 !rounded-none">
-      { value ?? "Tout voir" }
+      className="bg-transparent border-t-1 text-left text-blue-600 border-gray-500/30 !p-0 !pt-2 !rounded-none hover:scale-100">
+      <span className="">{ value ?? "Tout voir" }</span>
     </MyButton>
-  </>);
+  );
 }
 

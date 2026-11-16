@@ -1,5 +1,5 @@
 import { Id, Sex } from '.';
-import { TypeWithTrace } from '../hooks/bd/useBook';
+import { TypeWithTrace } from '../hooks/useBook';
 import BedRoom from './bedroom';
 import Employer from './employer';
 
@@ -42,14 +42,12 @@ export type CheckInType = {
     datas?: never,
 })
 
+
 export type ReservationType = {
     name: string,
     start_date: Date,
     end_date: Date,
 }
-
-
-
 
 
 export type RestaurantProps = {

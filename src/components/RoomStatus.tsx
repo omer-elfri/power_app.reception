@@ -2,16 +2,26 @@ import { twMerge } from "tailwind-merge";
 
 import BedRoom from "../types/bedroom";
 
-export default function RoomStatus({ room:bedRoom }: {
+export default function RoomStatus({ room:bedRoom, label }: {
     room: BedRoom.Type,
+    label?: string,
     className?: string,
 }) {
+    label ??=
+        bedRoom.customer ? "Vendue"
+        : bedRoom.booked ? "Réservée"
+        // : bedRoom.cleaning ? "Néttoyage"
+        : "Libre";
     return (
-        bedRoom.customer
-        ?   <StatusLabel value="Vendue" className="text-green-700 bg-green-700/15" />
-        : bedRoom.booked
-        ?   <StatusLabel value="Réservée" className="text-purple-700 bg-purple-700/15" />
-        :   <StatusLabel value="Libre" className="text-blue-700 bg-blue-700/15" />
+        label === "Néttoyage"
+        ?   <StatusLabel value={label} className="text-blue-700 bg-blue-700/15" />
+        : label === "Vendue"
+        ?   <StatusLabel value={label} className="text-green-700 bg-green-700/15" />
+        : label === "Réservée"
+        ?   <StatusLabel value={label} className="text-purple-700 bg-purple-700/15" />
+        : label === "Libre"
+        ?   <StatusLabel value={label} className="text-gray-700 bg-gray-700/15" />
+        : null
     );
 }
 

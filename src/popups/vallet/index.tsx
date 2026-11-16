@@ -11,13 +11,15 @@ import { Title } from "../../components/SectionBox";
 import { PersonSex2 } from "../../components/PersonSex";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "../../hooks/useAuth";
+import { useVisual } from "../../hooks/useVisual";
 
 export default function ValletPopup({ roomId:bedRoomId, className }: {
   roomId: BedRoom.Id,
   className?: string,
 }) {
   const { cleaners } = useAuth();
-  const { unPopup, cleaning_book } = useDataContext();
+  const { unPopup } = useVisual();
+  const {  cleaning_book } = useDataContext();
   const { clean_room } = useRequest();
     
   return (
@@ -28,15 +30,15 @@ export default function ValletPopup({ roomId:bedRoomId, className }: {
       subClassName="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-5 overflow-visible">
 
       { cleaners.map(cleaner => {
-        const roomsTotal = cleaning_book.today.filter(clean => clean.valet_id === cleaner.id);
+        const roomsTotal = cleaning_book.getToday().filter(clean => clean.valet_id === cleaner.id);
         const roomsDone = roomsTotal.filter(clean => clean.done);
         return (
           <div key={cleaner.id} className="grid grid-rows-[1fr_auto] gap-2 p-4 bg-white rounded relative animate-1 cursor-pointer hover:scale-105 transition-transform duration-700 ease-in-out"
             onClick={() => { clean_room(bedRoomId, cleaner.id as Employer.Id); unPopup(); }}>
 
-            <div className="grid gris-cols-2 gap-1 w-12 absolute top-3 right-2 text-white p-2 rounded text-center">
-              <p className="text-white bg-green-800">{getString(roomsDone.length)}</p>
-              <p className="text-white bg-red-800">{getString(roomsTotal.length)}</p>
+            <div className="grid gris-cols-2 gap-1 w-12 absolute top-3 right-2 text-white p-2 rounded text-center font-bold">
+              <p className="text-black bg-green-800/40">{getString(roomsDone.length)}</p>
+              <p className="text-white bg-green-800">{getString(roomsTotal.length)}</p>
             </div>
 
             <div className="flex justify-center items-center">

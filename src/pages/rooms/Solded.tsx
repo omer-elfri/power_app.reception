@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import SectionBox, { Title } from "../../components/SectionBox";
 import SoldRoom from "../../components/SoldRoom";
 import { useRequest } from "../../hooks/useRequest";
-import { formatPrice } from '../../tools';
+import { formatPrice, getString } from '../../tools';
 
 export default function SoldedAside({ className }: {
     className?: string,
@@ -16,7 +16,7 @@ export default function SoldedAside({ className }: {
     return (
         <SectionBox className={twMerge("pb-5", className)}>
 
-            <Title bar className="mb-2" right={nbSold}>Ventes</Title>
+            <Title bar className="mb-2" right={getString(nbSold)}>Ventes</Title>
 
             <div className="flex flex-col gap-3"> { analysis.categories.map((room_ctg) => (
                 <SoldRoom key={room_ctg.name}

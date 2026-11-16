@@ -1,13 +1,14 @@
 import React from "react";
 import { useSupabase } from "./useSupabase";
 
-import { Id, TableId } from "../../types";
-import BedRoom from "../../types/bedroom";
-import { PostgrestFilterBuilder } from "@supabase/supabase-js";
-import { useAuth } from "../useAuth";
-import Employer from "../../types/employer";
+import { Id, TableId } from "../types";
+import BedRoom from "../types/bedroom";
+import { PostgrestFilterBuilder, PostgrestQueryBuilder } from "@supabase/supabase-js";
+import { useAuth } from "./useAuth";
+import Employer from "../types/employer";
 
-export type SupabaseSelect = PostgrestFilterBuilder<any, any, any, any[], string, unknown, "GET", false>;
+export type SupabaseSlt = PostgrestQueryBuilder<any, any, any, TableId, unknown>;
+export type SupabaseSelect = PostgrestFilterBuilder<any, any, any, any[], TableId, unknown, "GET" | "RPC", false>;
 
 export type TypeWithTrace<T> = T & {
     id: Id,
@@ -23,7 +24,7 @@ export type TypeWithTrace<T> = T & {
     cancel_by: Employer.Id,
 })
 
-export type LocalBook<T extends Object, R = T> = {
+export type LocalBook<T, R=T> = {
     add: (roomId: BedRoom.Id, data: T, description?: string) => Promise<void>,
     update: (id: number, data: Partial<TypeWithTrace<T>>, description?: string) => Promise<void>,
     cancel: (id: number) => Promise<void>,
@@ -31,22 +32,22 @@ export type LocalBook<T extends Object, R = T> = {
     list: TypeWithTrace<R>[],
     getId: (id: Id) => TypeWithTrace<R> | null,
     getRoomId: (roomId: BedRoom.Id, and?: (data: TypeWithTrace<R>) => boolean) => TypeWithTrace<R> | null,
-    getRooms: (roomId: BedRoom.Id) => TypeWithTrace<R>[],
-
-    today: TypeWithTrace<R>[];
+    getRooms: (roomId: BedRoom.Id, and?: (data: TypeWithTrace<R>) => boolean) => TypeWithTrace<R>[],
+    getToday: () => TypeWithTrace<R>[];
 }
 
 export function useLocalData<T extends Object, R = T>(
     tableId: TableId,
-    filter?: (get: SupabaseSelect) => SupabaseSelect,
+    filter: (get: SupabaseSlt) => SupabaseSelect = e => e.select('*'),
     listenTables: TableId[] = [],
 ): LocalBook<T, R> {
-    const { isAuth } = useAuth();
-    const mySupabase = useSupabase<T, TypeWithTrace<R>>(tableId, table => {
-        return (filter ? filter(table) : table)
+    const mySupabase = useSupabase<T, TypeWithTrace<R>>(tableId,
+        table => filter(table)
             .is('cancel_date', null)
-            .order('created_date', { ascending: false })
-    }, listenTables);
+            .order('created_date', { ascending: false }),
+    listenTables);
+
+    const { isAuth } = useAuth();
     const { datas } = mySupabase;
 
     const getId = React.useCallback((id: Id) => {
@@ -60,8 +61,16 @@ export function useLocalData<T extends Object, R = T>(
         return datas.find(data => data.room_id === roomId && and(data)) ?? null;
     }, [datas]);
 
-    const getRooms = React.useCallback((roomId: BedRoom.Id) => {
-        return datas.filter(data => data.room_id === roomId) || null;
+    const getRooms = React.useCallback((
+        roomId: BedRoom.Id,
+        and: (data: TypeWithTrace<R>) => boolean = () => true,
+    ) => {
+        return datas.filter(data => data.room_id === roomId && and(data));
+    }, [datas]);
+
+    const getToday = React.useCallback(() => {
+        const today = new Date();
+        return datas.filter(elem => elem.created_date.getDate() === today.getDate());
     }, [datas]);
 
 
@@ -78,7 +87,7 @@ export function useLocalData<T extends Object, R = T>(
             created_date: new Date(),
             description,
         });
-    }, [isAuth, mySupabase]);
+    }, [isAuth, mySupabase.add]);
 
     const update = React.useCallback(async (
         id: Id,
@@ -87,19 +96,14 @@ export function useLocalData<T extends Object, R = T>(
     ) => {
         const res: Partial<TypeWithTrace<T>> = { ...data, description, };
         await mySupabase.update(id, res);
-    }, [isAuth, mySupabase]);
+    }, [mySupabase.update]);
 
     const cancel = React.useCallback(async (id: Id) => {
         await mySupabase.update(id, {
             cancel_date: new Date(),
             cancel_by: isAuth().id,
         } as Partial<TypeWithTrace<T>>);
-    }, [isAuth, mySupabase]);
-
-    const today = React.useMemo(() => {
-        const today = new Date();
-        return datas.filter(elem => elem.created_date.getDate() === today.getDate());
-    }, [datas]);
+    }, [isAuth, mySupabase.update]);
 
     return {
         list: datas,
@@ -109,7 +113,7 @@ export function useLocalData<T extends Object, R = T>(
         add,
         update,
         cancel,
-        today
+        getToday
     };
 }
 

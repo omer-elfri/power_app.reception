@@ -248,3 +248,83 @@ insert -> pas de reservation date antérieure (< now)
 customer_book
 insert -> pas deux clients meme chambre (pas 2 end null meme CH)
         -> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        return select.select(`*,
+            category:bedroom_ctg_table(*),
+            customer
+            cleans:last_clean(*)
+                valet
+            reservations
+            restaurations
+                customer
+        `);
+
+tu comprends ?
+
+category: BedRoom.Catefory.Type
+    sa categorie
+
+cleaning? => TypeWithTrace<CleanType>
+    !done
+    +valet
+
+cleans => TypeWithTrace<CleanType>[]
+    created_date > hier 18h
+    done
+    +valet
+
+lastClean? => TypeWithTrace<CleanType>
+    done
+    +valet
+
+customer?: TypeWithTrace<CustomerType>
+    !end
+    + resto
+
+reservations : TypeWithTrace<ReservationType>[]
+    end_date > now
+
+restaurant : TypeWithTrace<RestaurantType>[]
+    tout les resto dont le customer a au moin 1 unpaid ou !customer.end
+    + customer
+
+cleanList: 
+customerList: !end || done === today
+
+
+
+
+
+cleaneds
+    done &&
+    created_date > hier 18h
+customer
+    end === today
+restaurant
+    customer.end &&
+    ... dont le client a 1 impayé
+
+
