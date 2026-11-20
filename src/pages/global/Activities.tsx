@@ -31,7 +31,7 @@ export default function ActivitySection({ className }: {
           value={analysis.powered.length}
           name="Chambres" subName="alimentées"
           color={colors.powered}
-          onClick={() => addPopup(['BEDROOM', 'powered'])}
+          onClick={() => addPopup(['BEDROOM'])}
         />
         <ActivityBox
           icon={ <div className="flex flex-row">
@@ -42,16 +42,26 @@ export default function ActivitySection({ className }: {
           value={analysis.solded.length}
           name="Chambres" subName="vendues"
           color={colors.sold}
-          onClick={() =>  addPopup(['BEDROOM', 'solded'])}
+          onClick={() =>  addPopup(['BEDROOM'])}
         />
         <ActivityBox
           icon={<IoBed size={35} />}
           value={analysis.available.length}
           name="Chambres" subName="disponibles"
           color={colors.free}
-          onClick={() =>  addPopup(['BEDROOM', 'free'])}
+          onClick={() =>  addPopup(['BEDROOM'])}
           infobulle={analysis.issues.length > 0 && <MdWarning
             title={`${getString(analysis.issues.length)} chambre(s) sont problématiques`}
+            className="text-yellow-600" />}
+        />
+        <ActivityBox
+          icon={<MdCleaningServices size={30} />}
+          value={analysis.cleaning.total.length}
+          name="Chambres" subName="à néttoyer"
+          color={colors.cleaning}
+          onClick={() =>  addPopup(['CLEANING'])}
+          infobulle={analysis.cleaning.obsolets.length > 0 && <MdWarning
+            title="Certaines chambres sont obsolètes"
             className="text-yellow-600" />}
         />
         <ActivityBox
@@ -60,16 +70,6 @@ export default function ActivitySection({ className }: {
           name="Réservations" subName="aujourd'hui"
           color={colors.coming}
           onClick={() =>  addPopup(['RESERVATION'])}
-        />
-        <ActivityBox
-          icon={<MdCleaningServices size={30} />}
-          value={analysis.cleaning.total.length}
-          name="Chambre" subName="en néttoyage"
-          color={colors.cleaning}
-          onClick={() =>  addPopup(['CLEANING'])}
-          infobulle={analysis.cleaning.obsolets.length > 0 && <MdWarning
-            title="Certaines chambres sont obsolètes"
-            className="text-yellow-600" />}
         />
         <ActivityBox bar={false}
           icon={<TbChefHatFilled size={30} />}

@@ -19,10 +19,10 @@ export default function RoomLine({ room:bedRoom, className }: {
     const clientName = bedRoom.customer?.name ?? bedRoom.booked?.name ?? null;
 
     const cleaningState = (() => {
-        if (bedRoom.cleaning)
-            return bedRoom.cleaning?.valet.name;
-        if (!bedRoom.lastClean) return "...";
-        return !isObsolet(bedRoom.id) ? "Propre" : 'Sale';
+        if (!bedRoom.clean) return "...";
+        if (bedRoom.cleaning) return bedRoom.cleaning?.valet.name;
+        if (isObsolet(bedRoom.id)) return "Sale";
+        return "Propre";
     })();
 
     const issueIcon = (
@@ -60,8 +60,8 @@ export default function RoomLine({ room:bedRoom, className }: {
                 <span className="">{bedRoom.power ? "Allumée" : "Éteinte"}</span>
             </div>
 
-            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.cleaning ? "text-black" : isObsolet(bedRoom.id) ? "text-red-600" : "text-gray-400")}>
-                <GiBroom size={14} className={bedRoom.cleaning ? "text-blue-600" : ""} />
+            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.cleaning ? "text-black" : "")}>
+                <GiBroom size={14} className={bedRoom.cleaning ? "text-blue-600" : isObsolet(bedRoom.id) ? "text-yellow-600" : "text-gray-400"} />
                 <span className="">{cleaningState}</span>
             </div>
 

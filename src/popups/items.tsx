@@ -48,7 +48,10 @@ export default function ItemPopup({ onglet, className, subClassName, children }:
   }];
 
   return (
-    <PopupBody top={<Title bar className="gap-2" right={<CloseBtn />}>Tableau de bord</Title>}
+    <PopupBody top={<Title bar className="gap-2" right={<>
+      {/* <input type="search" className=" !border-0 !border-b-1 !border-gray-500 pb-1 !rounded-none" placeholder="Rechercher" /> */}
+      <CloseBtn />
+    </>}>Tableau de bord</Title>}
       className={twMerge(className, "h-160")}>
 
       <OngletDiv datas={datas} subClassName={subClassName}

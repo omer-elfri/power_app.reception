@@ -5,7 +5,7 @@ import BedRoom from "../../types/bedroom";
 import React from "react";
 import { getString } from "../../tools";
 import { FilterOption } from ".";
-import { AsideDiv } from "../../components/FormAside";
+import { AsideDiv } from "../../components/AsideDiv";
 import { useVisual } from "../../hooks/useVisual";
 
 export default function RoomFilter({ status, rooms, className, setRoomFiltered }: {
@@ -22,6 +22,7 @@ export default function RoomFilter({ status, rooms, className, setRoomFiltered }
     'booked': rooms.filter(room => !!room.booked),
     'cleaning': rooms.filter(room => !!room.cleaning),
     'free': rooms.filter(room => !room.customer),
+    'issue': rooms.filter(room => !!room.issue),
   }), [rooms]);
 
   React.useEffect(() => {
@@ -36,7 +37,7 @@ export default function RoomFilter({ status, rooms, className, setRoomFiltered }
   }) => {
     return (
       <div onClick={() => switchPopup(['BEDROOM', label])} className={twMerge(
-        "flex flex-row font-bold text-[11px] px-2 py-1 rounded border-1 border-gray-600 cursor-pointer",
+        "flex flex-row font-bold text-[11px] px-2 py-1 rounded cursor-pointer border-1 border-gray-600",
         status === label ? twMerge("bg-blue-600 text-white", style) : "bg-white text-gray-600"
       )}>
         <span className="font-semibold flex-1">{value}</span>
@@ -53,6 +54,7 @@ export default function RoomFilter({ status, rooms, className, setRoomFiltered }
       <FilterSelect label="powered" value="Alimentées" nb={analysis.powered.length} style="bg-red-600" />
       <FilterSelect label="booked" value="Réservées" nb={analysis.booked.length} style="bg-purple-600" />
       <FilterSelect label="cleaning" value="En néttoyages" nb={analysis.cleaning.length} style="bg-blue-600" />
+      <FilterSelect label="issue" value="En pannes" nb={analysis.issue.length} style="bg-blue-600" />
     </AsideDiv>
   );
 }

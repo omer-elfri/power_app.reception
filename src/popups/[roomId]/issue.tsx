@@ -4,11 +4,12 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 import { PriorityId, State } from '../../types';
 import BedRoom from '../../types/bedroom';
-
-import FormAside from '../../components/FormAside';
-import { MdError, MdWarning } from "react-icons/md";
 import { useRequest } from '../../hooks/useRequest';
 import { useVisual } from '../../hooks/useVisual';
+
+import { AsideDiv } from '../../components/AsideDiv';
+import MyButton from '../../components/MyButton';
+import { MdError, MdWarning } from "react-icons/md";
 
 export default function CommentBox({ room:bedRoom, className }: {
   room: BedRoom.Type,
@@ -16,9 +17,59 @@ export default function CommentBox({ room:bedRoom, className }: {
 }) {
   const { checkError } = useVisual();
   const { updateIssue } = useRequest();
-  const [priority, setPriority] = React.useState(bedRoom.issue?.priority ?? 'low');
+  const [priority, setPriority] = React.useState(bedRoom.issue?.priority ?? null);
+  const [message, setMessage] = React.useState(bedRoom.issue?.message ?? "");
+  const buttonStyle = "px-3 !py-1 !text-[10px]";
 
-  const rigth = (
+  React.useEffect(() => {
+    console.log(",,,")
+    setPriority(p => !p ? (bedRoom.issue?.priority ?? null) : p);
+    setMessage(m => { console.log("m",m); return m === "" ? (bedRoom.issue?.message ?? "") : m});
+  }, [bedRoom]);
+
+  const submitHandler = () => {
+    checkError(async () => {
+      if (!priority) throw ['error', "Précisez la priorité"];
+      if (message === '') throw ['error', "Rentrez un commentaire"];
+      updateIssue(bedRoom.id, { priority, message });
+    });
+  }
+
+  return (
+    <AsideDiv title="Signaler un problème" className={twMerge("", className)}>
+
+      <IssuePart priority={priority} setPriority={setPriority} />
+
+      <textarea name="message" value={message} onChange={e => setMessage(e.target.value)}
+        className='shadow-[inset_0_1px_1px_1px_rgba(0,0,0,0.15)] px-3 pt-3 pb-2 h-20 !border-none bg-gray-300/20 text-[12px]'
+      />
+
+      <div className='flex flex-row gap-3 justify-end'>
+        { !bedRoom.issue
+        ?
+          <MyButton onClick={submitHandler} disabled={!priority || message === ""}
+            className={twMerge("bg-blue-600 text-white", buttonStyle)}
+          >Envoyer</MyButton>
+        : <>
+          <MyButton onClick={submitHandler}
+            className={twMerge("bg-transparent border-1 border-red-600 text-red-600", buttonStyle)}
+          >Retirer</MyButton>
+
+          <MyButton onClick={() => updateIssue(bedRoom.id, null)}
+            className={twMerge("bg-blue-600/70 text-white", buttonStyle)}
+          >Modifier</MyButton>
+        </> }
+      </div>
+
+    </AsideDiv>
+  );
+}
+
+function IssuePart({ priority, setPriority }: {
+  priority: PriorityId | null,
+  setPriority: State<PriorityId | null>,
+}) {
+  return (
     <div className='flex flex-row gap-2'>
 
       <IssusPriority color="text-yellow-600" value="low"
@@ -38,60 +89,12 @@ export default function CommentBox({ room:bedRoom, className }: {
 
     </div>
   );
-
-  return (
-    <FormAside title="Signaler un problème"
-      className={twMerge("", className)} onSubmit={e => {
-      
-        if (e.target.submit_issue) {
-          checkError(async () => {
-            const priority = e.target.priority.value;
-            const message = e.target.message.value;
-            if (message === '')
-              throw ['error', "Rentrez un commentaire"];
-            updateIssue(bedRoom.id, { priority, message });
-          });
-        }
-    
-        if (e.target.cancel_issue) {
-          updateIssue(bedRoom.id, null);
-        }
-
-      }}>
-
-      { rigth }
-
-      <input type='hidden' name='priority' value={priority} />
-
-      <textarea name="message" defaultValue={bedRoom.issue?.message}
-        className='shadow-[inset_0_1px_1px_1px_rgba(0,0,0,0.15)] px-3 pt-3 pb-2 h-50 !border-none bg-gray-300/20 text-[12px]'
-      />
-
-      { !bedRoom.issue ?
-
-        <input type="submit" name='submit_issue' value="Envoyer"
-          className='self-end px-3 py-1 text-[12px] bg-blue-600 text-white cursor-pointer'
-        /> :
-
-        <div className='flex flex-row gap-3 justify-end'>
-          <button name='cancel_issue' className='self-end px-3 !py-1 text-[12px] \
-            border-1 border-red-600 text-red-600 cursor-pointer'>Retirer
-          </button>
-          <input type="submit" name='submit_issue' value="Modifier"
-            className='self-end px-3 py-1 text-[12px] bg-blue-600/70 text-white cursor-pointer'
-          />
-        </div>
-      }
-
-    </FormAside>
-  );
 }
-
 function IssusPriority({ className, color, priority, setPriority, value, children }: {
   className?: string,
   color: string,
-  priority: PriorityId,
-  setPriority: State<PriorityId>,
+  priority: PriorityId | null,
+  setPriority: State<PriorityId | null>,
   value: PriorityId,
   children: React.ReactNode,
 }) {

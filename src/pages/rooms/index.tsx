@@ -12,7 +12,7 @@ export type FormType = 'line' | 'grid';
 
 export default function RoomsPage() {
     const { bedRoomTab } = useRequest();
-    const [form, setForm] = React.useState<FormType>('line');
+    const [form, setForm] = React.useState<FormType>('grid');
     const [filteredRooms, setFilteredRooms] = React.useState(bedRoomTab);
 
     return (

@@ -5,52 +5,41 @@ import { useDataContext } from "../../hooks";
 import BedRoom from '../../types/bedroom';
 import { getFrenchDate } from '../../tools/date';
 
-import { AsideDiv } from '../../components/FormAside';
-import { MyTr } from '../../components/MyTable';
+import { AsideDiv } from '../../components/AsideDiv';
 import NoElem from '../../components/NoElem';
-import MyButton from "../../components/MyButton";
 import { FaCalendarAlt } from 'react-icons/fa';
-import { useVisual } from '../../hooks/useVisual';
-
-export function BookButton({ className }: {
-  className?: string,
-}) {
-  const { addPopup } = useVisual();
-
-  return (
-    <MyButton
-      className={twMerge('!text-[10px] bg-purple-500 text-white !px-2 !py-1 gap-x-1 hover:scale-95', className)}
-      onClick={() => addPopup(['RESERVATION'])}>Réserver
-    </MyButton>
-  );
-}
+import Caster from '../../components/Caster';
+import { colors } from '../../types';
 
 export default function ReservationTab({ room:bedRoom, className }: {
   room: BedRoom.Type,
   className?: string,
 }) {
-  const { addPopup } = useVisual();
   const { reservation_book } = useDataContext();
   const roomReservations = reservation_book.getRooms(bedRoom.id);
+  const gridStyle = "grid grid-cols-[40px_1fr_40px_40px] gap-2 px-2";
 
   return (
-    <AsideDiv icon={<FaCalendarAlt size={14} className='text-purple-700' />} title="Réservations" className={twMerge('min-h-30', className)} right={<BookButton className="self-end" />}>
+    <AsideDiv no_bar title="Réservations"
+      icon={<FaCalendarAlt size={14} className='text-purple-700' />}
+      right={<Caster color={colors.coming} value={['RESERVATION']} />}
+      className={twMerge('min-h-30', className)} subClassName='gap-0'>
 
       <NoElem Icon={FaCalendarAlt} text="Aucune réservation" list={roomReservations} className="min-h-30">
 
-        <MyTr className="grid grid-cols-4 text-center text-[11px] text-gray-500 border-b-1 border-gray-400/40">
-          <p>Client</p><p>CH</p><p>Arrivée</p><p>Départ</p>
-        </MyTr>
+        <div className={twMerge("text-[11px] py-1 text-gray-500 border-y-1 border-gray-400/40", gridStyle)}>
+          <p>Date</p><p>Client</p><p>Arrivée</p><p>Départ</p>
+        </div>
 
         <div className='flex flex-col flex-1'>
           { roomReservations.map(rsv =>
-            <MyTr key={rsv.id} onClick={() => addPopup(['RESERVATION', rsv.id])}
-              className="grid-cols-4 group py-1 cursor-pointer hover:bg-blue-400/10 text-[11px]">
+            <div key={rsv.id}
+              className={twMerge("text-[11px] py-[7px] border-b-1 border-gray-400/40 last:border-0 text-gray-600", gridStyle)}>
+              <p>{getFrenchDate(rsv.created_date).slice(0,6)}</p>
               <p>{rsv.name}</p>
-              <p>{rsv.room_id}</p>
               <p>{getFrenchDate(rsv.start_date).slice(0,6)}</p>
               <p>{getFrenchDate(rsv.end_date).slice(0,6)}</p>
-            </MyTr>
+            </div>
           ) }
         </div>
 

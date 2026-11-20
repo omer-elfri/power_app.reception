@@ -28,6 +28,8 @@ export type RequestContext = AnalysisData & {
 
     book: (roomId: BedRoom.Id, props: ReservationType) => Promise<void>,
     cancel_book: (bookId: Id) => Promise<void>,
+
+    pay_restaurant: (restoId: Id) => Promise<void>,
 }
 
 export function RequestProvider({ children }: { children: React.ReactNode }) {
@@ -56,7 +58,8 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
     ) => {
         await checkError(async () => {
             const issue = datas ? { date: new Date(), ...datas } : null;
-            bedroom_table.update(roomId, { issue });
+            await bedroom_table.update(roomId, { issue });
+            throw ['sucess', `Chambre ${roomId}`, `Issue mis à jour avec succès !`];
         });
     }, [bedRooms, bedroom_table.update]);
 
@@ -149,7 +152,6 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             const bookedInPeriod = getBookedPeriod(props.start_date, props.end_date);
             const isBooked = bookedInPeriod.find(booked => booked.room_id === roomId);
             if (isBooked) throw ['error', `La chambre ${roomId} à déjà été réservée par ${isBooked.name.toUpperCase()} du ${getFrenchDate(isBooked.start_date)} au ${isBooked.end_date ? getFrenchDate(isBooked.end_date) : '...'}`];
-
             await reservation_book.add(roomId, props);
             throw ['sucess', `Réservation chambre ${roomId}`, `Réservée par Mr / Mme ${props.name} du ${getFrenchDate(props.start_date)} au ${getFrenchDate(props.end_date)}`];
         });
@@ -165,6 +167,17 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
         });
     }, [reservation_book]);
 
+
+    const pay_restaurant = React.useCallback(async (restoId: Id) => {
+        await checkError(async () => {
+            const resto = restaurant_book.getId(restoId);
+            if (!resto) throw ['error', `La restauration ${restoId} est introuvable'`];
+
+            await restaurant_book.update(restoId, { paid: true });
+            throw ['sucess', `Payment restauration`, `La réservation "${resto.article}" de Mr / Mme ${resto.customer.name} est réglée`];
+        });
+    }, [reservation_book]);
+
     
     return (
         <requestContext.Provider value={{
@@ -173,7 +186,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             check_in, check_move, check_out,
             clean_room, clean_done, clean_cancel,
             book, cancel_book,
-
+            pay_restaurant,
         }}> { children }
         </requestContext.Provider>
     );

@@ -75,13 +75,12 @@ export function useAnalysis(): AnalysisData {
         const obsoletDay = new Date(Date.now() - 3*24*60*60*1000);
         const room = bedRooms[roomId];
         if (!room) return false;
-        const cleaned = room?.cleaning ?? room?.lastClean;
         const customer = customer_book.getRoomId(roomId);
 
-        if (!cleaned) return false;
-        if (!cleaned.done) return false;
-        if (cleaned.done < obsoletDay) return true;
-        if (customer?.end && cleaned.done < customer.end) return true;
+        if (!room.clean) return false;
+        if (!room.clean.done) return false;
+        if (room.clean.done < obsoletDay) return true;
+        if (customer?.end && room.clean.done < customer.end) return true;
         return false;
     }, [bedRooms, customer_book]);
     
@@ -95,11 +94,8 @@ export function useAnalysis(): AnalysisData {
             const roomRestos = restaurant_book.list.filter(({ customer }) => customer.room_id === room.id);
             const res: BedRoom.Type = {
                 ...(bedRooms[room.id] ?? {}), ...room,
-                cleaning,
-                customer: customer ? { ...customer,
-                    restaurant: roomRestos,
-                } : null,
-                lastClean,
+                cleaning, lastClean, clean: cleaning ?? lastClean,
+                customer: customer ? { ...customer, restaurant: roomRestos, } : null,
                 booked: isBookedToday(room.id),
             }
             return [ room.id, res ];

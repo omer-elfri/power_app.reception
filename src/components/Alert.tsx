@@ -2,6 +2,7 @@
 
 import React from "react";
 import { twMerge } from "tailwind-merge";
+
 import { useVisual } from "../hooks/useVisual";
 import { MdWarning } from "react-icons/md";
 import { FaCheckCircle } from "react-icons/fa";
@@ -13,16 +14,41 @@ export default function Alert({ className }: {
 }) {
   const { alerts, popAlert } = useVisual();
 
-  React.useEffect(() => {
-      if (alerts.length === 0) return;
-      const id = setTimeout(() => popAlert(), 5*1000);
-      return () => clearTimeout(id);
-  }, [alerts, popAlert]);
+  const timer = React.useRef<NodeJS.Timeout | null>(null);
+  const remaining = React.useRef(5000);
+  const startedAt = React.useRef(0);
 
-  if (!alert) return null;
+  const startTimer = React.useCallback(() => {
+      if (timer.current || alerts.length === 0)
+        return;
+      startedAt.current = Date.now();
+      timer.current = setTimeout(() => {
+        popAlert();
+        remaining.current = 5000;
+        timer.current = null;
+      }, remaining.current);
+  }, [alerts.length, popAlert]);
+
+  const pauseTimer = React.useCallback(() => {
+      if (!timer.current) return;
+      clearTimeout(timer.current);
+      timer.current = null;
+      remaining.current -= Date.now() - startedAt.current;
+  }, []);
+
+  React.useEffect(() => {
+      remaining.current = 5000;
+      startTimer();
+      return pauseTimer;
+  }, [alerts, startTimer, pauseTimer]);
+
+  if (alerts.length === 0) return null;
 
   return (
-    <div className="fixed top-5 flex flex-col items-center z-110" onClick={popAlert}>
+    <div className="fixed top-5 flex flex-col items-center z-110"
+      onMouseEnter={pauseTimer}
+      onMouseLeave={startTimer}
+      onClick={popAlert}>
       { alerts.slice(0,3).map((alert, i) => (
         <InfobulleNotif key={i} alert={alert} className={
           twMerge("shadow-md", className,
@@ -34,7 +60,6 @@ export default function Alert({ className }: {
     </div>
   );
 }
-
 
 export function InfobulleNotif({ className, alert }: {
   className?: string,

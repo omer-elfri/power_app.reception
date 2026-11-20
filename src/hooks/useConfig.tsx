@@ -12,7 +12,7 @@ export type Config<T extends Object> = {
     list: ConfigType<T>[];
     read: () => Promise<(T & { id: string | number })[]>,
     getId: (id: string | Id) => ConfigType<T> | null;
-    update: (id: string | Id, data: Partial<ConfigType<T>>) => void;
+    update: (id: string | Id, data: Partial<ConfigType<T>>) => Promise<void>;
 }
 
 export function useConfig<T extends Object>(
@@ -22,7 +22,7 @@ export function useConfig<T extends Object>(
 ): Config<T> {
     const mySupabase = useSupabase<ConfigType<T>>(
         tableId, filter, listenTables);
-    console.log(tableId, mySupabase.datas)
+    // console.log(tableId, mySupabase.datas)
     const datas = mySupabase.datas//.filter(data => !data.disabled) as ConfigType<T>[];
 
     const getId = React.useCallback((id: string | Id) => {

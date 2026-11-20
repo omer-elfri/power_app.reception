@@ -7,7 +7,7 @@ import { getFrenchDateTime } from "../../tools/date";
 
 import NoElem from "../../components/NoElem";
 import Room from "../../components/Room";
-import { AsideDiv } from "../../components/FormAside";
+import { AsideDiv } from "../../components/AsideDiv";
 import { MyTr } from "../../components/MyTable";
 import MyButton from "../../components/MyButton";
 
@@ -20,7 +20,6 @@ export default function CleaningAside({ className }: {
   className?: string,
 }) {
   const { analysis, clean_done, clean_cancel } = useRequest();
-
   const gridTodayStyle2 = "w-full grid grid-cols-[45px_30px_1fr_60px] items-center gap-1 py-2 font-bold text-[12px] text-gray-600 [&>*]:bggreen-500";
   const cleanings = analysis.cleaning.total;
 
@@ -38,7 +37,7 @@ export default function CleaningAside({ className }: {
       <NoElem Icon={GiBroom} size={30} list={cleanings} text="Vide" className="h-30">
         { cleanings.map(room => (
           <ToRoom key={room.id} id={room.id}
-            className={twMerge("border-b-1 border-gray-300/80 text-[10px] text-center", gridTodayStyle2)}>
+            className={twMerge("last:border-0 border-b-1 border-gray-300/80 text-[10px] text-center", gridTodayStyle2)}>
 
             <span className="text-[11px]">{ room.cleaning ? getFrenchDateTime(room.cleaning.created_date) : "..." }</span>
 

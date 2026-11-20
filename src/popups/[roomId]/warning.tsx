@@ -5,7 +5,7 @@ import { useVisual } from '../../hooks/useVisual';
 import { useRequest } from "../../hooks/useRequest";
 import BedRoom from '../../types/bedroom';
 
-import { AsideDiv } from '../../components/FormAside';
+import { AsideDiv } from '../../components/AsideDiv';
 import { MdError, MdWarning } from 'react-icons/md';
 
 export default function IssueSide({ roomId:bedRoomId }: {

@@ -8,12 +8,14 @@ import LabelInput from "../../components/LabelInput";
 import MyButton from "../../components/MyButton";
 import { FaExchangeAlt } from "react-icons/fa";
 import { useVisual } from "../../hooks/useVisual";
+import React from "react";
 
 export default function CheckMove({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
     const { switchPopup } = useVisual();
+    const [roomId, setRoomId] = React.useState<BedRoom.Id | null>(null);
     const { analysis, bedRoomTab, check_move } = useRequest();
 
     return (
@@ -27,7 +29,7 @@ export default function CheckMove({ room:bedRoom, className }: {
             <FaExchangeAlt size={10} />
             <label className="flex-1">Déplacer vers</label>
 
-            <LabelInput name="toRoomId" options={
+            <LabelInput value={roomId ?? ""} onChangeText={setRoomId} options={
                 bedRoomTab.map(room => ({
                     k: room.id.toString(),
                     value: `${room.id} ${room.customer?.name.toUpperCase() ?? ""}`,

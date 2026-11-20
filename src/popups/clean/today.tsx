@@ -9,7 +9,7 @@ import { getString } from "../../tools";
 import { CleanStatus } from "../../pages/global/Entretien";
 import NoElem from "../../components/NoElem";
 import Room from "../../components/Room";
-import { AsideDiv } from "../../components/FormAside";
+import { AsideDiv } from "../../components/AsideDiv";
 import { MyTr } from "../../components/MyTable";
 import { MdCalendarToday } from 'react-icons/md';
 import { ToRoom } from ".";
@@ -44,8 +44,6 @@ export default function TodayCleanAside({ className }: {
             <div className="flex flex-row justify-center items-center"><CleanStatus clean={clean} /></div>
             <span>{ clean?.done ? getFrenchDateTime(clean.done) : "..." }</span>
           </ToRoom>
-          // <MyTr key={clean.id} className={twMerge(" hover:text-blue-900 cursor-pointer ">
-          // </MyTr>
         )) }
       </NoElem>
 

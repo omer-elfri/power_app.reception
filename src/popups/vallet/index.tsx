@@ -20,7 +20,9 @@ export default function ValletPopup({ roomId:bedRoomId, className }: {
   const { cleaners } = useAuth();
   const { unPopup } = useVisual();
   const {  cleaning_book } = useDataContext();
-  const { clean_room } = useRequest();
+  const { clean_room, clean_cancel, clean_done, bedRooms } = useRequest();
+  const bedRoom = bedRooms[bedRoomId];
+  if (!bedRoom) return null;
     
   return (
     <PopupBody top={<Title className="text-white">
@@ -33,7 +35,7 @@ export default function ValletPopup({ roomId:bedRoomId, className }: {
         const roomsTotal = cleaning_book.getToday().filter(clean => clean.valet_id === cleaner.id);
         const roomsDone = roomsTotal.filter(clean => clean.done);
         return (
-          <div key={cleaner.id} className="grid grid-rows-[1fr_auto] gap-2 p-4 bg-white rounded relative animate-1 cursor-pointer hover:scale-105 transition-transform duration-700 ease-in-out"
+          <div key={cleaner.id} className="grid grid-rows-[1fr_auto] gap-2 p-4 bg-white rounded relative animate-1 transition-transform duration-700 ease-in-out hover:scale-105 cursor-pointer"
             onClick={() => { clean_room(bedRoomId, cleaner.id as Employer.Id); unPopup(); }}>
 
             <div className="grid gris-cols-2 gap-1 w-12 absolute top-3 right-2 text-white p-2 rounded text-center font-bold">
@@ -45,7 +47,7 @@ export default function ValletPopup({ roomId:bedRoomId, className }: {
               <PersonSex2 sexe={cleaner.sexe} size={50} className="text-gray-600" />
             </div>
 
-            <div className="flex flex-row justify-center px-2 pt-2 border-t-1 border-gray-400/50">
+            <div className="flex flex-row justify-center pt-2 border-t-1 border-gray-400/50">
               <span className="font-bold text-[13px] uppercase text-center">{ cleaner.name }</span>
             </div>
 

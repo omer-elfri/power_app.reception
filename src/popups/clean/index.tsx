@@ -3,25 +3,28 @@ import { twMerge } from "tailwind-merge";
 import ItemPopup from "../items";
 import CleaningAside from "./cleaning";
 import TodayCleanAside from "./today";
-import ObsoletAside from "./obsolets";
+
 import LastCleanedAside from "./table";
 import BedRoom from "../../types/bedroom";
 import { useVisual } from "../../hooks/useVisual";
+import { useRequest } from "../../hooks/useRequest";
 
 export default function CleanTab({ className }: {
   className?: string,
 }) {
+  const { analysis } = useRequest();
+
   return (
     <ItemPopup onglet="CLEANING" className={twMerge("", className)}
       subClassName={twMerge("grid grid-cols-[250px_1fr] gap-3", )}>
 
       <div className="flex flex-col gap-3">
-        <CleaningAside />
-        <TodayCleanAside />
-        <ObsoletAside className="flex-1" />
+        { analysis.cleaning.total.length > 0 && <CleaningAside /> }
+        <TodayCleanAside className="flex-1" />
+        {/* <ObsoletAside /> */}
       </div>
 
-      <LastCleanedAside className="" />
+      <LastCleanedAside />
 
     </ItemPopup>
   );

@@ -29,11 +29,10 @@ export const colors: {[k in (StatusId)]: string} = {
 
 export type PopupType =
     [ 'BEDROOM', (FilterOption | null)? ] |
-    [ 'CLEANING', Id? ] |
+    [ 'CLEANING' ] |
     [ 'RESERVATION', Id? ] |
-    [ 'RESTAURANT', Id? ] |
+    [ 'RESTAURANT' ] |
 
-    [ 'ROOM_RESTO', Id ] |
     [ 'ROOM', BedRoom.Id ] |
     [ 'CHECK_IN', BedRoom.Id ] |
     [ 'USER' ] |

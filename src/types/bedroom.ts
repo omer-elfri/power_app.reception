@@ -39,6 +39,7 @@ namespace BedRoom {
 
     export type RoomData2 = RoomData & {
         category: ConfigType<BedRoom.Category.Type>,
+        clean: TypeWithTrace<CleanType> | null,
         lastClean: TypeWithTrace<CleanType> | null,
     }
 

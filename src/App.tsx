@@ -19,14 +19,13 @@ import ReservationTab from "./popups/reservation";
 import CleanTab from "./popups/clean";
 import BedRoomTab from "./popups/bedroom";
 import RestaurantTab from "./popups/restaurant";
-import RoomRestoPopup from "./popups/restaurant/[id]";
 
 export default function App() {
   const { loading } = useVisual();
   // useServer();
 
   return (
-    <div className={twMerge("flex flex-col items-center w-screen max-h-screen px-5 py-2 min-w-200")}>
+    <div className={twMerge("flex flex-col items-center w-screen max-h-screen px-5 py-2 min-w-220")}>
       <Alert />
 
       <div className="flex flex-col w-full max-w-210">
@@ -61,10 +60,9 @@ function CurrentPopup() {
   return <Popup>{
     popup[0] === 'BEDROOM' ? <BedRoomTab status={popup[1]} /> :
     popup[0] === 'CLEANING' ? <CleanTab /> :
-    popup[0] === 'RESERVATION' ? <ReservationTab id={popup[1]} /> :
-    popup[0] === 'RESTAURANT' ? <RestaurantTab id={popup[1]} /> :
+    popup[0] === 'RESERVATION' ? <ReservationTab /> :
+    popup[0] === 'RESTAURANT' ? <RestaurantTab /> :
     
-    popup[0] === 'ROOM_RESTO' ? <RoomRestoPopup id={popup[1]} /> :
     popup[0] === 'ROOM' ? <RoomPopup roomId={popup[1]} /> :
     popup[0] === 'VALLET' ? <ValletPopup roomId={popup[1]} /> :
     popup[0] === 'CHANGE_PASS' ? <ChangePassPopup /> :
@@ -101,16 +99,16 @@ export function ConnexionStatus({ className }: {
     return (
         <div className={twMerge("fixed bottom-5 left-0 right-0 flex justify-center pointer-events-none", className)}>
             <div className={twMerge(
-                "px-5 py-3 min-w-[500px] text-center rounded font-bold uppercase",
-                "backdrop-blur-md shadow transition-all duration-500 ease-in-out",
-                online
-                    ? "bg-green-800/30 text-green-800"
-                    : "bg-yellow-800/30 text-yellow-800",
-                show
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-[calc(100%+20px)] opacity-0"
+              "px-5 py-3 min-w-[500px] text-center rounded font-bold uppercase",
+              "backdrop-blur-md shadow transition-all duration-500 ease-in-out",
+              online
+                ? "bg-green-800/30 text-green-800"
+                : "bg-yellow-800/30 text-yellow-800",
+              show
+                ? "translate-y-0 opacity-100"
+                : "translate-y-[calc(100%+20px)] opacity-0"
             )}>
-                {online ? "Connecté à internet" : "Aucune connexion à internet"}
+              { online ? "Connecté à internet" : "Aucune connexion à internet" }
             </div>
         </div>
     );

@@ -13,7 +13,7 @@ export function useSupabase<T extends Object, R extends { id: string | number} =
 ) {
     const [obsolet, setObsolet] = React.useState(true);
     const [datas, setDatas] = React.useState<R[]>([]);
-    const { setLoading } = useVisual();
+    const { setLoading, checkError } = useVisual();
 
     React.useEffect(() => {
         let previousState = false;
@@ -30,29 +30,28 @@ export function useSupabase<T extends Object, R extends { id: string | number} =
     const manager = React.useCallback(async (
         handler: () => Promise<any>,
     ): Promise<any> => {
-        try {
-            console.log("... ", tableId);
-            const res = await handler();
-            setLoading(false);
-            return res;
-        }
-        catch(err: any) {
-            setLoading(false);
-            throw ['error', err.message];
-        }
+        await checkError(async () => {
+            try {
+                // console.log("... ", tableId);
+                const res = await handler();
+                setLoading(false);
+                return res;
+            }
+            catch(err: any) {
+                setLoading(false);
+                throw ['error', err.message];
+            }
+        });
     }, []);
 
     const read = React.useCallback(async (): Promise<R[]> => {
-        return manager(async () => {
+        return await manager(async () => {
             setObsolet(true);
             const { data, error } = await filter( supabase.from(tableId) );
             if (error) throw Error(`Get à échoué: ${error.message} !`);
             console.log("get ", tableId);
             setObsolet(false);
-            if (tableId === 'bedroom_table')
-                console.log("last_clean", data[2].room_id, data[2].lastClean);
             const res = parseDates(data) as any[];
-            console.log("res", res)
             setDatas(res);
             return res;
         });
@@ -78,23 +77,25 @@ export function useSupabase<T extends Object, R extends { id: string | number} =
     const add = React.useCallback(async (
         newDatas: T,
     ) => {
-        return manager(async () => {
+        const res = await manager(async () => {
             setLoading(true);
             await new Promise(resolve => setTimeout(resolve, 3000));
             const { error } = await supabase.from(tableId).insert(newDatas as any);
+            console.log("error", error)
             if (error) throw Error(`L'ajout a échoué: ${error.message} !`);
             // const newDatasR: R = { ...newDatas, id: -1 } as R;
             // setDatas(datas => [ newDatasR, ...datas ]);
             console.log("add ", tableId, datas);
             setObsolet(true);
         });
+        return res;
     }, []);
 
     const update = React.useCallback(async (
         id: string | number,
         updatedDatas: Partial<R>,
     ) => {
-        return manager(async () => {
+        return await manager(async () => {
             setLoading(true);
             await new Promise(resolve => setTimeout(resolve, 3000));
             const { error } = await supabase.from(tableId)

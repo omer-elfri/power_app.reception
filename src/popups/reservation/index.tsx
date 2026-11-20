@@ -8,8 +8,7 @@ import ItemPopup from "../items";
 import BookingForm from "./form";
 import BookingInfos from "./table";
 
-export default function ReservationTab({ id, className }: {
-  id?: number,
+export default function ReservationTab({ className }: {
   className?: string,
 }) {
   const [selectedDate, setSelectedDate] = React.useState<DateRange>({ from: new Date() });

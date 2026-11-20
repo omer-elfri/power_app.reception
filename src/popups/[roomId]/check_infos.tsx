@@ -1,16 +1,17 @@
 import { twMerge } from "tailwind-merge";
-import { getFrenchDateTime } from "../../tools/date";
-import BedRoom from "../../types/bedroom";
-
-import AsideForm from "../../components/FormAside";
-import LabelValue from "../../components/LabelValue";
-import NoElem from "../../components/NoElem";
-import { MdPerson } from "react-icons/md";
-import { formatPrice } from "../../tools";
-import { FaExchangeAlt } from "react-icons/fa";
-import MyButton from "../../components/MyButton";
 import { useRequest } from "../../hooks/useRequest";
 import { useVisual } from "../../hooks/useVisual";
+import { getFrenchDateTime } from "../../tools/date";
+import { formatPrice } from "../../tools";
+import BedRoom from "../../types/bedroom";
+
+import AsideForm from "../../components/AsideDiv";
+import LabelValue from "../../components/LabelValue";
+import NoElem from "../../components/NoElem";
+import MyButton from "../../components/MyButton";
+import { MdPerson } from "react-icons/md";
+import { FaExchangeAlt } from "react-icons/fa";
+import { colors } from "../../types";
 
 export default function CheckInfos({ room:bedRoom, className }: {
     room: BedRoom.Type,
@@ -18,17 +19,24 @@ export default function CheckInfos({ room:bedRoom, className }: {
 }) {
     const { addPopup } = useVisual();
     const { check_out } = useRequest();
+
+    const Right = () => {
+        return (
+            <MyButton name='check_out' icon={<FaExchangeAlt />}
+                className="bg-transparent border-1 text-red-700 border-red-700 !py-1 !px-1 !text-[10px]">Check out
+            </MyButton>
+        );
+    }
+
+    const submitHandler = async () => {
+        await check_out(bedRoom.id);
+        if (!bedRoom.cleaning) addPopup(['VALLET', bedRoom.id]);
+    }
+
     return (
-        <AsideForm icon={<MdPerson className="text-gray-500" />} title="Informations client"
-            className={twMerge("", className)} subClassName="gap-3" right={
-                <MyButton name='check_out' icon={<FaExchangeAlt />}
-                    className="bg-transparent border-1 text-red-700 border-red-700 !py-1 !px-1 !text-[10px]">Check out
-                </MyButton>
-            } onSubmit={async () => {
-                await check_out(bedRoom.id);
-                if (!bedRoom.cleaning)
-                    addPopup(['VALLET', bedRoom.id]);
-            }}>
+        <AsideForm icon={<MdPerson size={16} color={colors.sold} className="text-gray-500" />} title="Informations client"
+            className={twMerge("", className)} subClassName="gap-3"
+            right={<Right />} onSubmit={submitHandler}>
             <NoElem list={bedRoom.customer ? [1] : []} text="Aucun client">
 
                 <div className="flex flex-col gap-2">

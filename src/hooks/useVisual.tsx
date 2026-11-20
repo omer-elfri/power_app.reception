@@ -27,7 +27,7 @@ export function VisualProvider({ children }: {
     const [loading, setLoading] = React.useState(false);
 
     const addAlert = React.useCallback((alert: Infobulle) => {
-        setAlerts(alerts => [ alert, ...alerts ]);
+        setAlerts(alerts => [ ...alerts, alert, ]);
         // const notifications = localStorage.getItem('notifications') ?? "";
         // localStorage.setItem('notifications', [
         //     alert, strToDate<Infobulle>(notifications),

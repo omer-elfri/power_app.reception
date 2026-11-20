@@ -48,7 +48,7 @@ function OngletDiv1<T extends string>({
         onClick={() => { !elem.disabled ? setOnglet(elem) : undefined }}>
         { elem.icon }
         <div className='flex-1'>{ elem.value ?? elem.key }</div>
-        <div className=''>{ elem.rightIcon }</div>
+        <div className='text-black'>{ elem.rightIcon }</div>
       </div>
     );
   }, [onglet]);

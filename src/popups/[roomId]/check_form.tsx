@@ -4,7 +4,7 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 import BedRoom from "../../types/bedroom";
 
-import { AsideDiv } from "../../components/FormAside";
+import { AsideDiv } from "../../components/AsideDiv";
 import LabelInput from "../../components/LabelInput";
 import { FaRegComment } from "react-icons/fa";
 import { MdPerson } from "react-icons/md";
