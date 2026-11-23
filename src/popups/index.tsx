@@ -18,7 +18,7 @@ export default function Popup({ className, children } : {
   );
 }
 
-export function PopupBody({ top, bottom, className, subClassName, children, onSubmit } : {
+export function PopupBody({ top, bottom, className, subClassName, children } : {
   top?: React.ReactNode,
   bottom?: React.ReactNode,
   className?: string,
@@ -29,7 +29,7 @@ export function PopupBody({ top, bottom, className, subClassName, children, onSu
   className = twMerge("flex flex-col gap-3 bg-gray-200 rounded-lg \
       w-full max-w-160 p-5 min-h-80 max-h-[calc(100vh-100px)]", className);
 
-  const res = (
+  return (
     <div className={twMerge("flex flex-col gap-3 bg-gray-200 rounded-lg \
       w-full max-w-160 p-5 min-h-80 max-h-[calc(100vh-100px)]", className)}
       onClick={e => e.stopPropagation()}>
@@ -43,15 +43,6 @@ export function PopupBody({ top, bottom, className, subClassName, children, onSu
       { bottom }
 
     </div>
-  );
-
-  if (!onSubmit) return res;
-
-  return (
-    <form className="flex flex-col items-center w-full"
-      onSubmit={e => { e.preventDefault(); onSubmit(e); } }>
-      { res }
-    </form>
   );
 }
 

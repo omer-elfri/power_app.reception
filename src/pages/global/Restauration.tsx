@@ -19,7 +19,7 @@ export default function RestaurationSection({ className }: {
   const restaurant = restaurant_book.list.slice(0,5);
 
   return (
-    <SectionBox className={twMerge("", className)}
+    <SectionBox className={twMerge("gap-0", className)}
       top={<Title icon={<RiServiceBellLine size={22} />} right={getString(restaurant_book.list.length)}>Restauration</Title>}
       bottom={<SeeMore value="Voir tout" onClick={() => addPopup(['RESTAURANT'])} />}>
 
@@ -28,6 +28,9 @@ export default function RestaurationSection({ className }: {
         <table className="w-full border-separate border-spacing-y-2 [&_th,&_td]:px-3">
 
           <thead>
+            <tr>
+              <td colSpan={6}><hr className="text-gray-400/40" /></td>
+            </tr>
             <tr className="text-[11px] font-bold">
               <th className="">Heure</th>
               <th className="">Chambre</th>
@@ -36,16 +39,15 @@ export default function RestaurationSection({ className }: {
               <th className="">Prix</th>
               <th className="">Statut</th>
             </tr>
+            <tr>
+              <td colSpan={6}><hr className="text-gray-400/40" /></td>
+            </tr>
           </thead>
 
-          <thead>
-            <tr><td colSpan={6}>
-              <hr className="text-gray-400/40" />
-            </td></tr>
-
+          <tbody>
             { restaurant.map((data, i) => (
               <tr key={i} className={twMerge("text-center py-2 text-gray-600 text-[11px] font-bold",
-                (i!==restaurant.length-1) ? "border-b-1 border-gray-400/50" : "") }>
+                  (i!==restaurant.length-1) ? "border-b-1 border-gray-400/50" : "") }>
                 <td className="">{getTime(data.created_date)}</td>
                 <td className="text-[12px]">{data.room_id}</td>
                 <td className="">{data.customer?.name.toUpperCase() || "..."}</td>
@@ -57,7 +59,7 @@ export default function RestaurationSection({ className }: {
                 </td>
               </tr>
             )) }
-          </thead>
+          </tbody>
 
         </table>
 

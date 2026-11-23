@@ -2,18 +2,18 @@
 
 import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../hooks";
-import { getFrenchDateTime } from "../../tools/date";
+import { useVisual } from "../../hooks/useVisual";
 import { CheckInType } from "../../types/types";
+import { getString } from "../../tools";
+import { getFrenchDateTime } from "../../tools/date";
 
 import SectionBox, { Title } from "../../components/SectionBox";
 import NoElem from "../../components/NoElem";
+import Room from "../../components/Room";
 import { IoArrowUpOutline }  from "react-icons/io5";
 import { FiArrowDownRight, FiArrowUpRight } from "react-icons/fi";
 import { TbArrowsDoubleNeSw } from "react-icons/tb";
 import { GoPerson } from "react-icons/go";
-import { getString } from "../../tools";
-import Room from "../../components/Room";
-import { useVisual } from "../../hooks/useVisual";
 
 export default function MouvementSection({ className }: {
   className?: string,
@@ -41,21 +41,21 @@ export default function MouvementSection({ className }: {
 
         <NoElem list={customer_book.list} Icon={GoPerson} text="Rien à signaler" className="col-span-full">
           { customer_book.list.map((customer, i) => (
-            <div key={i} className={twMerge("py-[5px] cursor-pointer text-gray-600 group",
-              gridStyle)}
+            <div key={i} className={twMerge("py-[5px] cursor-pointer text-gray-600 group", gridStyle)}
               onClick={() => addPopup(['ROOM', customer.room_id])}>
     
               <div className="">{getFrenchDateTime(customer.created_date)}</div>
     
-              <Room id={customer.room_id} className={!customer.end ? "group-hover:text-green-800" : "group-hover:text-red-800"} />
+              <Room id={customer.room_id} className={!customer.end ?
+                "group-hover:text-green-800" : "group-hover:text-red-800"}
+              />
     
               <MoveSens move={customer.actions[0]} />
     
-              { !customer.end
-                ? <div className="truncate"
-                    onClick={() => addPopup(['ROOM', customer.room_id])}>{ customer.name.toUpperCase() }
-                  </div>
-                : <div className="truncate">{ customer.name.toUpperCase() }</div> }
+              <div className="truncate text-gray-800"
+                onClick={() => addPopup(['ROOM', customer.room_id])}>
+                { customer.name.toUpperCase() }
+              </div>
     
               <p className="text-center">{customer.end && getFrenchDateTime(customer.end)}</p>
     

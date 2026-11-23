@@ -26,6 +26,7 @@ import MyButton from "../../components/MyButton";
 import Caster from "../../components/Caster";
 import { FaCheck } from "react-icons/fa";
 import { IoBed } from "react-icons/io5";
+import PowerOn from "./power_on";
 
 export default function RoomPopup({ roomId:bedRoomId, className }: {
   roomId: BedRoom.Id,
@@ -94,6 +95,7 @@ export default function RoomPopup({ roomId:bedRoomId, className }: {
           <Restaurant room={bedRoom} className="flex-1 min-h-50" />
 
         </> : <>
+          <PowerOn room={bedRoom} />
           <form className="flex flex-col gap-3 h-full" onSubmit={submitHandler}>
             <CheckForm room={bedRoom} />
             <CheckInComment room={bedRoom} className="flex-1" />

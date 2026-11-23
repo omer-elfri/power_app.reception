@@ -45,7 +45,6 @@ export default function ChangePassPopup({ className }: {
 
   return (
     <Popup className={twMerge("", className)}>
-      {/* <PopupBody top={<h1 className="font-bold text-[16px]">Modifier mon mot de passe</h1>}> */}
       <div onClick={e => e.stopPropagation()} className="grid grid-cols-[150px_150px] gap-15">
 
         <form onSubmit={submitHandler} className="flex flex-col gap-3 bg-gray-200 px-10 py-5 rounded-md shadow min-w-[400px]">
@@ -80,7 +79,6 @@ export default function ChangePassPopup({ className }: {
         </form>
 
       </div>
-      {/* </PopupBody> */}
     </Popup>
   );
 }

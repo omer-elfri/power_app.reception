@@ -41,7 +41,7 @@ export default function ValletPopup({ roomId:bedRoomId, className }: {
         ) )}
       </div>
 
-      <MyButton className="self-end bg-red-600/70 text-white" onClick={unPopup}>Fermer</MyButton>
+      <MyButton className="self-end bg-red-800/50 uppercase text-white" onClick={unPopup}>Fermer</MyButton>
 
     </PopupBody>
   );

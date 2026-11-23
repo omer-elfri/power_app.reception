@@ -16,17 +16,6 @@ type sideDivProps = {
     onClick?: () => void,
 }
 
-export default function FormAside({ onSubmit, className, ...props }: sideDivProps & {
-    onSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void,
-}) {
-    return (
-        <form onSubmit={e => { e.preventDefault(); onSubmit(e); }}
-            className={twMerge('bg-white/60 px-3 py-3 font-bold rounded shadow-md w-full', className)}>
-            <AsideDiv topClassName='h-full' {...props} />
-        </form>
-    );
-}
-
 export function AsideDiv({ icon, title, no_bar = false, onClick, nb, right, bottom, className, topClassName, subClassName, children }: sideDivProps & {
     topClassName?: string,
 }) {
