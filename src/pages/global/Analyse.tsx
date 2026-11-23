@@ -13,25 +13,30 @@ export default function AnalyseSection({ className }: {
   const { analysis, bedRoomTab } = useAnalysis();
 
   const data = [
-    { label: 'Vendu',
+    { label: 'Vendues',
       value: analysis.solded.length,
-      color: colors.sold
+      color: colors.sold,
+      nb: analysis.solded.length,
     },
-    { label: 'Libre et réservée',
+    { label: 'Réservées',
       value: analysis.coming.free.length,
-      color: colors.coming
+      color: colors.coming,
+      nb: analysis.coming.total.length,
     },
-    { label: 'Chambres sales',
+    { label: 'En néttoyage',
       value: analysis.cleaning.free.length,
-      color: colors.cleaning
+      color: colors.cleaning,
+      nb: analysis.cleaning.total.length,
     },
     { label: 'Hors service',
       value: analysis.issues.filter(room => room.issue?.priority === 'high').length,
-      color: colors.issue
+      color: colors.issue,
+      nb: analysis.issues.filter(room => room.issue?.priority === 'high').length,
     },
-    { label: 'Prêt à vendre',
+    { label: 'Disponibles',
       value: analysis.free.length,
-      color: '#8997aa30'
+      color: '#8997aa30',
+      nb: analysis.free.length,
     },
   ];
   return (
@@ -61,12 +66,12 @@ export default function AnalyseSection({ className }: {
       />
       <table className="">
         <tbody>
-          { data.map(({label, value, color}) => <tr key={label} className="py-2 font-bold">
+          { data.map(({label, nb, color}) => <tr key={label} className="py-2 font-bold">
             <td className="py-[7px] pr-1">
               <div className="w-[10px] rounded-full aspect-square" style={{ backgroundColor: color }} />
             </td>
             <td className="text-[12px] text-gray-600">{label}</td>
-            <td className="text-[12px] text-right pl-1">{getString(value)}</td>
+            <td className="text-[12px] text-right pl-1">{getString(nb)}</td>
           </tr> ) }
         </tbody>
       </table>

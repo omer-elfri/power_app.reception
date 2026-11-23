@@ -13,24 +13,38 @@ import { MdCalendarToday } from "react-icons/md";
 import { AsideDiv } from "../../components/AsideDiv";
 import { ImCross } from "react-icons/im";
 import MyButton from "../../components/MyButton";
+import { normalizeSearch } from "../../tools";
 
-export default function BookingInfos({ className }: {
+export default function BookingInfos({ searchText, className }: {
+  searchText: string,
   className?: string,
 }) {
   const { addPopup } = useVisual();
-  const [bookId, setBookId] = React.useState<number | null>(null);
-  const { reservation_book } = useDataContext();
   const { cancel_book } = useRequest();
+  const { reservation_book } = useDataContext();
+  const [bookId, setBookId] = React.useState<number | null>(null);
+
+  const reservationlist = reservation_book.list
+    .filter(rsv => {
+      const tab = [
+        rsv.room_id, rsv.name,
+        getFrenchDate(rsv.start_date),
+      ].filter(elem => !!elem);
+      return tab.some(elem => normalizeSearch(elem!)
+        .includes( normalizeSearch(searchText) ) );
+    });
   const dateReservations = Object.groupBy(
-    reservation_book.list.sort((rsv1, rsv2) =>
+    reservationlist.sort((rsv1, rsv2) =>
       rsv1.start_date.getTime() - rsv2.start_date.getTime()),
     rsv => getFrenchDate(rsv.start_date));
-  const reservationList = Object.entries(dateReservations).sort(([date1], [date2]) => new Date(date1).getTime() - new Date(date2).getTime());
+  const reservationList = Object.entries(dateReservations)
+    .sort(([date1], [date2]) => new Date(date1).getTime() - new Date(date2).getTime());
+
   const gridStyle = "grid grid-cols-[50px_20px_2fr_1fr_1fr] gap-3 px-2 py-1 text-center";
 
   return (
     <div className={twMerge("flex flex-col gap-3 overflow-auto \
-      gap-5 px-2 py-1 font-bold text-[11px]", className)}>
+      gap-3 px-2 py-1 font-bold text-[11px]", className)}>
 
       <AsideDiv className="!py-2" subClassName={twMerge("text-center", gridStyle)}>
         <span>Réservée</span>

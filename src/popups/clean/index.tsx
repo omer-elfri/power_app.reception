@@ -17,15 +17,15 @@ export default function CleanTab({ className }: {
   return (
     <ItemPopup onglet="CLEANING" className={twMerge("", className)}
       subClassName={twMerge("grid grid-cols-[250px_1fr] gap-3", )}>
-
-      <div className="flex flex-col gap-3">
-        { analysis.cleaning.total.length > 0 && <CleaningAside /> }
-        <TodayCleanAside className="flex-1" />
-        {/* <ObsoletAside /> */}
-      </div>
-
-      <LastCleanedAside />
-
+      { searchText => <>
+        <div className="flex flex-col gap-3">
+          { analysis.cleaning.total.length > 0 &&
+            <CleaningAside /> }
+          <TodayCleanAside className="flex-1" />
+          {/* <ObsoletAside /> */}
+        </div>
+        <LastCleanedAside searchText={searchText} />
+      </> }
     </ItemPopup>
   );
 }

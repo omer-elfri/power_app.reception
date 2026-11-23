@@ -20,7 +20,7 @@ export default function ReservationTab({ room:bedRoom, className }: {
   const gridStyle = "grid grid-cols-[40px_1fr_40px_40px] gap-2 px-2";
 
   return (
-    <AsideDiv no_bar title="Réservations"
+    <AsideDiv no_bar={roomReservations.length > 0} title="Réservations"
       icon={<FaCalendarAlt size={14} className='text-purple-700' />}
       right={<Caster color={colors.coming} value={['RESERVATION']} />}
       className={twMerge('min-h-30', className)} subClassName='gap-0'>

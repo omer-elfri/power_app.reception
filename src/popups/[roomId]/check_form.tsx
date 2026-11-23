@@ -22,7 +22,7 @@ export default function CheckForm({ room:bedRoom, className }: {
     return (
         <AsideDiv icon={<MdPerson />} title="Enrégistrement" className={twMerge("", className)}>
 
-            <div className="grid grid-cols-6 gap-x-2 gap-y-2 text-[12px]">
+            <div className="grid grid-cols-6 gap-x-2 gap-y-2 text-[12px] [&_input]:shadow-[inset_0_1px_1px_1px_rgba(0,0,0,0.15)]">
 
                 <LabelInput required label="Sexe" name="sexe"
                     defaultValue={bedRoom.customer?.sexe}
@@ -80,8 +80,8 @@ export function CheckInComment({ room:bedRoom, className }: {
         <AsideDiv icon={<FaRegComment />} title="Commentaire" className={twMerge("", className)} >
 
             <LabelInput type='textarea' label="Infos supplémentaires" name='description'
-                className={twMerge("text-[11px] min-h-30 bg-gray-200/20", style)}
-                inputClassName=""
+                className={twMerge("text-[11px] min-h-30", style)}
+                inputClassName="bg-gray-300/20"
                 defaultValue={bedRoom.customer?.description}
                 // placeholder="IFU / entreprise / autre description"
             />

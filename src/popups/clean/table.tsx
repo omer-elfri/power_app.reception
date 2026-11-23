@@ -11,14 +11,29 @@ import { BiBed } from "react-icons/bi";
 import { useVisual } from "../../hooks/useVisual";
 import React from "react";
 import BedRoom from "../../types/bedroom";
+import { normalizeSearch } from "../../tools";
 
-export default function LastCleanedAside({ className }: {
+export default function LastCleanedAside({ searchText, className }: {
+  searchText: string,
   className?: string,
 }) {
   const { addPopup, checkError } = useVisual();
   const { bedRoomTab } = useAnalysis();
 
-  const roomStages = Object.entries(Object.groupBy(bedRoomTab, room => room.stage));
+  const bedRoomFiltered = React.useMemo<BedRoom.Type[]>(() => {
+    return bedRoomTab.filter(room => {
+      const tab = [
+        room.id, room.name,
+        room.customer?.name,
+        room.clean?.valet?.name,
+      ].filter(elem => !!elem);
+
+      return tab.some(elem => normalizeSearch(elem!)
+        .includes( normalizeSearch(searchText) ) );
+    });
+  }, [bedRoomTab, searchText]);
+
+  const roomStages = Object.entries(Object.groupBy(bedRoomFiltered, room => room.stage));
   const gridStyle = "w-full grid grid-cols-[50px_40px_1fr_80px_50px] gap-2 py-2 font-bold text-gray-600";
 
   const clickHandler = (room: BedRoom.Type) => {
@@ -40,7 +55,7 @@ export default function LastCleanedAside({ className }: {
         <span>Fin</span>
       </AsideDiv>
 
-      <NoElem text="Aucun élément" Icon={BiBed} className="text-[15px] pr-3 overflow-auto" list={bedRoomTab}>
+      <NoElem text="Aucun élément" Icon={BiBed} className="text-[15px] pr-3 overflow-auto" list={bedRoomFiltered}>
 
         <div className="flex flex-col gap-1 overflow-auto">
           { roomStages.map(([stage, rooms]) =>

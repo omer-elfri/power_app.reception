@@ -3,12 +3,13 @@
 import { twMerge } from "tailwind-merge";
 import BedRoom from "../../types/bedroom";
 import React from "react";
-import { getString } from "../../tools";
+import { getString, normalizeSearch } from "../../tools";
 import { FilterOption } from ".";
 import { AsideDiv } from "../../components/AsideDiv";
 import { useVisual } from "../../hooks/useVisual";
 
-export default function RoomFilter({ status, rooms, className, setRoomFiltered }: {
+export default function RoomFilter({ searchText, status, rooms, className, setRoomFiltered }: {
+  searchText: string,
   status: FilterOption | null,
   rooms: BedRoom.Type[],
   className?: string,
@@ -16,18 +17,32 @@ export default function RoomFilter({ status, rooms, className, setRoomFiltered }
 }) {
   const { switchPopup } = useVisual();
 
+  const bedRoomFiltered = React.useMemo<BedRoom.Type[]>(() => {
+    return rooms.filter(room => {
+      const tab = [
+        room.id, room.name,
+        room.customer?.name,
+        room.clean?.valet?.name,
+      ].filter(elem => !!elem);
+
+      return tab.some(elem => normalizeSearch(elem!)
+        .includes( normalizeSearch(searchText) ) );
+    });
+  }, [rooms, searchText]);
+
+
   const analysis: { [k in FilterOption]: BedRoom.Type[] } = React.useMemo(() => ({
-    'powered': rooms.filter(room => !!room.power),
-    'solded': rooms.filter(room => !!room.customer),
-    'booked': rooms.filter(room => !!room.booked),
-    'cleaning': rooms.filter(room => !!room.cleaning),
-    'free': rooms.filter(room => !room.customer),
-    'issue': rooms.filter(room => !!room.issue),
-  }), [rooms]);
+    'powered': bedRoomFiltered.filter(room => !!room.power),
+    'solded': bedRoomFiltered.filter(room => !!room.customer),
+    'booked': bedRoomFiltered.filter(room => !!room.booked),
+    'cleaning': bedRoomFiltered.filter(room => !!room.cleaning),
+    'free': bedRoomFiltered.filter(room => !room.customer),
+    'issue': bedRoomFiltered.filter(room => !!room.issue),
+  }), [bedRoomFiltered]);
 
   React.useEffect(() => {
-    setRoomFiltered(status ? analysis[status] : rooms);
-  }, [analysis, status, rooms]);
+    setRoomFiltered(status ? analysis[status] : bedRoomFiltered);
+  }, [analysis, status, bedRoomFiltered]);
 
   const FilterSelect = React.useCallback(({ label, value, nb, style }: {
     label: FilterOption | null,
@@ -48,9 +63,9 @@ export default function RoomFilter({ status, rooms, className, setRoomFiltered }
 
   return (
     <AsideDiv title="Filtres" className={twMerge("", className)} subClassName="flex flex-col gap-2">
-      <FilterSelect label={null} value="Tout" nb={rooms.length} style="bg-blue-800/70" />
-      <FilterSelect label="free" value="Disponibles" nb={analysis.free.length} style="bg-gray-600" />
+      <FilterSelect label={null} value="Tout" nb={bedRoomFiltered.length} style="bg-blue-800/70" />
       <FilterSelect label="solded" value="Vendues" nb={analysis.solded.length} style="bg-green-600" />
+      <FilterSelect label="free" value="Disponibles" nb={analysis.free.length} style="bg-gray-600" />
       <FilterSelect label="powered" value="Alimentées" nb={analysis.powered.length} style="bg-red-600" />
       <FilterSelect label="booked" value="Réservées" nb={analysis.booked.length} style="bg-purple-600" />
       <FilterSelect label="cleaning" value="En néttoyages" nb={analysis.cleaning.length} style="bg-blue-600" />

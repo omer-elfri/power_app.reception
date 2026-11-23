@@ -25,11 +25,11 @@ export default function MouvementSection({ className }: {
 
   return (
     <SectionBox className={twMerge("", className)}
-      top={<Title icon={<TbArrowsDoubleNeSw size={20} />} className="mb-2" right={getString(customer_book.list.length)}>Mouvements du jour</Title>}>
+      top={<Title icon={<TbArrowsDoubleNeSw size={20} />} right={getString(customer_book.list.length)}>Mouvements du jour</Title>}>
 
       <div className={`flex flex-col justify-start text-left text-[11px] font-bold h-full`}>
 
-        <div className={twMerge("", gridStyle)}>
+        <div className={twMerge("border-y-1 border-gray-400/50 py-[6px] mb-1", gridStyle)}>
           <p className="">Arrivée</p>
           <p className="">CH</p>
           <p className="pl-3">Sens</p>
@@ -37,7 +37,7 @@ export default function MouvementSection({ className }: {
           <p className="">Départ</p>
         </div>
 
-        <hr className="col-span-full text-gray-400/40 mt-3 mb-1" />
+        {/* <hr className="col-span-full text-gray-400/40 mt-3 mb-1" /> */}
 
         <NoElem list={customer_book.list} Icon={GoPerson} text="Rien à signaler" className="col-span-full">
           { customer_book.list.map((customer, i) => (

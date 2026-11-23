@@ -1,10 +1,10 @@
 import { twMerge } from "tailwind-merge";
-import { useAnalysis } from "../../hooks/useAnalysis";
+import { useAnalysis } from "../../../hooks/useAnalysis";
 
-import RoomStatus from "./../RoomStatus";
-import { PersonSex2 } from "./../PersonSex";
-import { colors } from "../../types";
-import BedRoom from "../../types/bedroom";
+import RoomStatus from "../../../components/RoomStatus";
+import { PersonSex2 } from "../../../components/PersonSex";
+import { colors } from "../../../types";
+import BedRoom from "../../../types/bedroom";
 
 import { HiLightningBolt } from "react-icons/hi";
 import { GiBroom } from "react-icons/gi";
@@ -35,14 +35,11 @@ export default function RoomLine({ room:bedRoom, className }: {
         null
     );
 
-
     return (
-        <div className={twMerge("grid grid-cols-[auto_70px_2fr_1fr_1fr_auto] items-center gap-x-5 py-2 \
-            relative text-[11px] font-bold [&>div]:bg-red-40", className)} >
+        <div className={twMerge("relative text-[11px] font-bold [&>div]:bg-red-40", className)} >
 
             <div className="flex flex-col">
                 <span className="text-[14px]">{bedRoom.id}</span>
-                <div className="self-center">{issueIcon}</div>
             </div>
 
             <div> {bedRoom.category.name} </div>
@@ -55,17 +52,21 @@ export default function RoomLine({ room:bedRoom, className }: {
                 <span className="flex-1 text-center">{clientName?.toUpperCase() ?? "libre"}</span>
             </div>
 
-            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.power ? "text-black" : "text-gray-400")}>
+            <div className={twMerge("flex flex-row justify-center gap-2", bedRoom.power ? "text-black" : "text-gray-400")}>
                 <HiLightningBolt size={14} className={bedRoom.power ? "text-red-600" : ""} />
                 <span className="">{bedRoom.power ? "Allumée" : "Éteinte"}</span>
             </div>
 
-            <div className={twMerge("flex flex-row items-center gap-2", bedRoom.cleaning ? "text-black" : "")}>
+            <div className={twMerge("flex flex-row justify-center gap-2", bedRoom.cleaning ? "text-black" : "")}>
                 <GiBroom size={14} className={bedRoom.cleaning ? "text-blue-600" : isObsolet(bedRoom.id) ? "text-yellow-600" : "text-gray-400"} />
                 <span className="">{cleaningState}</span>
             </div>
 
-            <RoomStatus room={bedRoom} />
+            <div className="flex flex-row justify-center">
+                <RoomStatus room={bedRoom} />
+            </div>
+
+            <div className="flex flex-row justify-end">{issueIcon}</div>
 
         </div>
     );

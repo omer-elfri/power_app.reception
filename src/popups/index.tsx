@@ -35,9 +35,11 @@ export function PopupBody({ top, bottom, className, subClassName, children, onSu
       onClick={e => e.stopPropagation()}>
 
       { top }
+
       <div className={twMerge("flex flex-col gap-3 overflow-auto flex-1", subClassName)}>
         { children }
       </div>
+
       { bottom }
 
     </div>

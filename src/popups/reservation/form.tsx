@@ -9,8 +9,9 @@ import { useAnalysis } from "../../hooks/useAnalysis";
 
 import { DateRange, DayPicker } from "@daypicker/react";
 import LabelInput from "../../components/LabelInput";
-import { State } from "../../types";
+import { colors, State } from "../../types";
 import BedRoom from "../../types/bedroom";
+import MyButton from "../../components/MyButton";
 
 export default function BookingForm({ className, selectedDate, setSelectedDate }: {
   className?: string,
@@ -63,20 +64,21 @@ export default function BookingForm({ className, selectedDate, setSelectedDate }
         })
       } />
 
-      <LabelInput label="Nom du client" name="clientName" required autoFocus
+      <LabelInput label="Nom du client" name="clientName" required
         value={clientName} onChangeText={setClientName}
         inputClassName="uppercase h-8 !border-gray-400 shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)]"
       />
 
       <LabelInput type='textarea' name="description" label="Description"
         value={description} onChangeText={setDescription}
-        className="col-span-full h-30"
+        className="col-span-full h-25"
       />
 
       <div className="col-span-full flex flex-row justify-end">
-        <button type="submit" name="register" disabled={disabled}
-          className="bg-gray-800 text-white text-[11px]">Réserver
-        </button>
+        <MyButton name="register" disabled={disabled}
+          className="!py-1 text-white border-1"
+          style={{ background: colors.coming, borderColor: colors.coming }}>Réserver
+        </MyButton>
       </div>
 
     </form>

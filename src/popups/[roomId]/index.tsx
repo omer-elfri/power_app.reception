@@ -95,7 +95,7 @@ export default function RoomPopup({ roomId:bedRoomId, className }: {
         </> : <>
           <form className="flex flex-col gap-3 h-full" onSubmit={submitHandler}>
             <CheckForm room={bedRoom} />
-            <CheckInComment room={bedRoom} />
+            <CheckInComment room={bedRoom} className="flex-1" />
             <MyButton name="check_in" iconRight={<FaCheck />}
               className="bg-blue-500 !py-1 text-white self-end">Check in
             </MyButton>

@@ -51,11 +51,11 @@ export default function CommentBox({ room:bedRoom, className }: {
             className={twMerge("bg-blue-600 text-white", buttonStyle)}
           >Envoyer</MyButton>
         : <>
-          <MyButton onClick={submitHandler}
+          <MyButton onClick={() => updateIssue(bedRoom.id, null)}
             className={twMerge("bg-transparent border-1 border-red-600 text-red-600", buttonStyle)}
           >Retirer</MyButton>
 
-          <MyButton onClick={() => updateIssue(bedRoom.id, null)}
+          <MyButton onClick={submitHandler}
             className={twMerge("bg-blue-600/70 text-white", buttonStyle)}
           >Modifier</MyButton>
         </> }

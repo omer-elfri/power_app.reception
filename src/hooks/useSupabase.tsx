@@ -110,9 +110,9 @@ export function useSupabase<R extends { id: string | number}>(
                 .update(updatedDatas as any)
                 .eq('id', id);
             if (error) throw Error(`La modification a échoué: ${error.message} !`);
-            console.log("update", tableId, datas);
+            console.log("update", tableId, id, datas);
             setDatas(datas => datas.map(data => (data.id === id)
-                ? { ...data, updatedDatas } : data) );
+                ? { ...data, ...updatedDatas } : data) );
             setObsolet(true);
         });
     }, []);

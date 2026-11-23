@@ -21,7 +21,7 @@ export function useConfig<T extends Object>(
 
     return {
         ...mySupabase,
-        list: mySupabase.datas,
+        list: mySupabase.datas.filter(data => !data.disabled),
     };
 }
 

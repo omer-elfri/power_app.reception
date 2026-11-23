@@ -16,13 +16,13 @@ export default function ReservationTab({ className }: {
   return (
     <ItemPopup onglet="RESERVATION" className={twMerge("", className)}
       subClassName={twMerge("grid grid-cols-[230px_1fr] gap-3", )}>
-      
-      <BookingForm
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-      />
-      <BookingInfos />
-
+      { searchText => <>
+        <BookingForm
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+        />
+        <BookingInfos searchText={searchText} />
+      </>}
     </ItemPopup>
   );
 }

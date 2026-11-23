@@ -1,10 +1,10 @@
 import React from "react";
+import { useAuth } from "./useAuth";
 import { useSupabase } from "./useSupabase";
 
 import { Id, TableId } from "../types";
 import BedRoom from "../types/bedroom";
 import { PostgrestFilterBuilder, PostgrestQueryBuilder } from "@supabase/supabase-js";
-import { useAuth } from "./useAuth";
 import Employer from "../types/employer";
 
 export type SupabaseSlt = PostgrestQueryBuilder<any, any, any, TableId, unknown>;
@@ -102,7 +102,7 @@ export function useLocalData<R extends Object>(
         add, cancel,
         getRoomId, getRooms, getToday,
         getId: mySupabase.getId,
-        update: (id, datas) => mySupabase.update(id, datas),
+        update: mySupabase.update,
     };
 }
 

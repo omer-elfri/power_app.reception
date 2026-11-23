@@ -1,5 +1,3 @@
-'use client';
-
 import { twMerge } from "tailwind-merge";
 import { TypeWithTrace } from "../../hooks/useBook";
 
@@ -9,17 +7,19 @@ import { formatPrice } from "../../tools";
 
 import { AsideDiv } from "../../components/AsideDiv";
 import MyButton from "../../components/MyButton";
+import { useDataContext } from "../../hooks";
 
-export default function RestoLine({ restos, className, subClassName, onClick }: {
+export default function RestoGroup({ restos, className, subClassName, onClick }: {
   restos: TypeWithTrace<RestaurantType>[];
   className?: string,
   subClassName?: string,
   onClick?: () => void,
 }) {
+  const { restaurant_book } = useDataContext();
   const customer = restos[0].customer;
-  const paidPrice = restos.filter(resto => resto.paid)
+  const paidPrice = restaurant_book.list.filter(resto => resto.paid)
     .reduce((res, resto) => res + resto.price, 0);
-  const unpaidPrice = restos.filter(resto => !resto.paid)
+  const unpaidPrice = restaurant_book.list.filter(resto => !resto.paid)
     .reduce((res, resto) => res + resto.price, 0);
   const totalPrice = paidPrice + unpaidPrice;
 
@@ -34,20 +34,7 @@ export default function RestoLine({ restos, className, subClassName, onClick }: 
       </div>
 
       { restos.map(resto => (
-        <AsideDiv key={resto.id} className={twMerge("text-[12px] text-gray-600 text-center bg-white/60 py-0")}
-          subClassName={twMerge("", subClassName)}>
-          <span>{getFrenchDateTime(resto.created_date)}</span>
-          <span>{resto.room_id}</span>
-          <span className="uppercase">{resto.customer?.name || "..."}</span>
-          <span>{resto.article}</span>
-          <span className="text-[14px] text-gray-700">{formatPrice(resto.price)}</span>
-          <div className="uppercase">
-            { resto.paid
-              ? <span className="text-[11px]">payé</span>
-              : <MyButton className="bg-green-400/20 border-1 border-green-600 uppercase !text-[10px] !px-2 !py-1" onClick={() => {}}>payer</MyButton>
-            }
-          </div>
-        </AsideDiv>
+        <RestoLine key={resto.id} resto={resto} subClassName={twMerge("", subClassName)} />
       )) }
 
       <AsideDiv className="self-end" subClassName="flex-row">
@@ -56,6 +43,29 @@ export default function RestoLine({ restos, className, subClassName, onClick }: 
       </AsideDiv>
 
     </div>
+  );
+}
+
+function RestoLine({ resto, className, subClassName }: {
+  resto: TypeWithTrace<RestaurantType>,
+  className?: string,
+  subClassName?: string,
+}) {
+  return (
+    <AsideDiv className={twMerge("text-[12px] text-gray-600 text-center bg-white/60 py-0", className)}
+      subClassName={twMerge("", subClassName)}>
+      <span>{getFrenchDateTime(resto.created_date)}</span>
+      <span>{resto.room_id}</span>
+      <span className="uppercase">{resto.customer?.name || "..."}</span>
+      <span>{resto.article}</span>
+      <span className="text-[14px] text-gray-700">{formatPrice(resto.price)}</span>
+      <div className="uppercase">
+        { resto.paid
+          ? <span className="text-[11px]">payé</span>
+          : <MyButton className="bg-green-400/20 border-1 border-green-600 uppercase !text-[10px] !px-2 !py-1" onClick={() => {}}>payer</MyButton>
+        }
+      </div>
+    </AsideDiv>
   );
 }
 

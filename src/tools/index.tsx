@@ -90,3 +90,12 @@ export function getPerIdBook2
     return res;
 }
 
+export function normalizeSearch(value: string) {
+    return value
+        .toLocaleLowerCase('fr')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .replace(/\s+/g, ' ');
+}
+

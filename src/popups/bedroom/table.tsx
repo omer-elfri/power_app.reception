@@ -77,12 +77,13 @@ function RoomLine({ room:bedRoom, className }: {
 
       <div className="flex flex-row justify-center gap-3 text-[11px]">
         { bedRoom.clean && <>
-          <GiBroom className={twMerge("", bedRoom.cleaning ? "text-blue-600" : isObsolet(bedRoom.id) ? "text-yellow-600" : "text-gray-600/50")} />
+          <GiBroom className={twMerge("", bedRoom.cleaning ? "text-blue-600" : "text-gray-600/50")} />
           <span className={twMerge("", bedRoom.cleaning ? "" : "text-gray-800/60")}>{bedRoom.clean.valet?.name || '...'}</span>
         </> }
       </div>
 
       <div className="">
+        { isObsolet(bedRoom.id) && <IoWarning size={15} className="text-yellow-700" /> }
         { bedRoom.issue?.priority === 'low' && <IoWarning size={15} className="text-yellow-700" /> }
         { bedRoom.issue?.priority === 'medium' && <IoWarning size={15} className="text-red-700" /> }
         { bedRoom.issue?.priority === 'high' && <MdDangerous size={15} className="text-red-700" /> }

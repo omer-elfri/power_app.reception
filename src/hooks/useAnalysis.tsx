@@ -149,7 +149,9 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <analysisContext.Provider value={{
-            analysis, bedRooms, bedRoomTab, updateBedRoom, isObsolet,
+            analysis,
+            bedRooms, bedRoomTab,
+            updateBedRoom, isObsolet,
         }}> { children }
         </analysisContext.Provider>
     );
