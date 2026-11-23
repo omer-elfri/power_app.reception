@@ -3,13 +3,13 @@
 import { twMerge } from "tailwind-merge";
 import SectionBox, { Title } from "../../components/SectionBox";
 import SoldRoom from "../../components/SoldRoom";
-import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
 import { formatPrice, getString } from '../../tools';
 
 export default function SoldedAside({ className }: {
     className?: string,
 }) {
-    const { analysis } = useRequest();
+    const { analysis } = useAnalysis();
 
     const nbSold = analysis.categories.reduce((res, elem) => res + elem.topSolded.length, 0);
 

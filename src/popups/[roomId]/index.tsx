@@ -5,9 +5,9 @@ import { twMerge } from "tailwind-merge";
 import { CloseBtn, PopupBody } from "..";
 
 import { useRequest } from "../../hooks/useRequest";
+import { useVisual } from "../../hooks/useVisual";
+import { useAnalysis } from "../../hooks/useAnalysis";
 import BedRoom from '../../types/bedroom';
-
-import { Title } from "../../components/SectionBox";
 
 import Warning from './warning';
 import CleaningBox from './cleaning';
@@ -20,19 +20,20 @@ import CheckForm, { CheckInComment } from "./check_form";
 import Restaurant from './restaurant';
 import CommentBox from './issue';
 
+import { Title } from "../../components/SectionBox";
 import RoomStatus from "../../components/RoomStatus";
 import MyButton from "../../components/MyButton";
+import Caster from "../../components/Caster";
 import { FaCheck } from "react-icons/fa";
 import { IoBed } from "react-icons/io5";
-import { useVisual } from "../../hooks/useVisual";
-import Caster from "../../components/Caster";
 
 export default function RoomPopup({ roomId:bedRoomId, className }: {
   roomId: BedRoom.Id,
   className?: string,
 }) {
   const { switchPopup } = useVisual();
-  const { bedRooms, bedRoomTab, isObsolet, check_in } = useRequest();
+  const { bedRooms, bedRoomTab, isObsolet, } = useAnalysis();
+  const { check_in } = useRequest();
   const bedRoom = bedRooms[bedRoomId];
 
   const MyTitle = React.useCallback(() => (

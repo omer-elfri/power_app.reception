@@ -1,14 +1,15 @@
 'use client'
 
+import React from "react";
 import { twMerge } from "tailwind-merge";
 import { useRequest } from "../../hooks/useRequest";
+import { useVisual } from "../../hooks/useVisual";
 import BedRoom from "../../types/bedroom";
 
 import LabelInput from "../../components/LabelInput";
 import MyButton from "../../components/MyButton";
 import { FaExchangeAlt } from "react-icons/fa";
-import { useVisual } from "../../hooks/useVisual";
-import React from "react";
+import { useAnalysis } from "../../hooks/useAnalysis";
 
 export default function CheckMove({ room:bedRoom, className }: {
     room: BedRoom.Type,
@@ -16,7 +17,8 @@ export default function CheckMove({ room:bedRoom, className }: {
 }) {
     const { switchPopup } = useVisual();
     const [roomId, setRoomId] = React.useState<BedRoom.Id | null>(null);
-    const { analysis, bedRoomTab, check_move } = useRequest();
+      const { analysis, bedRoomTab } = useAnalysis();
+    const { check_move } = useRequest();
 
     return (
         <form onSubmit={e => {

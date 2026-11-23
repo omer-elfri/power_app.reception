@@ -3,12 +3,12 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 import { useLocation, Link } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
+import { useVisual } from "../../hooks/useVisual";
 
 import { IoPersonCircle } from "react-icons/io5";
 import { FaCalendarAlt } from "react-icons/fa";
 import { GiBroom } from "react-icons/gi";
-import { useVisual } from "../hooks/useVisual";
 
 export default function PageTitle({ className, children }: {
     className?: string,

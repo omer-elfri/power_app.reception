@@ -48,7 +48,7 @@ export default function RestaurationSection({ className }: {
                 (i!==restaurant.length-1) ? "border-b-1 border-gray-400/50" : "") }>
                 <td className="">{getTime(data.created_date)}</td>
                 <td className="text-[12px]">{data.room_id}</td>
-                <td className="">{data.customer.name}</td>
+                <td className="">{data.customer?.name || "..."}</td>
                 <td className="">{data.article}</td>
                 <td className="">{formatPrice(data.price)}</td>
                 <td className="">{data.paid

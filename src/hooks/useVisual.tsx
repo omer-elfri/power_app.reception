@@ -58,6 +58,7 @@ export function VisualProvider({ children }: {
             await handler();
         }
         catch (alert) {
+            console.log("alert", alert)
             addAlert(alert as Infobulle);
         }
     }, []);

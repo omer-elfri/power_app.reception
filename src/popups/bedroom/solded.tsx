@@ -1,7 +1,7 @@
 'use client';
 
 import { twMerge } from "tailwind-merge";
-import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
 import { formatPrice, getString } from "../../tools";
 
 import { AsideDiv } from "../../components/AsideDiv";
@@ -10,7 +10,7 @@ import SoldRoom from "../../components/SoldRoom";
 export default function RoomIssues({ className }: {
   className?: string,
 }) {
-  const { analysis } = useRequest();
+  const { analysis } = useAnalysis();
   const nbSold = analysis.categories.reduce(
     (res, elem) => res + elem.topSolded.length, 0);
 

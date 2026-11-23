@@ -1,5 +1,4 @@
-import React from "react";
-import { useSupabase } from "./useSupabase";
+import { SupabaseContext, useSupabase } from "./useSupabase";
 import { SupabaseSelect, SupabaseSlt } from "./useBook";
 import { Id, TableId } from "../types";
 
@@ -8,11 +7,8 @@ export type ConfigType<T> = T & {
     disabled: boolean,
 }
 
-export type Config<T extends Object> = {
+export type Config<T extends Object> = SupabaseContext<ConfigType<T>> & {
     list: ConfigType<T>[];
-    read: () => Promise<(T & { id: string | number })[]>,
-    getId: (id: string | Id) => ConfigType<T> | null;
-    update: (id: string | Id, data: Partial<ConfigType<T>>) => Promise<void>;
 }
 
 export function useConfig<T extends Object>(
@@ -20,20 +16,12 @@ export function useConfig<T extends Object>(
     filter?: (get: SupabaseSlt) => SupabaseSelect,
     listenTables: TableId[] = [],
 ): Config<T> {
-    const mySupabase = useSupabase<ConfigType<T>>(
-        tableId, filter, listenTables);
-    // console.log(tableId, mySupabase.datas)
-    const datas = mySupabase.datas//.filter(data => !data.disabled) as ConfigType<T>[];
 
-    const getId = React.useCallback((id: string | Id) => {
-        return datas.find(data => data.id === id) ?? null;
-    }, [datas]);
+    const mySupabase = useSupabase<ConfigType<T>>(tableId, filter, listenTables);
 
     return {
-        list: datas,
-        read: mySupabase.read,
-        getId,
-        update: mySupabase.update,
+        ...mySupabase,
+        list: mySupabase.datas,
     };
 }
 

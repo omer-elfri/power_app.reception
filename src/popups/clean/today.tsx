@@ -37,10 +37,10 @@ export default function TodayCleanAside({ className }: {
 
       <NoElem Icon={MdCalendarToday} size={30} list={todayCleans} text="Vide" className="h-30 my-10">
         { todayCleans.map(clean => (
-          <ToRoom key={clean.id} id={clean.room_id} className={twMerge("border-b-1 border-gray-300/80 !text-[10px]", gridTodayStyle)}>
+          <ToRoom key={clean.id} id={clean.room_id} className={twMerge("group border-b-1 border-gray-300/80 !text-[10px]", gridTodayStyle)}>
             <span>{ clean ? getFrenchDateTime(clean.created_date) : "..." }</span>
-            <Room id={clean.room_id} />
-            <span>{ clean.valet.name }</span>
+            <Room id={clean.room_id} className="group-hover:text-green-900" />
+            <span>{ clean.valet?.name || '...' }</span>
             <div className="flex flex-row justify-center items-center"><CleanStatus clean={clean} /></div>
             <span>{ clean?.done ? getFrenchDateTime(clean.done) : "..." }</span>
           </ToRoom>

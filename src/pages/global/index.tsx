@@ -1,4 +1,4 @@
-import PageTitle from "../../components/PageTitle";
+import PageTitle from "../../components/dynamic/PageTitle";
 
 import ActivitySection from "./Activities";
 import AnalyseSection from "./Analyse";

@@ -2,7 +2,7 @@
 
 import { twMerge } from "tailwind-merge";
 
-import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
 import { getFrenchDateTime } from "../../tools/date";
 
 import NoElem from "../../components/NoElem";
@@ -15,11 +15,19 @@ import BedRoom from "../../types/bedroom";
 export default function LastCleanedAside({ className }: {
   className?: string,
 }) {
-  const { addPopup } = useVisual();
-  const { bedRoomTab } = useRequest();
+  const { addPopup, checkError } = useVisual();
+  const { bedRoomTab } = useAnalysis();
 
   const roomStages = Object.entries(Object.groupBy(bedRoomTab, room => room.stage));
   const gridStyle = "w-full grid grid-cols-[50px_40px_1fr_80px_50px] gap-2 py-2 font-bold text-gray-600";
+
+  const clickHandler = (room: BedRoom.Type) => {
+    checkError(async () => {
+      if (room.cleaning)
+        throw ['info', `La chambre ${room.name} est déjà en néttoyage !`];
+      addPopup(['VALLET', room.id]);
+    });
+  }
 
   return (
     <div className={twMerge("flex flex-col gap-2", className)}>
@@ -45,14 +53,13 @@ export default function LastCleanedAside({ className }: {
 
               <AsideDiv className="py-1" subClassName="gap-0">
                 { rooms.map(room => (
-                  <div key={room.id}
-                    className={twMerge("last:border-0 border-b-1 border-gray-400/30 py-1 text-center text-[11px] text-center hover:bg-blue-300/10 cursor-pointer", gridStyle)}
-                    onClick={() => room.cleaning ? null : addPopup(['VALLET', room.id])} >
-                    <p>{ room.lastClean ? getFrenchDateTime(room.lastClean.created_date) : "..." }</p>
-                    <p className={room.lastClean ? "text-black text-[12px]" : ""}>{room.id}</p>
-                    <p>{ room.lastClean?.valet.name ?? "..." }</p>
+                  <div key={room.id} onClick={() => clickHandler(room)}
+                    className={twMerge("last:border-0 border-b-1 border-gray-400/30 py-1 text-center text-[11px] text-center hover:bg-blue-300/10 cursor-pointer", gridStyle)}>
+                    <p>{ room.clean ? getFrenchDateTime(room.clean.created_date) : "..." }</p>
+                    <p className={room.clean ? "text-black text-[12px]" : ""}>{room.id}</p>
+                    <p>{ room.clean?.valet?.name ?? "..." }</p>
                     <div className="flex flex-row justify-center text-center"><Status room={room} /></div>
-                    <p>{ room.lastClean?.done ? getFrenchDateTime(room.lastClean.done) : "..." }</p>
+                    <p>{ room.clean?.done ? getFrenchDateTime(room.clean.done) : "..." }</p>
                   </div>
                 )) }
               </AsideDiv>
@@ -70,7 +77,7 @@ export default function LastCleanedAside({ className }: {
 function Status({ room:bedRoom }: {
   room: BedRoom.Type,
 }) {
-  const { isObsolet } = useRequest();
+  const { isObsolet } = useAnalysis();
   const style = "text-[10px] px-[4px] py-[0px] rounded border-1 text-center";
 
   if (!bedRoom.clean)

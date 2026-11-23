@@ -3,28 +3,27 @@ import { TypeWithTrace } from '../hooks/useBook';
 import BedRoom from './bedroom';
 import Employer from './employer';
 
-export type CleanProps = {
+export type CleanType = {
     valet_id: Employer.Id,
+
     done?: Date,
-}
-export type CleanType = CleanProps & {
-    valet: Employer.Type,
+    valet?: Employer.Type,
 }
 
 
 export type CustomerType = {
-    sexe?: Sex,
     name: string,
+    price: number,
+    actions: CheckInType[],
+
+    sexe?: Sex,
     tel?: number,
     town?: string,
-    price: number,
     reason?: string,
     end?: Date,
     enterprise?: string,
     ifu?: number,
-    actions: CheckInType[];
 }
-
 export type CheckInType = {
     date: Date,
     room_id: BedRoom.Id,
@@ -51,13 +50,12 @@ export type ReservationType = {
 }
 
 
-export type RestaurantProps = {
+export type RestaurantType = {
     customer_id: Id,
     article: string,
     price: number,
     paid: boolean,
-}
-export type RestaurantType = RestaurantProps & {
-    customer: TypeWithTrace<CustomerType>,
+
+    customer?: TypeWithTrace<CustomerType>,
 }
 

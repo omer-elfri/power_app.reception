@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge";
 import { CloseBtn, PopupBody } from ".";
 
 import { useDataContext } from "../hooks";
-import { useRequest } from "../hooks/useRequest";
+import { useAnalysis } from "../hooks/useAnalysis";
 
 import { Title } from "../components/SectionBox";
 import OngletDiv, { OngletType } from "../components/OngletTab";
@@ -23,7 +23,7 @@ export default function ItemPopup({ onglet, className, subClassName, children }:
 }) {
   const { switchPopup } = useVisual();
   const { reservation_book, restaurant_book } = useDataContext();
-  const { analysis } = useRequest();
+  const { analysis } = useAnalysis();
 
   const datas: [OngletType<ItemId>, ...OngletType<ItemId>[]] = [{
     key: 'BEDROOM',
@@ -48,13 +48,11 @@ export default function ItemPopup({ onglet, className, subClassName, children }:
   }];
 
   return (
-    <PopupBody top={<Title bar className="gap-2" right={<>
-      {/* <input type="search" className=" !border-0 !border-b-1 !border-gray-500 pb-1 !rounded-none" placeholder="Rechercher" /> */}
-      <CloseBtn />
-    </>}>Tableau de bord</Title>}
+    <PopupBody top={<Title bar className="gap-2" right={<CloseBtn />}>Tableau de bord</Title>}
       className={twMerge(className, "h-160")}>
 
-      <OngletDiv datas={datas} subClassName={subClassName}
+      <OngletDiv datas={datas}
+        subClassName={subClassName}
         onglet={datas.find(o => o.key === onglet)}
         setOnglet={elem => switchPopup([elem.key])}>
         { () => children }

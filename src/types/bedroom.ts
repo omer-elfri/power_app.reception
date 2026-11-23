@@ -35,6 +35,7 @@ namespace BedRoom {
         category_id: BedRoom.Category.Id,
         stage: BedRoom.StageId,
         issue: BedRoom.IssueType | null,
+        description?: string,
     }
 
     export type RoomData2 = RoomData & {

@@ -24,96 +24,85 @@ export type TypeWithTrace<T> = T & {
     cancel_by: Employer.Id,
 })
 
-export type LocalBook<T, R=T> = {
-    add: (roomId: BedRoom.Id, data: T, description?: string) => Promise<void>,
-    update: (id: number, data: Partial<TypeWithTrace<T>>, description?: string) => Promise<void>,
-    cancel: (id: number) => Promise<void>,
+export type LocalBook<R> = {
+    add: (roomId: BedRoom.Id, data: R, description?: string) => Promise<TypeWithTrace<R>>,
+    update: (id: number, data: Partial<TypeWithTrace<R>>) => Promise<TypeWithTrace<R>>,
+    cancel: (id: number) => Promise<TypeWithTrace<R>>,
 
     list: TypeWithTrace<R>[],
     getId: (id: Id) => TypeWithTrace<R> | null,
     getRoomId: (roomId: BedRoom.Id, and?: (data: TypeWithTrace<R>) => boolean) => TypeWithTrace<R> | null,
-    getRooms: (roomId: BedRoom.Id, and?: (data: TypeWithTrace<R>) => boolean) => TypeWithTrace<R>[],
+    getRooms: (roomId: BedRoom.Id) => TypeWithTrace<R>[],
     getToday: () => TypeWithTrace<R>[];
 }
 
-export function useLocalData<T extends Object, R = T>(
+export function useLocalData<R extends Object>(
     tableId: TableId,
     filter: (get: SupabaseSlt) => SupabaseSelect = e => e.select('*'),
     listenTables: TableId[] = [],
-): LocalBook<T, R> {
-    const mySupabase = useSupabase<T, TypeWithTrace<R>>(tableId,
+): LocalBook<R> {
+
+    const mySupabase = useSupabase<TypeWithTrace<R>>(tableId,
         table => filter(table)
             .is('cancel_date', null)
             .order('created_date', { ascending: false }),
-    listenTables);
+        listenTables);
 
     const { isAuth } = useAuth();
     const { datas } = mySupabase;
-
-    const getId = React.useCallback((id: Id) => {
-        return datas.find(data => data.id === id) ?? null;
-    }, [datas]);
 
     const getRoomId = React.useCallback((
         roomId: BedRoom.Id,
         and: (data: TypeWithTrace<R>) => boolean = () => true,
     ) => {
-        return datas.find(data => data.room_id === roomId && and(data)) ?? null;
+        return datas.find(data =>
+            data.room_id === roomId &&
+            and(data) ) ?? null;
     }, [datas]);
 
     const getRooms = React.useCallback((
         roomId: BedRoom.Id,
-        and: (data: TypeWithTrace<R>) => boolean = () => true,
     ) => {
-        return datas.filter(data => data.room_id === roomId && and(data));
+        return datas.filter(data =>
+            data.room_id === roomId);
     }, [datas]);
 
     const getToday = React.useCallback(() => {
         const today = new Date();
-        return datas.filter(elem => elem.created_date.getDate() === today.getDate());
+        return datas.filter(elem =>
+            elem.created_date.getDate() === today.getDate());
     }, [datas]);
-
 
 
     const add = React.useCallback(async (
         roomId: BedRoom.Id,
-        data: T,
+        data: R,
         description?: string,
     ) => {
-        await mySupabase.add({
-            ...data,
+        return await mySupabase.add({
             room_id: roomId,
             created_by: isAuth().id,
             created_date: new Date(),
-            description,
+            description, ...data,
         });
     }, [isAuth, mySupabase.add]);
 
-    const update = React.useCallback(async (
+    const cancel = React.useCallback(async (
         id: Id,
-        data: Partial<TypeWithTrace<T>>,
-        description?: string,
     ) => {
-        const res: Partial<TypeWithTrace<T>> = { ...data, description, };
-        await mySupabase.update(id, res);
-    }, [mySupabase.update]);
-
-    const cancel = React.useCallback(async (id: Id) => {
-        await mySupabase.update(id, {
+        return await mySupabase.update(id, {
             cancel_date: new Date(),
             cancel_by: isAuth().id,
-        } as Partial<TypeWithTrace<T>>);
+        } as Partial<TypeWithTrace<R>>);
     }, [isAuth, mySupabase.update]);
+
 
     return {
         list: datas,
-        getId,
-        getRoomId,
-        getRooms,
-        add,
-        update,
-        cancel,
-        getToday
+        add, cancel,
+        getRoomId, getRooms, getToday,
+        getId: mySupabase.getId,
+        update: (id, datas) => mySupabase.update(id, datas),
     };
 }
 

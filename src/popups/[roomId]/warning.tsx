@@ -2,7 +2,7 @@
 
 import { twMerge } from 'tailwind-merge';
 import { useVisual } from '../../hooks/useVisual';
-import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
 import BedRoom from '../../types/bedroom';
 
 import { AsideDiv } from '../../components/AsideDiv';
@@ -12,7 +12,7 @@ export default function IssueSide({ roomId:bedRoomId }: {
   roomId: BedRoom.Id,
 }) {
   const {  addPopup } = useVisual();
-  const { isObsolet,bedRooms } = useRequest();
+  const { isObsolet, bedRooms } = useAnalysis();
   const bedRoom = bedRooms[bedRoomId];
 
   return (

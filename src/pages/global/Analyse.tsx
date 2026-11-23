@@ -2,7 +2,7 @@
 
 import { PieChart } from '@mui/x-charts/PieChart';
 import { colors } from "../../types";
-import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
 import SectionBox, { Title } from '../../components/SectionBox';
 import { twMerge } from 'tailwind-merge';
 import { getString } from '../../tools';
@@ -10,7 +10,7 @@ import { getString } from '../../tools';
 export default function AnalyseSection({ className }: {
   className?: string,
 }) {
-  const { analysis, bedRoomTab } = useRequest();
+  const { analysis, bedRoomTab } = useAnalysis();
 
   const data = [
     { label: 'Vendu',

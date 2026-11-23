@@ -3,6 +3,7 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 import { useRequest } from '../../hooks/useRequest';
+import { useAnalysis } from '../../hooks/useAnalysis';
 import BedRoom from '../../types/bedroom';
 import { getFrenchDate, getHour } from '../../tools/date';
 
@@ -23,7 +24,8 @@ export default function CleaningBox({ className, roomId:bedRoomId }: {
   className?: string,
 }) {
   const { addPopup } = useVisual();
-  const { bedRooms, clean_done, clean_cancel } = useRequest();
+  const { bedRooms } = useAnalysis();
+  const { clean_done, clean_cancel } = useRequest();
   const bedRoom = bedRooms[bedRoomId];
 
   const Right =  React.useCallback(() => {
@@ -79,7 +81,7 @@ export default function CleaningBox({ className, roomId:bedRoomId }: {
 
       <NoElem list={bedRoom.clean ? [1]: []} text="Aucune information">
         <LabelValue label='Date'>{bedRoom.clean && <DateTime date={bedRoom.clean.created_date} />}</LabelValue>
-        <LabelValue label='Vallet'>{bedRoom.clean && bedRoom.clean.valet.name}</LabelValue>
+        <LabelValue label='Vallet'>{bedRoom.clean && (bedRoom.clean.valet?.name || '...')}</LabelValue>
         <LabelValue label='Fin'>{ bedRoom.clean?.done
           ? <DateTime date={bedRoom.clean.done} />
           : <span className='text-gray-500'>en néttoyage</span> }

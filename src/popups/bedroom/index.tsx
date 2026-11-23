@@ -2,7 +2,7 @@
 
 import React from "react";
 import { twMerge } from "tailwind-merge";
-import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
 import BedRoom from "../../types/bedroom";
 
 import ItemPopup from "../items";
@@ -18,7 +18,7 @@ export default function BedRoomTab({ status=null, className }: {
   status?: FilterOption | null,
   className?: string,
 }) {
-  const { bedRoomTab } = useRequest();
+  const { bedRoomTab } = useAnalysis();
   const [roomFiltered, setRoomFiltered] = React.useState<BedRoom.Type[]>([]);
 
   return (

@@ -1,26 +1,26 @@
 import { twMerge } from "tailwind-merge";
+import { useAnalysis } from "../../hooks/useAnalysis";
 
-import RoomStatus from "./RoomStatus";
-import { PersonSex2 } from "./PersonSex";
-import { colors } from "../types";
-import BedRoom from "../types/bedroom";
+import RoomStatus from "./../RoomStatus";
+import { PersonSex2 } from "./../PersonSex";
+import { colors } from "../../types";
+import BedRoom from "../../types/bedroom";
 
 import { HiLightningBolt } from "react-icons/hi";
 import { GiBroom } from "react-icons/gi";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdError, MdWarning } from "react-icons/md";
-import { useRequest } from "../hooks/useRequest";
 
 export default function RoomLine({ room:bedRoom, className }: {
     room: BedRoom.Type,
     className?: string,
 }) {
-    const { isObsolet } = useRequest();
+    const { isObsolet } = useAnalysis();
     const clientName = bedRoom.customer?.name ?? bedRoom.booked?.name ?? null;
 
     const cleaningState = (() => {
         if (!bedRoom.clean) return "...";
-        if (bedRoom.cleaning) return bedRoom.cleaning?.valet.name;
+        if (bedRoom.cleaning) return bedRoom.cleaning.valet?.name ?? "...";
         if (isObsolet(bedRoom.id)) return "Sale";
         return "Propre";
     })();

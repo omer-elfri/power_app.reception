@@ -37,7 +37,7 @@ export type AnalysisType = {
     })[],
 }
 
-export type AnalysisData = {
+export type AnalysisContext = {
     analysis: AnalysisType;
     bedRooms: BedRoom.Map;
     bedRoomTab: BedRoom.Type[];
@@ -45,7 +45,7 @@ export type AnalysisData = {
     isObsolet: (roomId: string) => boolean,
 }
 
-export function useAnalysis(): AnalysisData {
+export function AnalysisProvider({ children }: { children: React.ReactNode }) {
     const {
         bedroom_table, bedroom_categories,
         cleaning_book, customer_book, restaurant_book,
@@ -88,10 +88,10 @@ export function useAnalysis(): AnalysisData {
 
     React.useEffect(() => {
         setBedRooms(bedRooms => Object.fromEntries( bedroom_table.list.map(room => {
-            const cleaning = cleaning_book.getRoomId(room.id, cl => !cl.done) ?? null;
+            const cleaning = cleaning_book.getRoomId(room.id, clean => !clean.done) ?? null;
             const lastClean = room.lastClean?.id ? room.lastClean : null;
-            const customer = customer_book.getRoomId(room.id, cu => !cu.end) ?? null;
-            const roomRestos = restaurant_book.list.filter(({ customer }) => customer.room_id === room.id);
+            const customer = customer_book.getRoomId(room.id, client => !client.end) ?? null;
+            const roomRestos = restaurant_book.list.filter(({ customer }) => customer?.room_id === room.id);
             const res: BedRoom.Type = {
                 ...(bedRooms[room.id] ?? {}), ...room,
                 cleaning, lastClean, clean: cleaning ?? lastClean,
@@ -147,6 +147,20 @@ export function useAnalysis(): AnalysisData {
     }, [bedRoomTab, bedroom_categories, isObsolet, restaurant_book]);
 
 
-    return ({ analysis, bedRooms, bedRoomTab, updateBedRoom, isObsolet, });
+    return (
+        <analysisContext.Provider value={{
+            analysis, bedRooms, bedRoomTab, updateBedRoom, isObsolet,
+        }}> { children }
+        </analysisContext.Provider>
+    );
+}
+
+const analysisContext = React.createContext<AnalysisContext | null>(null);
+
+export function useAnalysis() {
+    const context = React.useContext(analysisContext);
+    if (!context)
+        throw new Error("useAnalysisContext doit être utilisé dans AnalysisProvider");
+    return context;
 }
 

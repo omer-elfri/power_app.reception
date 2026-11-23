@@ -4,7 +4,7 @@ import React from "react";
 import { LocalBook, TypeWithTrace, useLocalData } from "./useBook";
 import { Config, ConfigType, useConfig } from "./useConfig";
 
-import { CleanProps, CleanType, CustomerType, ReservationType, RestaurantProps, RestaurantType } from "../types/types";
+import { CleanType, CustomerType, ReservationType, RestaurantType } from "../types/types";
 import BedRoom from "../types/bedroom";
 import { supabase } from "../tools/supabase";
 
@@ -12,26 +12,20 @@ type DataContextType = {
     bedroom_table: Config<BedRoom.RoomData2>,
     bedroom_categories: ConfigType<BedRoom.Category.Type>[],
 
-    cleaning_book: LocalBook<CleanProps, CleanType>,
+    cleaning_book: LocalBook<CleanType>,
     customer_book: LocalBook<CustomerType>,
     reservation_book: LocalBook<ReservationType>,
-    restaurant_book: LocalBook<RestaurantProps, RestaurantType>,
+    restaurant_book: LocalBook<RestaurantType>,
 
     getBookedPeriod: (start?: Date, end?: Date | null) => TypeWithTrace<ReservationType>[],
     isBookedToday: (roomId: BedRoom.Id) => TypeWithTrace<ReservationType> | null,
 };
 
 export function DataProvider({ children }: {
-    children: React.ReactNode
+    children: React.ReactNode,
 }) {
     const [today, setToday] = React.useState(new Date());
 
-    React.useEffect(() => {
-        const id = setInterval(() => {
-            setToday( new Date() );
-        }, 3*60*60*1000);
-        return () => clearInterval(id);
-    }, []);
 
     const bedroom_table = useConfig<BedRoom.RoomData2>('bedroom_table',
         table => table.select(`*,
@@ -41,7 +35,16 @@ export function DataProvider({ children }: {
             .is('disabled', false),
         [ 'bedroom_ctg_table', 'employer_table', 'cleaning_book' ]);
 
-    const cleaning_book = useLocalData<CleanProps, CleanType>('cleaning_book',
+    const bedroom_categories = React.useMemo(() => {
+        return Array.from( new Map(
+            bedroom_table.list.map(room =>
+                [room.category_id, room.category])
+        ).values() ).sort((a, b) => a.price - b.price);
+    }, [bedroom_table.list]);
+
+
+
+    const cleaning_book = useLocalData<CleanType>('cleaning_book',
         table => table.select(`*,
             valet:cleaning_valet(*)`),
         [ 'employer_table' ]);
@@ -59,19 +62,18 @@ export function DataProvider({ children }: {
             return table.select('*').or(`end_date.gte.${start.toISOString()}`);
         });
 
-    const restaurant_book = useLocalData<RestaurantProps, RestaurantType>('restaurant_book',
+    const restaurant_book = useLocalData<RestaurantType>('restaurant_book',
         () => supabase.rpc('get_active_restaurants'),
         [ 'customer_book' ]);
 
     
-    const bedroom_categories = React.useMemo(() => {
-        return Array.from( new Map(
-            bedroom_table.list.map(room =>
-                [room.category_id, room.category])
-        ).values() ).sort((a, b) => a.price - b.price);
-    }, [bedroom_table.list]);
 
-
+    React.useEffect(() => {
+        const id = setInterval(() => {
+            setToday( new Date() );
+        }, 3*60*60*1000);
+        return () => clearInterval(id);
+    }, []);
 
     const getBookedPeriod = React.useCallback((start?: Date, end?: Date | null) => {
         start ??= new Date();
@@ -93,8 +95,8 @@ export function DataProvider({ children }: {
             bedroom_table,
             bedroom_categories,
 
-            customer_book,
             cleaning_book,
+            customer_book,
             restaurant_book,
             reservation_book,
 

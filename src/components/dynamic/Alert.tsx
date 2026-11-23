@@ -3,7 +3,7 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
-import { useVisual } from "../hooks/useVisual";
+import { useVisual } from "../../hooks/useVisual";
 import { MdWarning } from "react-icons/md";
 import { FaCheckCircle } from "react-icons/fa";
 
@@ -45,7 +45,7 @@ export default function Alert({ className }: {
   if (alerts.length === 0) return null;
 
   return (
-    <div className="fixed top-5 flex flex-col items-center z-110"
+    <div className="fixed top-5 left-0 right-0 flex flex-col items-center z-110"
       onMouseEnter={pauseTimer}
       onMouseLeave={startTimer}
       onClick={popAlert}>

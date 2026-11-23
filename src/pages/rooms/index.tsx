@@ -1,9 +1,9 @@
 "use client"
 
 import React from "react";
-import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
 
-import PageTitle from "../../components/PageTitle";
+import PageTitle from "../../components/dynamic/PageTitle";
 import FilterSection from "./Filter";
 import SoldedAside from "./Solded";
 import RoomSection from "./Rooms";
@@ -11,7 +11,7 @@ import RoomSection from "./Rooms";
 export type FormType = 'line' | 'grid';
 
 export default function RoomsPage() {
-    const { bedRoomTab } = useRequest();
+    const { bedRoomTab } = useAnalysis();
     const [form, setForm] = React.useState<FormType>('grid');
     const [filteredRooms, setFilteredRooms] = React.useState(bedRoomTab);
 

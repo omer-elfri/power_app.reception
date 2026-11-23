@@ -1,7 +1,7 @@
 'use client'
 
 import { twMerge } from "tailwind-merge";
-import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
 import { useVisual } from "../../hooks/useVisual";
 import { colors } from "../../types";
 import { getString } from "../../tools";
@@ -19,7 +19,7 @@ export default function ActivitySection({ className }: {
   className?: string,
 }) {
   const { addPopup } = useVisual();
-  const { analysis } = useRequest();
+  const { analysis } = useAnalysis();
 
   return (
     <SectionBox className={twMerge("", className)}>

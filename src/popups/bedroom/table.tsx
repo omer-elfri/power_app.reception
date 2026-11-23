@@ -1,7 +1,9 @@
 'use client';
 
+import React from "react";
 import { twMerge } from "tailwind-merge";
 import { useVisual } from "../../hooks/useVisual";
+import { useAnalysis } from "../../hooks/useAnalysis";
 import BedRoom from "../../types/bedroom";
 
 import RoomStatus from "../../components/RoomStatus";
@@ -11,10 +13,8 @@ import { IoWarning } from "react-icons/io5";
 import { GiBroom } from "react-icons/gi";
 import { HiLightningBolt } from "react-icons/hi";
 import { MdDangerous } from "react-icons/md";
-import { gridStyle } from ".";
-import { useAnalysis } from "../../hooks/useBedroom";
-import React from "react";
 import { BiBed } from "react-icons/bi";
+import { gridStyle } from ".";
 
 export default function RoomTable({ roomFiltered, className }: {
   roomFiltered: BedRoom.Type[],
@@ -78,7 +78,7 @@ function RoomLine({ room:bedRoom, className }: {
       <div className="flex flex-row justify-center gap-3 text-[11px]">
         { bedRoom.clean && <>
           <GiBroom className={twMerge("", bedRoom.cleaning ? "text-blue-600" : isObsolet(bedRoom.id) ? "text-yellow-600" : "text-gray-600/50")} />
-          <span className={twMerge("", bedRoom.cleaning ? "" : "text-gray-800/60")}>{bedRoom.clean.valet.name}</span>
+          <span className={twMerge("", bedRoom.cleaning ? "" : "text-gray-800/60")}>{bedRoom.clean.valet?.name || '...'}</span>
         </> }
       </div>
 

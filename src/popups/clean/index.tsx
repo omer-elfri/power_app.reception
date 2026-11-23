@@ -7,12 +7,12 @@ import TodayCleanAside from "./today";
 import LastCleanedAside from "./table";
 import BedRoom from "../../types/bedroom";
 import { useVisual } from "../../hooks/useVisual";
-import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
 
 export default function CleanTab({ className }: {
   className?: string,
 }) {
-  const { analysis } = useRequest();
+  const { analysis } = useAnalysis();
 
   return (
     <ItemPopup onglet="CLEANING" className={twMerge("", className)}
@@ -37,7 +37,7 @@ export function ToRoom({ id, className, children }: {
 }) {
   const { addPopup } = useVisual();
   return (
-    <div className={twMerge("flex flex-row items-center hover:text-blue-800 cursor-pointer text-center text-[10px]", className)}
+    <div className={twMerge("flex flex-row items-center cursor-pointer text-center text-[10px]", className)}
       onClick={() => addPopup(['ROOM', id])}>{ children }
     </div>
   );

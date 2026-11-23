@@ -2,7 +2,7 @@
 
 import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../hooks";
-import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
 import { formatPrice } from "../../tools";
 
 import NoElem from "../../components/NoElem";
@@ -19,9 +19,11 @@ export default function RestaurantTab({ className }: {
   className?: string,
 }) {
   const { restaurant_book, } = useDataContext();
-  const { analysis } = useRequest();
-  const restosCustomer = Object.entries( Object.groupBy(restaurant_book.list, resto => resto.customer.id) );
-  const gridStyle1 = "grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 items-center font-bold px-3 py-2 rounded";
+  const { analysis } = useAnalysis();
+  const restosCustomer = Object.entries( Object.groupBy(
+    restaurant_book.list.filter(resto => resto.customer),
+    resto => resto.customer!.id) );
+  const gridStyle1 = "grid grid-cols-[60px_40px_1fr_1fr_60px_auto] gap-2 items-center font-bold px-3 py-2 rounded";
 
   return (
     <ItemPopup onglet="RESTAURANT" className={twMerge("", className)}
@@ -31,9 +33,10 @@ export default function RestaurantTab({ className }: {
         <NoElem list={restaurant_book.list} Icon={MdRoomService}
           size={50} text="Aucune commande" className="gap-2">
 
-          <AsideDiv className="py-1" subClassName={twMerge("text-[11px]", gridStyle1)}>
+          <AsideDiv className="py-1" subClassName={twMerge("text-[11px] text-center", gridStyle1)}>
             <span>Date</span>
             <span>CH</span>
+            <span>Client</span>
             <span>Article</span>
             <span>Prix</span>
             <span>Action</span>
@@ -52,7 +55,7 @@ export default function RestaurantTab({ className }: {
         <BottomBox title="Restaurations" Icon={IoFastFoodOutline} value={analysis.restaurant.total.reduce((res,resto) => res + resto.price, 0)} />
         <BottomBox title="Payés" Icon={MdCreditScore} value={analysis.restaurant.paid.reduce((res,resto) => res + resto.price, 0)} className="text-green-700" />
         <BottomBox title="Impayés" Icon={TbCreditCardOff} value={analysis.restaurant.unPaid.reduce((res,resto) => res + resto.price, 0)} className="text-red-700" />
-        <BottomBox title="Crédits" Icon={CiCreditCard1} value={analysis.restaurant.unPaid.filter(resto => resto.customer.end).reduce((res,resto) => res + resto.price, 0)} />
+        <BottomBox title="Crédits" Icon={CiCreditCard1} value={analysis.restaurant.unPaid.filter(resto => resto.customer?.end).reduce((res,resto) => res + resto.price, 0)} />
       </div>
 
     </ItemPopup>

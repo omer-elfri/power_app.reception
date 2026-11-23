@@ -6,14 +6,23 @@ import { TableId } from "../types";
 import { supabase } from "../tools/supabase";
 import { parseDates } from "../tools/date";
 
-export function useSupabase<T extends Object, R extends { id: string | number} = T &  { id: string | number}>(
+export type SupabaseContext<R> = {
+    datas: R[],
+    obsolet: boolean,
+    getId: (id: string | number) => R | null,
+    read: () => Promise<R[]>,
+    add: (newDatas: Object) => Promise<R>,
+    update: (id: string | number, updatedDatas: Partial<R>) => Promise<R>,
+};
+
+export function useSupabase<R extends { id: string | number}>(
     tableId: TableId,
     filter: (table: SupabaseSlt) => SupabaseSelect = e => e.select('*'),
     listenTables: TableId[] = [],
-) {
+): SupabaseContext<R> {
     const [obsolet, setObsolet] = React.useState(true);
     const [datas, setDatas] = React.useState<R[]>([]);
-    const { setLoading, checkError } = useVisual();
+    const { setLoading } = useVisual();
 
     React.useEffect(() => {
         let previousState = false;
@@ -27,22 +36,38 @@ export function useSupabase<T extends Object, R extends { id: string | number} =
         return subscription.unsubscribe;
     }, [supabase.auth]);
 
+    React.useEffect(() => {
+        const channels = [tableId, ...listenTables].map(tableId2 => {
+            return supabase
+                .channel(`realtime-${tableId}-${tableId2}`)
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: tableId2,
+                }, read)
+                .subscribe();
+        });
+        return () => channels.forEach(supabase.removeChannel);
+    }, []);
+
     const manager = React.useCallback(async (
         handler: () => Promise<any>,
     ): Promise<any> => {
-        await checkError(async () => {
-            try {
-                // console.log("... ", tableId);
-                const res = await handler();
-                setLoading(false);
-                return res;
-            }
-            catch(err: any) {
-                setLoading(false);
-                throw ['error', err.message];
-            }
-        });
+        try {
+            console.log("... ", tableId);
+            const res = await handler();
+            setLoading(false);
+            return res;
+        }
+        catch(err: any) {
+            setLoading(false);
+            throw ['error', err.message];
+        }
     }, []);
+
+    const getId = React.useCallback((id: string | number) => {
+        return datas.find(data => data.id === id) ?? null;
+    }, [datas]);
 
     const read = React.useCallback(async (): Promise<R[]> => {
         return await manager(async () => {
@@ -57,57 +82,41 @@ export function useSupabase<T extends Object, R extends { id: string | number} =
         });
     }, []);
 
-    React.useEffect(() => {
-        const channel = supabase
-            .channel(`realtime-${tableId}`);
-        [tableId, ...listenTables].forEach(tableId2 => {
-            channel.on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: tableId2,
-            }, read);
-        })
-        channel.subscribe();
-
-        return () => {
-            void supabase.removeChannel(channel);
-        };
-    }, []);
-
     const add = React.useCallback(async (
-        newDatas: T,
-    ) => {
-        const res = await manager(async () => {
+        newDatas: Object,
+    ): Promise<R> => {
+        return await manager(async () => {
             setLoading(true);
             await new Promise(resolve => setTimeout(resolve, 3000));
-            const { error } = await supabase.from(tableId).insert(newDatas as any);
-            console.log("error", error)
+            const { error } = await supabase
+                .from(tableId)
+                .insert(newDatas as any);
             if (error) throw Error(`L'ajout a échoué: ${error.message} !`);
-            // const newDatasR: R = { ...newDatas, id: -1 } as R;
-            // setDatas(datas => [ newDatasR, ...datas ]);
             console.log("add ", tableId, datas);
+            // setDatas(datas => [...datas, newDatas]);
             setObsolet(true);
         });
-        return res;
     }, []);
 
     const update = React.useCallback(async (
         id: string | number,
         updatedDatas: Partial<R>,
-    ) => {
+    ): Promise<R> => {
         return await manager(async () => {
             setLoading(true);
             await new Promise(resolve => setTimeout(resolve, 3000));
-            const { error } = await supabase.from(tableId)
-                .update(updatedDatas as any).eq('id', id);
+            const { error } = await supabase
+                .from(tableId)
+                .update(updatedDatas as any)
+                .eq('id', id);
             if (error) throw Error(`La modification a échoué: ${error.message} !`);
-            // setDatas(datas => datas.filter(datas => ( datas.id === id ?
-            //     { ...datas, ...updatedDatas } : datas) ));
             console.log("update", tableId, datas);
+            setDatas(datas => datas.map(data => (data.id === id)
+                ? { ...data, updatedDatas } : data) );
             setObsolet(true);
         });
     }, []);
 
-    return { datas, obsolet, read, add, update };
+    return { datas, obsolet, getId, read, add, update };
 }
 

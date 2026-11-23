@@ -11,7 +11,7 @@ export default function Room({ id:bedRoomId, className }: {
   const { addPopup } = useVisual();
 
   return (
-    <span className={twMerge("text-black text-[12px] a", className)}
+    <span className={twMerge("text-black text-[12px]", className)}
       onClick={() => addPopup(['ROOM', bedRoomId])}>{ bedRoomId }
     </span>
   );

@@ -5,10 +5,9 @@ import { twMerge } from "tailwind-merge";
 
 import { useDataContext } from "../../hooks";
 import { useRequest } from "../../hooks/useRequest";
-import { getFrenchDate } from "../../tools/date";
+import { useAnalysis } from "../../hooks/useAnalysis";
 
 import { DateRange, DayPicker } from "@daypicker/react";
-
 import LabelInput from "../../components/LabelInput";
 import { State } from "../../types";
 import BedRoom from "../../types/bedroom";
@@ -19,7 +18,8 @@ export default function BookingForm({ className, selectedDate, setSelectedDate }
   setSelectedDate: State<DateRange>,
 }) {
   const { getBookedPeriod, } = useDataContext();
-  const { bedRoomTab, book } = useRequest();
+  const { bedRoomTab } = useAnalysis();
+  const { book } = useRequest();
 
   const [selectedRoomId, setSelectedRoomId] = React.useState<
     BedRoom.Id>(bedRoomTab.at(0)?.id ?? '');
@@ -33,7 +33,7 @@ export default function BookingForm({ className, selectedDate, setSelectedDate }
   }, [clientName, selectedDate]);
 
   return (
-    <form className={twMerge("flex flex-col gap-2", className)} onSubmit={async e => {
+    <form className={twMerge("grid grid-cols-[80px_1fr] gap-x-2 gap-y-2", className)} onSubmit={async e => {
       e.preventDefault();
       const start_date = selectedDate.from ?? new Date();
       const end_date = selectedDate.to ?? new Date(
@@ -41,51 +41,43 @@ export default function BookingForm({ className, selectedDate, setSelectedDate }
       await book(selectedRoomId, { name: clientName, start_date, end_date, description });
     }}>
       
-      <div className="flex flex-col gap-x-4 gap-y-2">
-
-        <LabelInput label="Période">
-          <div className="shadow-[inset_0_2px_4px_4px__rgba(0,0,0,0.15)] rounded px-3 py-1">
-            <DayPicker mode="range" className="my-calendar" min={1} required
-              selected={selectedDate} onSelect={setSelectedDate}
-              disabled={{ before: new Date() }}
-            />
-          </div>
-        </LabelInput>
-
-        <div className="grid grid-cols-[80px_1fr] gap-2">
-
-          <LabelInput label="Chambre" name="roomId" required
-            value={selectedRoomId.toString()} onChangeText={setSelectedRoomId}
-            inputClassName="text-[12px] text-center h-8 !border-gray-400" options={
-            bedRoomTab.map(room => {
-              const rsv = roomBookeds.find(room_rsv => room_rsv.room_id === room.id);
-              return ({
-                k: room.id.toString(),
-                value: `${room.id} ${rsv
-                  ? " - " + rsv.name.toUpperCase() + " - " + getFrenchDate(rsv.start_date).slice(0,6) + "..." + getFrenchDate(rsv.end_date).slice(0,6)
-                  : room.issue?.priority === 'high' ? " - hors service" : "" }`,
-                disabled: !!rsv || room.issue?.priority === 'high',
-              });
-            })
-          } />
-
-          <LabelInput label="Nom du client" name="clientName" required autoFocus
-            value={clientName} onChangeText={setClientName}
-            inputClassName="uppercase h-8 !border-gray-400 shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)]"
+      <LabelInput label="Période" className="col-span-full">
+        <div className="shadow-[inset_0_2px_4px_4px__rgba(0,0,0,0.15)] rounded px-3 py-1">
+          <DayPicker mode="range" className="my-calendar" min={1} required
+            selected={selectedDate} onSelect={setSelectedDate}
+            disabled={{ before: new Date() }}
           />
-
         </div>
+      </LabelInput>
 
-        <LabelInput type='textarea' name="description" label="Description"
-          value={description} onChangeText={setDescription}
-          className="h-30"
-        />
+      <LabelInput label="Chambre" name="roomId" required
+        value={selectedRoomId.toString()} onChangeText={setSelectedRoomId}
+        inputClassName="text-[12px] text-center h-8 !border-gray-400" options={
+        bedRoomTab.map(room => {
+          const rsv = roomBookeds.find(room_rsv => room_rsv.room_id === room.id);
+          return ({ k: room.id.toString(), value: `${room.id} ${rsv
+              ? " - " + rsv.name.toUpperCase()
+              : room.issue?.priority === 'high' ? " - hors service" : "" }`,
+            disabled: !!rsv || room.issue?.priority === 'high',
+          });
+        })
+      } />
 
+      <LabelInput label="Nom du client" name="clientName" required autoFocus
+        value={clientName} onChangeText={setClientName}
+        inputClassName="uppercase h-8 !border-gray-400 shadow-[inset_0_1px_1px_1px__rgba(0,0,0,0.15)]"
+      />
+
+      <LabelInput type='textarea' name="description" label="Description"
+        value={description} onChangeText={setDescription}
+        className="col-span-full h-30"
+      />
+
+      <div className="col-span-full flex flex-row justify-end">
+        <button type="submit" name="register" disabled={disabled}
+          className="bg-gray-800 text-white text-[11px]">Réserver
+        </button>
       </div>
-
-      <button type="submit" name="register" disabled={disabled}
-        className="bg-gray-800 text-white text-[11px] self-end">Réserver
-      </button>
 
     </form>
   );

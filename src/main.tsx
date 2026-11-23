@@ -9,6 +9,7 @@ import { RequestProvider } from "./hooks/useRequest";
 import { VisualProvider } from "./hooks/useVisual";
 
 import App from "./App";
+import { AnalysisProvider } from "./hooks/useAnalysis";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   // <React.StrictMode>
@@ -16,9 +17,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <VisualProvider>
       <AuthProvider>
         <DataProvider>
-          <RequestProvider>
-            <App />
-          </RequestProvider>
+          <AnalysisProvider>
+            <RequestProvider>
+              <App />
+            </RequestProvider>
+          </AnalysisProvider>
         </DataProvider>
       </AuthProvider>
     </VisualProvider>

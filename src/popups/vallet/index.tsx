@@ -1,17 +1,19 @@
 'use client';
 
-import { PopupBody } from "..";
+import { twMerge } from "tailwind-merge";
 import { useDataContext } from "../../hooks";
 import { useRequest } from "../../hooks/useRequest";
+import { useAnalysis } from "../../hooks/useAnalysis";
+import { useAuth } from "../../hooks/useAuth";
+import { useVisual } from "../../hooks/useVisual";
+
+import { PopupBody } from "..";
 import BedRoom from "../../types/bedroom";
 import Employer from "../../types/employer";
 import { getString } from "../../tools";
 
 import { Title } from "../../components/SectionBox";
 import { PersonSex2 } from "../../components/PersonSex";
-import { twMerge } from "tailwind-merge";
-import { useAuth } from "../../hooks/useAuth";
-import { useVisual } from "../../hooks/useVisual";
 
 export default function ValletPopup({ roomId:bedRoomId, className }: {
   roomId: BedRoom.Id,
@@ -20,7 +22,8 @@ export default function ValletPopup({ roomId:bedRoomId, className }: {
   const { cleaners } = useAuth();
   const { unPopup } = useVisual();
   const {  cleaning_book } = useDataContext();
-  const { clean_room, clean_cancel, clean_done, bedRooms } = useRequest();
+  const { clean_room } = useRequest();
+  const { bedRooms } = useAnalysis();
   const bedRoom = bedRooms[bedRoomId];
   if (!bedRoom) return null;
     

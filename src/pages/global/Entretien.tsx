@@ -36,20 +36,19 @@ export default function EntretienSection({ className }: {
 
         <NoElem list={todayCleaning} Icon={PiBroom} text="Vide" bar={true}>
           <table className="flex flex-col text-gray-600">
-            <tbody>
+            <tbody className="">
               { todayCleaning.map((clean, i) => (
-                <tr key={i} className="flex flex-row gap-3 items-start py-2 border-t-1 border-gray-400/50 hover:text-green-800/80 cursor-pointer"
+                <tr key={i} className="group flex flex-row gap-3 items-start py-2 border-t-1 border-gray-400/50 cursor-pointer"
                   onClick={() => addPopup(['ROOM', clean.room_id])}>
 
                   <td className="text-[11px] font-bold min-w-9">{getFrenchDateTime(clean.created_date)}</td>
 
-                  <td className={twMerge("text-[12px] font-bold text-black", clean.cancel_date ? "line-through" : "")}>{clean.room_id}
-                  </td>
+                  <td className={twMerge("text-[12px] font-bold text-black group-hover:text-green-900 group-hover:scale-110", clean.cancel_date ? "line-through" : "")}>{clean.room_id}</td>
 
                   <td><CleanStatus clean={clean} /></td>
 
                   <td className={twMerge("text-[11px] line-clamp-2 font-bold flex-1", clean.cancel_date ? "line-through" : "")}>
-                    { clean.valet?.name }
+                    { clean.valet?.name || "..." }
                   </td>
 
                   <td className="text-[11px] font-bold">{

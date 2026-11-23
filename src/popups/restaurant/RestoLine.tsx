@@ -27,21 +27,22 @@ export default function RestoLine({ restos, className, subClassName, onClick }: 
     <div className={twMerge("flex flex-col gap-2", className)} onClick={onClick}>
 
       <div className="flex flex-row gap-2 items-center px-3">
-        <span className="font-bold uppercase text-[12px]">{customer.name}</span>
+        <span className="font-bold uppercase text-[12px]">{customer?.name || "..."}</span>
         <div className="px-1 py-[1px] border-1 rounded text-[11px] font-bold text-green-800 border-green-800 bg-green-800/20">
-          {customer.room_id}
+          {customer?.room_id || "..."}
         </div>
       </div>
 
       { restos.map(resto => (
-        <AsideDiv className={twMerge("text-[12px] text-gray-600 bg-white/60 py-0")}
+        <AsideDiv key={resto.id} className={twMerge("text-[12px] text-gray-600 text-center bg-white/60 py-0")}
           subClassName={twMerge("", subClassName)}>
           <span>{getFrenchDateTime(resto.created_date)}</span>
           <span>{resto.room_id}</span>
+          <span className="uppercase">{resto.customer?.name || "..."}</span>
           <span>{resto.article}</span>
-          <span className="text-[12px]">{formatPrice(resto.price)}</span>
+          <span className="text-[14px] text-gray-700">{formatPrice(resto.price)}</span>
           <div className="uppercase">
-            { !resto.paid
+            { resto.paid
               ? <span className="text-[11px]">payé</span>
               : <MyButton className="bg-green-400/20 border-1 border-green-600 uppercase !text-[10px] !px-2 !py-1" onClick={() => {}}>payer</MyButton>
             }

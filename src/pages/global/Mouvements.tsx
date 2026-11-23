@@ -41,18 +41,18 @@ export default function MouvementSection({ className }: {
 
         <NoElem list={customer_book.list} Icon={GoPerson} text="Rien à signaler" className="col-span-full">
           { customer_book.list.map((customer, i) => (
-            <div key={i} className={twMerge("py-[5px] cursor-pointer text-gray-600",
-              gridStyle, !customer.end ? "hover:text-green-800": " hover:text-red-800")}
+            <div key={i} className={twMerge("py-[5px] cursor-pointer text-gray-600 group",
+              gridStyle)}
               onClick={() => addPopup(['ROOM', customer.room_id])}>
     
               <div className="">{getFrenchDateTime(customer.created_date)}</div>
     
-              <Room id={customer.room_id} />
+              <Room id={customer.room_id} className={!customer.end ? "group-hover:text-green-800" : "group-hover:text-red-800"} />
     
               <MoveSens move={customer.actions[0]} />
     
               { !customer.end
-              ? <div className="truncate a"
+              ? <div className="truncate"
                   onClick={() => addPopup(['ROOM', customer.room_id])}>{ customer.name }
                 </div>
               : <div className="truncate">{ customer.name }</div> }

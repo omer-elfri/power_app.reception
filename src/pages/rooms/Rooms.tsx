@@ -5,7 +5,7 @@ import { useVisual } from "../../hooks/useVisual";
 import BedRoom from "../../types/bedroom";
 
 import SectionBox, { Title } from "../../components/SectionBox";
-import RoomLine from "../../components/RoomLine"
+import RoomLine from "../../components/dynamic/RoomLine"
 import RoomBox from "../../components/RoomBox";
 import NoElem from "../../components/NoElem";
 import { IoBed } from "react-icons/io5";

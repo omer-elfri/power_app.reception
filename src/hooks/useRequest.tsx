@@ -2,19 +2,19 @@
 
 import React from "react";
 import { useDataContext } from ".";
-import { AnalysisData, useAnalysis } from "./useBedroom";
+import { useAuth } from "./useAuth";
+import { useVisual } from "./useVisual";
+import { useAnalysis } from "./useAnalysis";
 
 import { Id, PriorityId, } from "../types";
 import { CheckInType, CustomerType, ReservationType } from "../types/types";
 import Employer from "../types/employer";
 import BedRoom from "../types/bedroom";
 import { getFrenchDate } from "../tools/date";
-import { useAuth } from "./useAuth";
-import { useVisual } from "./useVisual";
 
 export type CheckInProps = Omit<CheckInType, 'status' | 'start' | 'end'> & { night: number };
 
-export type RequestContext = AnalysisData & {
+export type RequestContext = {
     switch_power: (roomId: BedRoom.Id, power: boolean | null) => void,
     updateIssue: (roomId: BedRoom.Id, datas: { priority: PriorityId, message: string } | null) => Promise<void>,
 
@@ -43,13 +43,13 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
         getBookedPeriod,
     } = useDataContext();
 
-    
+
     const switch_power = React.useCallback((roomId: BedRoom.Id, power: boolean | null) => {
         checkError(() => {
             if (power === null) updateBedRoom(roomId, { connected: false });
             else updateBedRoom(roomId, { connected: true, power });
             throw ['sucess', `La chambre ${roomId} est ${power === null ?
-                "déconnectée" : power ? "alimentée" : "éteinte" }`];
+                "déconnectée" : power ? "alimentée" : "éteinte"}`];
         });
     }, [updateBedRoom]);
 
@@ -61,7 +61,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             await bedroom_table.update(roomId, { issue });
             throw ['sucess', `Chambre ${roomId}`, `Issue mis à jour avec succès !`];
         });
-    }, [bedRooms, bedroom_table.update]);
+    }, [bedRooms, bedroom_table.update, updateBedRoom]);
 
 
     const check_in = React.useCallback(async (roomId: BedRoom.Id, customer: Omit<CustomerType, 'actions'>) => {
@@ -74,7 +74,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             await customer_book.add(roomId, { ...customer, actions: [action] });
             throw ['sucess', `La chambre ${roomId} vendue`, `Vendue à ${customer.sexe} ${customer.name}`];
         });
-    }, [customer_book, bedRooms]);
+    }, [customer_book, bedRooms, updateBedRoom]);
 
     const check_move = React.useCallback(async (roomId: BedRoom.Id, toRoomId: BedRoom.Id) => {
         await checkError(async () => {
@@ -82,15 +82,15 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             if (!room) throw ['error', `Cette chambre ${roomId} n'existe pas ou est désactivée`];
             const { customer } = room;
             const toRoom = bedRooms[toRoomId];
-            
+
             if (!customer) throw ['error', `La chambre ${roomId} n'est pas en check in`];
             if (toRoom.customer) throw ['error', `La chambre cible ${toRoom.id} est déjà en check in`];
 
             const action: CheckInType = { status: 'CHECK_MOVE', room_id: toRoomId, datas: { fromRoomId: roomId }, date: new Date() }
-            await customer_book.update(customer.id, { room_id: toRoomId, actions: [ action, ...customer.actions, ] });
+            await customer_book.update(customer.id, { room_id: toRoomId, actions: [action, ...customer.actions,] });
             throw ['sucess', `Changement de chambre : ${roomId} => ${toRoomId}`, `${customer.sexe} ${customer.name} s'est déplacé`];
         });
-    }, [customer_book, bedRooms]);
+    }, [customer_book, bedRooms, updateBedRoom]);
 
     const check_out = React.useCallback(async (roomId: BedRoom.Id) => {
         await checkError(async () => {
@@ -104,10 +104,10 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             if (toPay !== 0) addAlert(['warning', 'Restauration', `Le client ${customer.name} de la chambre ${roomId} doit solder ${toPay} au restaurant`]);
 
             const action: CheckInType = { status: 'CHECK_OUT', room_id: roomId, date: new Date() };
-            await customer_book.update(customer.id, { actions: [ action, ...customer.actions ], end: new Date() });
+            await customer_book.update(customer.id, { actions: [action, ...customer.actions], end: new Date() });
             throw ['sucess', `Check out ${roomId}`, `${customer.sexe} ${customer.name} a libéré`];
         });
-    }, [customer_book, restaurant_book.list]);
+    }, [customer_book, restaurant_book.list, updateBedRoom]);
 
 
     const clean_room = React.useCallback(async (roomId: BedRoom.Id, valetId: Employer.Id) => {
@@ -116,14 +116,14 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             if (!room) throw ['error', `Cette chambre ${roomId} n'existe pas ou est désactivée`];
             if (room.cleaning) throw ['error', `La chambre ${roomId} est déjà en nettoyage`];
 
-            const vallet = cleaners.find(cleaner => cleaner.id === valetId) ?? null;
-            if (!vallet) throw ['error', `Le vallet ${valetId} est introuvable`];
+            const valet = cleaners.find(cleaner => cleaner.id === valetId) ?? null;
+            if (!valet) throw ['error', `Le vallet ${valetId} est introuvable`];
 
             await cleaning_book.add(roomId, { valet_id: valetId });
-            throw ['sucess', `Néttoyage ${roomId}`, `Attribué à ${vallet.sexe} ${vallet.name}`];
+            throw ['sucess', `Néttoyage ${roomId}`, `Attribué à ${valet.sexe} ${valet.name}`];
         });
-    }, [bedRooms, cleaning_book.add, cleaners]);
-    
+    }, [bedRooms, cleaning_book.add, cleaners, updateBedRoom]);
+
     const clean_done = React.useCallback(async (roomId: BedRoom.Id) => {
         await checkError(async () => {
             const room = bedRooms[roomId];
@@ -131,9 +131,9 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             if (!room.cleaning) throw ['error', `La chambre ${roomId} n'est pas en nettoyage`];
 
             await cleaning_book.update(room.cleaning.id, { done: new Date() });
-            throw ['sucess', `Néttoyage ${roomId}`, `Chambre propre - ${room.cleaning.valet.sexe} ${room.cleaning.valet.name}`];
+            throw ['sucess', `Néttoyage ${roomId}`, `Chambre propre - ${room.cleaning.valet ? room.cleaning.valet.sexe+" "+room.cleaning.valet.name : "..."}`];
         });
-    }, [bedRooms, cleaning_book]);
+    }, [bedRooms, cleaning_book, updateBedRoom]);
 
     const clean_cancel = React.useCallback(async (roomId: BedRoom.Id) => {
         await checkError(async () => {
@@ -144,7 +144,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             await cleaning_book.cancel(room.cleaning.id);
             throw ['sucess', `Annulation néttoyage ${roomId}`, `Le néttoyage a été annulé`];
         });
-    }, [bedRooms, cleaning_book]);
+    }, [bedRooms, cleaning_book, updateBedRoom]);
 
 
     const book = React.useCallback(async (roomId: BedRoom.Id, props: ReservationType) => {
@@ -155,7 +155,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             await reservation_book.add(roomId, props);
             throw ['sucess', `Réservation chambre ${roomId}`, `Réservée par Mr / Mme ${props.name} du ${getFrenchDate(props.start_date)} au ${getFrenchDate(props.end_date)}`];
         });
-    }, [reservation_book, getBookedPeriod]);
+    }, [reservation_book, getBookedPeriod, updateBedRoom]);
 
     const cancel_book = React.useCallback(async (bookId: Id) => {
         await checkError(async () => {
@@ -165,7 +165,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             await reservation_book.cancel(bookId);
             throw ['sucess', `Annulation réservation chambre ${room_rsv.room_id}`, `La réservation de Mr / Mme ${room_rsv.name} du ${getFrenchDate(room_rsv.start_date)} au ${getFrenchDate(room_rsv.end_date)} est annulée`];
         });
-    }, [reservation_book]);
+    }, [reservation_book, updateBedRoom]);
 
 
     const pay_restaurant = React.useCallback(async (restoId: Id) => {
@@ -174,11 +174,12 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             if (!resto) throw ['error', `La restauration ${restoId} est introuvable'`];
 
             await restaurant_book.update(restoId, { paid: true });
-            throw ['sucess', `Payment restauration`, `La réservation "${resto.article}" de Mr / Mme ${resto.customer.name} est réglée`];
+            const { customer } = resto;
+            throw ['sucess', `Payment restauration`, `La réservation "${resto.article}" de ${customer ? customer.sexe+" "+customer.name : "..."} est réglée`];
         });
-    }, [reservation_book]);
+    }, [reservation_book, updateBedRoom]);
 
-    
+
     return (
         <requestContext.Provider value={{
             ...analysis,
@@ -187,7 +188,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
             clean_room, clean_done, clean_cancel,
             book, cancel_book,
             pay_restaurant,
-        }}> { children }
+        }}> {children}
         </requestContext.Provider>
     );
 }
