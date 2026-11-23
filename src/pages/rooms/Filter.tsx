@@ -39,7 +39,7 @@ export default function FilterSection({ form, setForm, datas, setDatas, classNam
             .filter((room) => { // search
                 const categoryName = room.category.name;
                 const textToSearch = room.id + " " +
-                    (room.customer?.name ?? "") + " " +
+                    (room.customer?.name.toUpperCase() ?? "") + " " +
                     categoryName;
                 const textToSearchFormated = textToSearch.toLowerCase()
                     .normalize("NFD").replace(/[\u0300-\u036f]/g, "");

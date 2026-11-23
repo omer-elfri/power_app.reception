@@ -2,7 +2,8 @@
 
 import React from "react";
 import { PopupType, State } from "../types";
-import { Infobulle } from "../components/Alert";
+import { Infobulle } from "../components/dynamic/Alert";
+import { strToDate } from "../tools/date";
 
 export type VisualContextType = {
     alerts: Infobulle[],
@@ -28,10 +29,10 @@ export function VisualProvider({ children }: {
 
     const addAlert = React.useCallback((alert: Infobulle) => {
         setAlerts(alerts => [ ...alerts, alert, ]);
-        // const notifications = localStorage.getItem('notifications') ?? "";
-        // localStorage.setItem('notifications', [
-        //     alert, strToDate<Infobulle>(notifications),
-        // ].toString())
+        const notifications = localStorage.getItem('notifications') ?? "";
+        localStorage.setItem('notifications', [
+            alert[1], strToDate<Infobulle>(notifications),
+        ].toString())
     }, []);
 
     const popAlert = React.useCallback(() => {

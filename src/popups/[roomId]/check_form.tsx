@@ -32,7 +32,7 @@ export default function CheckForm({ room:bedRoom, className }: {
                 />
 
                 <LabelInput required label="Nom de famille" name="fullname"
-                    placeholder="ABOU John" defaultValue={clientName}
+                    placeholder="ABOU John" defaultValue={clientName.toUpperCase()}
                     onChangeText={setFullName}
                     className="col-span-4"
                     inputClassName={twMerge("uppercase", style)}
@@ -82,7 +82,7 @@ export function CheckInComment({ room:bedRoom, className }: {
             <LabelInput type='textarea' label="Infos supplémentaires" name='description'
                 className={twMerge("text-[11px] min-h-30", style)}
                 inputClassName="bg-gray-300/20"
-                defaultValue={bedRoom.customer?.description}
+                defaultValue={bedRoom.customer?.description ?? bedRoom.booked?.description}
                 // placeholder="IFU / entreprise / autre description"
             />
 

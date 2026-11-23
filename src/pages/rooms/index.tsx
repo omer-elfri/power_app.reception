@@ -6,7 +6,8 @@ import { useAnalysis } from "../../hooks/useAnalysis";
 import PageTitle from "../../components/dynamic/PageTitle";
 import FilterSection from "./Filter";
 import SoldedAside from "./Solded";
-import RoomSection from "./Rooms";
+import LineView from "./line_view";
+import GridView from "./grid_view";
 
 export type FormType = 'line' | 'grid';
 
@@ -14,6 +15,12 @@ export default function RoomsPage() {
     const { bedRoomTab } = useAnalysis();
     const [form, setForm] = React.useState<FormType>('line');
     const [filteredRooms, setFilteredRooms] = React.useState(bedRoomTab);
+
+    const roomStages = React.useMemo(() => {
+        return Object.entries(
+            Object.groupBy(filteredRooms, room => room.stage)
+        );
+    }, [filteredRooms]);
 
     return (
         <div className="flex flex-col gap-3 pb-10">
@@ -28,7 +35,13 @@ export default function RoomsPage() {
                     <SoldedAside className="min-h-40" />
                 </div>
 
-                <RoomSection form={form} rooms={filteredRooms} />
+                <div className="">
+                    { form === 'line'
+                        ? <LineView roomStages={roomStages} />
+                        : <GridView roomStages={roomStages} />
+                    }
+                </div>
+
             </div>
 
         </div>

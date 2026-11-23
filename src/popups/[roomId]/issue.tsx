@@ -21,11 +21,10 @@ export default function CommentBox({ room:bedRoom, className }: {
   const [message, setMessage] = React.useState(bedRoom.issue?.message ?? "");
   const buttonStyle = "px-3 !py-1 !text-[10px]";
 
-  // React.useEffect(() => {
-  //   console.log(",,,")
-  //   setPriority(p => !p ? (bedRoom.issue?.priority ?? null) : p);
-  //   setMessage(m => { console.log("m",m); return m === "" ? (bedRoom.issue?.message ?? "") : m});
-  // }, [bedRoom]);
+  React.useEffect(() => {
+    setPriority(p => !p ? (bedRoom.issue?.priority ?? null) : p);
+    setMessage(m => m === "" ? (bedRoom.issue?.message ?? "") : m);
+  }, [bedRoom]);
 
   const submitHandler = () => {
     checkError(async () => {

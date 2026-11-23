@@ -28,10 +28,11 @@ export default function IssueSide({ roomId:bedRoomId }: {
       </p> }
 
       { isObsolet(bedRoomId) && (
-        <div className='grid grid-cols-[auto_1fr] items-center gap-2 py-1 px-2 rounded bg-yellow-600/20 font-bold cursor-pointer '
+        <div className={twMerge("grid grid-cols-[auto_1fr] items-center gap-2 py-1 px-2 rounded font-bold cursor-pointer",
+            (bedRoom.issue?.priority === "high") ? "border-1 border-red-600" : "bg-yellow-600/20")}
           onClick={() => addPopup(['VALLET', bedRoomId])}>
           <MdWarning size={18} className="text-yellow-600" title="A besoin de néttoyage" />
-          <p className='text-gray-800 text-[11px]'>Cette chambre à besoin d'être néttoyer</p>
+          <p className="text-gray-800 text-[11px]">Cette chambre à besoin d'être néttoyer</p>
         </div>
       ) }
 

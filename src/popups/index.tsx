@@ -56,11 +56,13 @@ export function PopupBody({ top, bottom, className, subClassName, children, onSu
 }
 
 
-export function CloseBtn() {
+export function CloseBtn({ className }: {
+  className?: string,
+}) {
   const { unPopup } = useVisual();
   return (
     <MyButton icon={<ImCross size={10} />}
-      className="bg-red-700/10 text-[11px] text-red-700 p-2 rounded"
+      className={twMerge("bg-red-700/10 text-[11px] text-red-700 p-2 rounded", className)}
       onClick={unPopup}
     />
   );

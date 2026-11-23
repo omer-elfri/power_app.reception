@@ -13,6 +13,7 @@ import MyButton from "../../components/MyButton";
 import Caster from "../../components/Caster";
 import { RiRestaurantFill, RiServiceBellLine } from "react-icons/ri";
 import { FaCheck } from "react-icons/fa";
+import { getFrenchDateTime } from "../../tools/date";
 
 export default function Restaurant({ room:bedRoom, className }: {
     room: BedRoom.Type,
@@ -23,7 +24,7 @@ export default function Restaurant({ room:bedRoom, className }: {
     const customerRestos = restaurant_book.list
         .filter(resto => resto.customer_id === bedRoom.customer?.id);
     const totalPrice = customerRestos.reduce((res, resto) => res + resto.price, 0);
-    const gridStyle = "grid grid-cols-[1fr_30px_1fr_40px_16px] gap-x-1 items-center";
+    const gridStyle = "grid grid-cols-[40px_40px_1fr_60px_16px] gap-x-1 items-center";
 
     const right = (<>
         <p className='text-[12px]'>
@@ -43,18 +44,18 @@ export default function Restaurant({ room:bedRoom, className }: {
                 <div className="flex flex-col">
 
                     <div className={twMerge("py-1 text-center px-2 text-[11px] text-center text-gray-600 border-y-1 border-gray-400/50 last:border-0 text-gray-800", gridStyle)}>
-                        <span>Article</span>
+                        <span>Date</span>
                         <span>CH</span>
-                        <span>Client</span>
+                        <span>Article</span>
                         <span>Prix</span>
                     </div>
 
                     { customerRestos.map(resto =>
                         <div key={resto.id} color="bg-blue-400/20"
                             className={twMerge("px-2 py-2 text-[11px] text-gray-600 border-b-1 border-gray-400/50 last:border-0 text-center", gridStyle)}>
-                            <p className="text-left">{resto.article}</p>
+                            <p className="">{getFrenchDateTime(resto.created_date)}</p>
                             <p className="text-gray-800 text-[12px]">{customer_book.getId(resto.customer_id)?.room_id}</p>
-                            <p className="">{customer_book.getId(resto.customer_id)?.name}</p>
+                            <p className="">{resto.article}</p>
                             <p className="text-black text-[12px]">{formatPrice(resto.price)}</p>
                             <div className="uppercase">{ !resto.paid ?
                                 <span className="text-[11px]">payé</span> :

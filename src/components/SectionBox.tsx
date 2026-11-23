@@ -20,17 +20,18 @@ export default function SectionBox({ className, subClassName, children, top, bot
   );
 }
 
-export function Title({ icon, children, className, right, bar }: {
+export function Title({ icon, children, className, subClassName, right, bar }: {
   icon?: React.ReactNode,
   children: string | React.ReactNode,
   right?: string | React.ReactNode,
   className?: string,
+  subClassName?: string,
   bar?: boolean,
 }) {
   return (
     <div className={twMerge("flex flex-col gap-2", className)}>
 
-      <div className="flex flex-row gap-2 items-center">
+      <div className={twMerge("flex flex-row gap-2 items-center", subClassName)}>
         { icon }
         <div className="flex flex-row gap-2 items-center font-bold text-[12px] uppercase flex-1">{children}</div>
         <div className="flex flex-row gap-2 items-center font-bold text-[12px]">{right}</div>

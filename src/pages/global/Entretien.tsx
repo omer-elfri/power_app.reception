@@ -12,6 +12,7 @@ import SectionBox, { SeeMore, Title } from "../../components/SectionBox";
 import { MdOutlineCleaningServices } from "react-icons/md";
 import { PiBroom } from "react-icons/pi";
 import { useVisual } from "../../hooks/useVisual";
+import { colors } from "../../types";
 
 export default function EntretienSection({ className }: {
   className?: string,
@@ -43,7 +44,7 @@ export default function EntretienSection({ className }: {
 
                   <td className="text-[11px] font-bold min-w-9">{getFrenchDateTime(clean.created_date)}</td>
 
-                  <td className={twMerge("text-[12px] font-bold text-black group-hover:text-green-900 group-hover:scale-110", clean.cancel_date ? "line-through" : "")}>{clean.room_id}</td>
+                  <td className={twMerge("text-[12px] font-bold text-black group-hover:text-green-900 group-hover:scale-105", clean.cancel_date ? "line-through" : "")}>{clean.room_id}</td>
 
                   <td><CleanStatus clean={clean} /></td>
 
@@ -70,8 +71,8 @@ export function CleanStatus({ clean }: {
   clean: TypeWithTrace<CleanType>,
 }) {
   return (
-    <div className="w-2 rounded-full aspect-square mt-[5px]"
-      style={{ backgroundColor: clean.done ? "#090" :
+    <div className="w-[6px] rounded-full aspect-square mt-[5px]"
+      style={{ backgroundColor: clean.done ? colors.cleaning :
         clean.cancel_date ? "#f00" : "#6666" }}
     />
   )

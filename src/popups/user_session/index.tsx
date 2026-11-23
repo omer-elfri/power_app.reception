@@ -39,7 +39,7 @@ function Button({ icon, className, children, onClick }: {
 }) {
   return (
     <div onClick={onClick} className={twMerge("flex flex-col items-center gap-3 shadow \
-        rounded p-3 animate-1 cursor-pointer hover:scale-105 transition-transform duration-700 ease-in-out", className)}>
+        rounded p-3 cursor-pointer hover:scale-105 animate-1 transition-transform duration-700 ease-in-out", className)}>
       { icon }
       <p className="font-bold text-[13px]">{ children }</p>
     </div>

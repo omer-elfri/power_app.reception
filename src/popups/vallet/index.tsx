@@ -1,63 +1,49 @@
 'use client';
 
 import { twMerge } from "tailwind-merge";
-import { useDataContext } from "../../hooks";
-import { useRequest } from "../../hooks/useRequest";
 import { useAnalysis } from "../../hooks/useAnalysis";
 import { useAuth } from "../../hooks/useAuth";
-import { useVisual } from "../../hooks/useVisual";
+import BedRoom from "../../types/bedroom";
 
 import { PopupBody } from "..";
-import BedRoom from "../../types/bedroom";
-import Employer from "../../types/employer";
-import { getString } from "../../tools";
-
 import { Title } from "../../components/SectionBox";
-import { PersonSex2 } from "../../components/PersonSex";
+import ValetBox from "./ValetBox";
+import MyButton from "../../components/MyButton";
+import { useVisual } from "../../hooks/useVisual";
 
 export default function ValletPopup({ roomId:bedRoomId, className }: {
   roomId: BedRoom.Id,
   className?: string,
 }) {
   const { cleaners } = useAuth();
-  const { unPopup } = useVisual();
-  const {  cleaning_book } = useDataContext();
-  const { clean_room } = useRequest();
   const { bedRooms } = useAnalysis();
+  const { unPopup } = useVisual();
   const bedRoom = bedRooms[bedRoomId];
-  if (!bedRoom) return null;
+
+  const top = (
+    <Title className="text-white" subClassName="items-end">
+      <span className="text-[20px]">CH </span>
+      <span className="text-[20px] text-green-200">{bedRoomId}</span>
+      <span> Choisissez un vallet</span>
+    </Title>
+  );
+
+  if (!bedRoom)
+    return null;
     
   return (
-    <PopupBody top={<Title className="text-white">
-        <h1><span className="text-[20px]">CH {bedRoomId}</span> Choisissez un vallet</h1>
-      </Title>}
-      className={twMerge("bg-transparent", className)}
-      subClassName="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-5 overflow-visible">
+    <PopupBody top={top}
+      className={twMerge("bg-transparent gap-6", className)}>
+      
+      <div className="grid grid-cols-3 justify-center gap-5 p-2">
+        { cleaners.map(cleaner => (
+          <ValetBox key={cleaner.id} roomId={bedRoomId} cleaner={cleaner} />
+        ) )}
+      </div>
 
-      { cleaners.map(cleaner => {
-        const roomsTotal = cleaning_book.getToday().filter(clean => clean.valet_id === cleaner.id);
-        const roomsDone = roomsTotal.filter(clean => clean.done);
-        return (
-          <div key={cleaner.id} className="grid grid-rows-[1fr_auto] gap-2 p-4 bg-white rounded relative animate-1 transition-transform duration-700 ease-in-out hover:scale-105 cursor-pointer"
-            onClick={() => { clean_room(bedRoomId, cleaner.id as Employer.Id); unPopup(); }}>
+      <MyButton className="self-end bg-red-600/70 text-white" onClick={unPopup}>Fermer</MyButton>
 
-            <div className="grid gris-cols-2 gap-1 w-12 absolute top-3 right-2 text-white p-2 rounded text-center font-bold">
-              <p className="text-black bg-green-800/40">{getString(roomsDone.length)}</p>
-              <p className="text-white bg-green-800">{getString(roomsTotal.length)}</p>
-            </div>
-
-            <div className="flex justify-center items-center">
-              <PersonSex2 sexe={cleaner.sexe} size={50} className="text-gray-600" />
-            </div>
-
-            <div className="flex flex-row justify-center pt-2 border-t-1 border-gray-400/50">
-              <span className="font-bold text-[13px] uppercase text-center">{ cleaner.name }</span>
-            </div>
-
-          </div>
-        )
-      }
-      )}
     </PopupBody>
   );
 }
+

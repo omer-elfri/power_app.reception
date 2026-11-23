@@ -52,10 +52,10 @@ export default function MouvementSection({ className }: {
               <MoveSens move={customer.actions[0]} />
     
               { !customer.end
-              ? <div className="truncate"
-                  onClick={() => addPopup(['ROOM', customer.room_id])}>{ customer.name }
-                </div>
-              : <div className="truncate">{ customer.name }</div> }
+                ? <div className="truncate"
+                    onClick={() => addPopup(['ROOM', customer.room_id])}>{ customer.name.toUpperCase() }
+                  </div>
+                : <div className="truncate">{ customer.name.toUpperCase() }</div> }
     
               <p className="text-center">{customer.end && getFrenchDateTime(customer.end)}</p>
     

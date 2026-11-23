@@ -1,3 +1,6 @@
+'use client'
+
+import React from "react";
 import { SupabaseContext, useSupabase } from "./useSupabase";
 import { SupabaseSelect, SupabaseSlt } from "./useBook";
 import { Id, TableId } from "../types";
@@ -19,9 +22,11 @@ export function useConfig<T extends Object>(
 
     const mySupabase = useSupabase<ConfigType<T>>(tableId, filter, listenTables);
 
-    return {
-        ...mySupabase,
-        list: mySupabase.datas.filter(data => !data.disabled),
-    };
+    const list = React.useMemo(() => {
+        return mySupabase.datas
+            .filter(data => !data.disabled);
+    }, [mySupabase.datas]);
+
+    return { ...mySupabase, list, };
 }
 

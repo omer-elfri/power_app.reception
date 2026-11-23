@@ -14,7 +14,7 @@ export default function App() {
   // useServer();
 
   return (
-    <div className={twMerge("flex flex-col items-center w-screen max-h-screen px-5 py-2 min-w-220")}>
+    <div className={twMerge("flex flex-col items-center w-screen max-h-screen px-5 pb-2 min-w-220")}>
       <Alert />
 
       <div className="flex flex-col w-full max-w-210">

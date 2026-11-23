@@ -43,7 +43,7 @@ export function getDuration(start: Date, end: Date) {
     // if (start.getDate() < end.getDate())
     //     return getFrenchDate(end).slice(0,6);
     if (j) return `${j}j ${h}h`;
-    if (j) return getFrenchDate(end).slice(0,6);
+    // if (j) return getFrenchDate(end).slice(0,6);
     if (h) return `${getString(h)}h ${getString(min)}`;
     return `${min} min`;
 }

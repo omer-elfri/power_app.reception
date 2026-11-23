@@ -21,7 +21,7 @@ import Restaurant from './restaurant';
 import CommentBox from './issue';
 
 import { Title } from "../../components/SectionBox";
-import RoomStatus from "../../components/RoomStatus";
+import { CleaningState, CustomerState } from "../../components/RoomStatus";
 import MyButton from "../../components/MyButton";
 import Caster from "../../components/Caster";
 import { FaCheck } from "react-icons/fa";
@@ -43,7 +43,8 @@ export default function RoomPopup({ roomId:bedRoomId, className }: {
         value={bedRoom.id} onChange={e => switchPopup(['ROOM', e.target.value])}>
         { bedRoomTab.map(room => <option key={room.id}>{room.name}</option>) }
       </select>
-      <RoomStatus room={bedRoom} />
+      <CleaningState room={bedRoom} />
+      <CustomerState room={bedRoom} />
       <Caster value={["BEDROOM"]} />
     </Title>
   ), [bedRoom, bedRoomTab, switchPopup]);

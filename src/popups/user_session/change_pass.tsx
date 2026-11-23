@@ -35,8 +35,8 @@ export default function ChangePassPopup({ className }: {
         if (!newPass) throw ['error', "Rentrez le nouveau mot de passe !"];
         if (newPass.length < 8) throw ['error', "Le nouveau mot de passe doit doit comporter minimum 8 lettres !"];
         if (newPass !== confPass) throw ['error', "Les mots de passe indiquées ne correspondent pas !"];
-        throw ['sucess', "Mot de passe changée avec succès"];
         // changePassword(userName, newPass);
+        throw ['sucess', "Mot de passe changée avec succès"];
       });
       setCurPass("");
       setLoading(false);

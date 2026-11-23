@@ -27,7 +27,7 @@ export default function RestoGroup({ restos, className, subClassName, onClick }:
     <div className={twMerge("flex flex-col gap-2", className)} onClick={onClick}>
 
       <div className="flex flex-row gap-2 items-center px-3">
-        <span className="font-bold uppercase text-[12px]">{customer?.name || "..."}</span>
+        <span className="font-bold uppercase text-[12px]">{customer?.name.toUpperCase() || "..."}</span>
         <div className="px-1 py-[1px] border-1 rounded text-[11px] font-bold text-green-800 border-green-800 bg-green-800/20">
           {customer?.room_id || "..."}
         </div>
@@ -56,7 +56,7 @@ function RestoLine({ resto, className, subClassName }: {
       subClassName={twMerge("", subClassName)}>
       <span>{getFrenchDateTime(resto.created_date)}</span>
       <span>{resto.room_id}</span>
-      <span className="uppercase">{resto.customer?.name || "..."}</span>
+      <span className="uppercase">{resto.customer?.name.toUpperCase() || "..."}</span>
       <span>{resto.article}</span>
       <span className="text-[14px] text-gray-700">{formatPrice(resto.price)}</span>
       <div className="uppercase">

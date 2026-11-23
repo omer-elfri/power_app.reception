@@ -41,7 +41,7 @@ export default function CheckInfos({ room:bedRoom, className }: {
 
                 <div className="flex flex-col gap-2">
                     <LabelValue label="Arrivée">{bedRoom.customer ? getFrenchDateTime(bedRoom.customer?.created_date) : '...'}</LabelValue>
-                    <LabelValue label="Client">{bedRoom.customer?.sexe} {bedRoom.customer?.name}</LabelValue>
+                    <LabelValue label="Client">{bedRoom.customer?.sexe} {bedRoom.customer?.name.toUpperCase()}</LabelValue>
                     <LabelValue label="Téléphone">{bedRoom.customer?.tel}</LabelValue>
                     <LabelValue label="Ville">{bedRoom.customer?.town}</LabelValue>
                     <LabelValue label="Prix unitaire">{formatPrice(bedRoom.customer?.price ?? 0)}</LabelValue>

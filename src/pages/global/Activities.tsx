@@ -48,7 +48,7 @@ export default function ActivitySection({ className }: {
           icon={<IoBed size={35} />}
           value={analysis.available.length}
           name="Chambres" subName="disponibles"
-          color={colors.free}
+          color={colors.free+"60"}
           onClick={() =>  addPopup(['BEDROOM'])}
           infobulle={analysis.issues.length > 0 && <MdWarning
             title={`${getString(analysis.issues.length)} chambre(s) sont problématiques`}
