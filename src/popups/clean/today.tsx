@@ -23,7 +23,7 @@ export default function TodayCleanAside({ className }: {
   const todayCleans = cleaning_book.getToday();
 
   return (
-    <AsideDiv title="Audjourd'hui" no_bar
+    <AsideDiv title="Aujourd'hui" no_bar
       right={<span className="text-gray-500">{getString(todayCleans.length)}</span>}
       className={twMerge("", className)} subClassName="gap-0">
 
@@ -35,7 +35,7 @@ export default function TodayCleanAside({ className }: {
         <span>Fin</span>
       </MyTr>
 
-      <NoElem Icon={MdCalendarToday} size={30} list={todayCleans} text="Vide" className="h-30 my-10">
+      <NoElem Icon={MdCalendarToday} size={40} list={todayCleans} text="VIDE" className="h-30 my-10">
         { todayCleans.map(clean => (
           <ToRoom key={clean.id} id={clean.room_id} className={twMerge("group border-b-1 border-gray-300/80 !text-[10px]", gridTodayStyle)}>
             <span>{ clean ? getFrenchDateTime(clean.created_date) : "..." }</span>

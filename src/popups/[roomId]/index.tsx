@@ -4,42 +4,40 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 import { CloseBtn, PopupBody } from "..";
 
-import { useRequest } from "../../hooks/useRequest";
 import { useVisual } from "../../hooks/useVisual";
 import { useAnalysis } from "../../hooks/useAnalysis";
 import BedRoom from '../../types/bedroom';
 
-import Warning from './warning';
+import Warning from './actions/warning';
+import PowerOn from "./actions/power_on";
+import CommentBox from './actions/issue';
+
+import CustomerForm from "./customer";
+import CheckInfos from './customer/check_infos';
+import ChangeRoom from './customer/check_move';
+import CheckForm from "./customer/check_form";
+import CheckInComment from "./customer/check_comment";
+
 import CleaningBox from './cleaning';
 import ReservationTab from './reservation';
-
-import CheckInfos from './check_infos';
-import ChangeRoom from './check_move';
-import CheckForm, { CheckInComment } from "./check_form";
-
-import Restaurant from './restaurant';
-import CommentBox from './issue';
+import RestaurantTab from './restaurant';
 
 import { Title } from "../../components/SectionBox";
 import { CleaningState, CustomerState } from "../../components/RoomStatus";
-import MyButton from "../../components/MyButton";
 import Caster from "../../components/Caster";
-import { FaCheck } from "react-icons/fa";
-import { IoBed } from "react-icons/io5";
-import PowerOn from "./power_on";
+import { BiBed } from "react-icons/bi";
 
 export default function RoomPopup({ roomId:bedRoomId, className }: {
   roomId: BedRoom.Id,
   className?: string,
 }) {
   const { switchPopup } = useVisual();
-  const { bedRooms, bedRoomTab, isObsolet, } = useAnalysis();
-  const { check_in } = useRequest();
+  const { bedRooms, bedRoomTab, } = useAnalysis();
   const bedRoom = bedRooms[bedRoomId];
 
   const MyTitle = React.useCallback(() => (
-    <Title bar icon={<IoBed size={16} />} right={<CloseBtn />} className='text-gray-500'>
-      <span>CH</span>
+    <Title bar icon={<BiBed size={19} />} right={<CloseBtn />} className='text-gray-500'>
+      <span className="text-[15px]">CH</span>
       <select className="!border-0 text-black text-[15px]"
         value={bedRoom.id} onChange={e => switchPopup(['ROOM', e.target.value])}>
         { bedRoomTab.map(room => <option key={room.id}>{room.name}</option>) }
@@ -50,63 +48,53 @@ export default function RoomPopup({ roomId:bedRoomId, className }: {
     </Title>
   ), [bedRoom, bedRoomTab, switchPopup]);
 
-  const submitHandler = (e: React.SubmitEvent<HTMLFormElement>) => {
-    const sexe = e.target.sexe.value;
-    const fullname = e.target.fullname.value;
-    const tel = e.target.tel.value;
-    const town = e.target.town.value;
-    const reason = e.target.reason.value;
-    const price = e.target.price.value;
-    check_in(bedRoomId, { sexe, name: fullname, tel, town, reason, price });
-  }
-
-  const LeftSide = React.useCallback(({ className, subClassName, children }: {
-    className?: string,
-    subClassName?: string,
-    children?: React.ReactNode,
-  }) => {
-    return (
-      <div className={twMerge("grid grid-cols-[3fr_4fr] gap-3 flex-1", className)}>
-
-        <div className="flex flex-col gap-3">
-          { ( bedRoom.issue || isObsolet(bedRoomId) ) &&
-            <Warning roomId={bedRoom.id} /> }
-          <CleaningBox roomId={bedRoom.id} />
-          <ReservationTab room={bedRoom} />
-          <CommentBox room={bedRoom} className="flex-1" />
-        </div>
-
-        <div className={twMerge("flex flex-col gap-3", subClassName)}>
-          { children }
-        </div>
-
-      </div>
-    );
-  }, [bedRoom, isObsolet]);
-
-  if (!bedRoom) return <p className="font-bold text-white text-[24px]">Cette chambre n'est plus accessible</p>;
+  if (!bedRoom) return (
+    <p className="font-bold text-white text-[24px]">Cette chambre n'est plus accessible</p>
+  );
 
   return (
     <PopupBody top={<MyTitle />} className={twMerge('h-160', className)}>
-      <LeftSide> { bedRoom.customer ?
-        <>
+      <LeftSide room={bedRoom}>
+        <PowerOn room={bedRoom} />
+        { bedRoom.customer ? <>
           <CheckInfos room={bedRoom} />
           <ChangeRoom room={bedRoom} />
-          <Restaurant room={bedRoom} className="flex-1 min-h-50" />
-
+          <RestaurantTab room={bedRoom} className="flex-1 min-h-50" />
         </> : <>
-          <PowerOn room={bedRoom} />
-          <form className="flex flex-col gap-3 h-full" onSubmit={submitHandler}>
+          <CustomerForm roomId={bedRoom.id}>
             <CheckForm room={bedRoom} />
             <CheckInComment room={bedRoom} className="flex-1" />
-            <MyButton name="check_in" iconRight={<FaCheck />}
-              className="bg-blue-500 !py-1 text-white self-end">Check in
-            </MyButton>
-          </form>
+          </CustomerForm>
         </> }
-
       </LeftSide>
     </PopupBody>
+  );
+}
+
+function LeftSide({ room:bedRoom, className, subClassName, children }: {
+  room: BedRoom.Type,
+  className?: string,
+  subClassName?: string,
+  children?: React.ReactNode,
+}) {
+  const { isObsolet, } = useAnalysis();
+
+  return (
+    <div className={twMerge("grid grid-cols-[3fr_4fr] gap-3 flex-1", className)}>
+
+      <div className="flex flex-col gap-3">
+        { ( bedRoom.issue || isObsolet(bedRoom.id) ) &&
+          <Warning roomId={bedRoom.id} /> }
+        <CleaningBox roomId={bedRoom.id} />
+        <ReservationTab room={bedRoom} />
+        <CommentBox room={bedRoom} className="flex-1" />
+      </div>
+
+      <div className={twMerge("flex flex-col gap-3", subClassName)}>
+        { children }
+      </div>
+
+    </div>
   );
 }
 

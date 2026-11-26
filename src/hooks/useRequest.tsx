@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from "react";
 import { useDataContext } from ".";
@@ -34,18 +34,17 @@ export type RequestContext = {
 
 export function RequestProvider({ children }: { children: React.ReactNode }) {
     const analysis = useAnalysis();
+    const { addAlert, checkAlert, } = useVisual();
+    const { bedRooms, updateBedRoom, getBookedPeriod, } = analysis;
     const { cleaners } = useAuth();
-    const { addAlert, checkError, } = useVisual();
-    const { bedRooms, updateBedRoom } = analysis;
     const {
         bedroom_table, restaurant_book,
         cleaning_book, customer_book, reservation_book,
-        getBookedPeriod,
     } = useDataContext();
 
 
     const switch_power = React.useCallback((roomId: BedRoom.Id, power: boolean | null) => {
-        checkError(() => {
+        checkAlert(() => {
             if (power === null) updateBedRoom(roomId, { connected: false });
             else updateBedRoom(roomId, { connected: true, power });
             throw ['sucess', `La chambre ${roomId} est ${power === null ?
@@ -56,7 +55,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
     const updateIssue = React.useCallback(async (roomId: BedRoom.Id,
         datas: { priority: PriorityId, message: string } | null,
     ) => {
-        await checkError(async () => {
+        await checkAlert(async () => {
             const issue = datas ? { date: new Date(), ...datas } : null;
             await bedroom_table.update(roomId, { issue });
             throw ['sucess', `Chambre ${roomId}`, `Issue mis à jour avec succès !`];
@@ -65,10 +64,13 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
 
 
     const check_in = React.useCallback(async (roomId: BedRoom.Id, customer: Omit<CustomerType, 'actions'>) => {
-        await checkError(async () => {
+        await checkAlert(async () => {
             const room = bedRooms[roomId];
             if (!room) throw ['error', `Cette chambre ${roomId} n'existe pas ou est désactivée`];
             if (room.customer) throw ['error', `La chambre ${roomId} est déja en check in`];
+
+            if (customer.name === "") throw ['error', `Renseignez le nom du client`];
+            if (customer.price < 0) throw ['error', `Le prix ne peut pas être négatif`];
 
             const action: CheckInType = { status: 'CHECK_IN', room_id: roomId, datas: { customer }, date: new Date() };
             await customer_book.add(roomId, { ...customer, actions: [action] });
@@ -77,7 +79,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
     }, [customer_book, bedRooms, updateBedRoom]);
 
     const check_move = React.useCallback(async (roomId: BedRoom.Id, toRoomId: BedRoom.Id) => {
-        await checkError(async () => {
+        await checkAlert(async () => {
             const room = bedRooms[roomId];
             if (!room) throw ['error', `Cette chambre ${roomId} n'existe pas ou est désactivée`];
             const { customer } = room;
@@ -93,7 +95,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
     }, [customer_book, bedRooms, updateBedRoom]);
 
     const check_out = React.useCallback(async (roomId: BedRoom.Id) => {
-        await checkError(async () => {
+        await checkAlert(async () => {
             const room = bedRooms[roomId];
             if (!room) throw ['error', `Cette chambre ${roomId} n'existe pas ou est désactivée`];
             const { customer } = room;
@@ -111,7 +113,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
 
 
     const clean_room = React.useCallback(async (roomId: BedRoom.Id, valetId: Employer.Id) => {
-        await checkError(async () => {
+        await checkAlert(async () => {
             const room = bedRooms[roomId];
             if (!room) throw ['error', `Cette chambre ${roomId} n'existe pas ou est désactivée`];
             if (room.cleaning) throw ['error', `La chambre ${roomId} est déjà en nettoyage`];
@@ -125,7 +127,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
     }, [bedRooms, cleaning_book.add, cleaners, updateBedRoom]);
 
     const clean_done = React.useCallback(async (roomId: BedRoom.Id) => {
-        await checkError(async () => {
+        await checkAlert(async () => {
             const room = bedRooms[roomId];
             if (!room) throw ['error', `Cette chambre ${roomId} n'existe pas ou est désactivée`];
             if (!room.cleaning) throw ['error', `La chambre ${roomId} n'est pas en nettoyage`];
@@ -136,7 +138,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
     }, [bedRooms, cleaning_book, updateBedRoom]);
 
     const clean_cancel = React.useCallback(async (roomId: BedRoom.Id) => {
-        await checkError(async () => {
+        await checkAlert(async () => {
             const room = bedRooms[roomId];
             if (!room) throw ['error', `Cette chambre ${roomId} n'existe pas ou est désactivée`]
             if (!room.cleaning) throw ['error', `La chambre ${roomId} n'est pas en nettoyage`];
@@ -148,7 +150,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
 
 
     const book = React.useCallback(async (roomId: BedRoom.Id, props: ReservationType) => {
-        await checkError(async () => {
+        await checkAlert(async () => {
             const bookedInPeriod = getBookedPeriod(props.start_date, props.end_date);
             const isBooked = bookedInPeriod.find(booked => booked.room_id === roomId);
             if (isBooked) throw ['error', `La chambre ${roomId} à déjà été réservée par ${isBooked.name.toUpperCase()} du ${getFrenchDate(isBooked.start_date)} au ${isBooked.end_date ? getFrenchDate(isBooked.end_date) : '...'}`];
@@ -158,7 +160,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
     }, [reservation_book, getBookedPeriod, updateBedRoom]);
 
     const cancel_book = React.useCallback(async (bookId: Id) => {
-        await checkError(async () => {
+        await checkAlert(async () => {
             const room_rsv = reservation_book.getId(bookId);
             if (!room_rsv) throw ['error', `La reservation ${bookId} est introuvable'`];
 
@@ -169,7 +171,7 @@ export function RequestProvider({ children }: { children: React.ReactNode }) {
 
 
     const pay_restaurant = React.useCallback(async (restoId: Id) => {
-        await checkError(async () => {
+        await checkAlert(async () => {
             const resto = restaurant_book.getId(restoId);
             if (!resto) throw ['error', `La restauration ${restoId} est introuvable'`];
 

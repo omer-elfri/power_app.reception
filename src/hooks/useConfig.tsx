@@ -1,8 +1,7 @@
 'use client'
 
 import React from "react";
-import { SupabaseContext, useSupabase } from "./useSupabase";
-import { SupabaseSelect, SupabaseSlt } from "./useBook";
+import { SupabaseContext, SupabaseObject, useSupabase } from "./useSupabase";
 import { Id, TableId } from "../types";
 
 export type ConfigType<T> = T & {
@@ -16,15 +15,13 @@ export type Config<T extends Object> = SupabaseContext<ConfigType<T>> & {
 
 export function useConfig<T extends Object>(
     tableId: TableId,
-    filter?: (get: SupabaseSlt) => SupabaseSelect,
-    listenTables: TableId[] = [],
+    others: SupabaseObject,
 ): Config<T> {
 
-    const mySupabase = useSupabase<ConfigType<T>>(tableId, filter, listenTables);
+    const mySupabase = useSupabase<ConfigType<T>>(tableId, others);
 
     const list = React.useMemo(() => {
-        return mySupabase.datas
-            .filter(data => !data.disabled);
+        return mySupabase.datas.filter(data => !data.disabled);
     }, [mySupabase.datas]);
 
     return { ...mySupabase, list, };

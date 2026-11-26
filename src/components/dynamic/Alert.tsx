@@ -14,7 +14,7 @@ export default function Alert({ className }: {
 }) {
   const { alerts, popAlert } = useVisual();
 
-  const timer = React.useRef<NodeJS.Timeout | null>(null);
+  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const remaining = React.useRef(5000);
   const startedAt = React.useRef(0);
 

@@ -1,93 +1,130 @@
-"use client";
+'use client';
 
 import React from "react";
+import { useAuth } from "./useAuth";
 import { LocalBook, TypeWithTrace, useLocalData } from "./useBook";
 import { Config, ConfigType, useConfig } from "./useConfig";
 
 import { CleanType, CustomerType, ReservationType, RestaurantType } from "../types/types";
 import BedRoom from "../types/bedroom";
 import { supabase } from "../tools/supabase";
+import { sendNotification } from "@tauri-apps/plugin-notification";
 
 type DataContextType = {
-    bedroom_table: Config<BedRoom.RoomData2>,
+    bedroom_table: Config<BedRoom.Type>,
     bedroom_categories: ConfigType<BedRoom.Category.Type>[],
 
     cleaning_book: LocalBook<CleanType>,
     customer_book: LocalBook<CustomerType>,
     reservation_book: LocalBook<ReservationType>,
     restaurant_book: LocalBook<RestaurantType>,
-
-    getBookedPeriod: (start?: Date, end?: Date | null) => TypeWithTrace<ReservationType>[],
-    isBookedToday: (roomId: BedRoom.Id) => TypeWithTrace<ReservationType> | null,
 };
 
 export function DataProvider({ children }: {
     children: React.ReactNode,
 }) {
-    const [today, setToday] = React.useState(new Date());
+    const { employer_table, logged } = useAuth();
 
-
-    const bedroom_table = useConfig<BedRoom.RoomData2>('bedroom_table',
-        table => table.select(`*,
+    const bedroom_table = useConfig<BedRoom.Type>('bedroom_table', {
+        filter: table => table.select(`*,
             category:bedroom_ctg_table(*),
-            lastClean:last_clean(*,
-                valet:cleaning_valet(*))`)
+            lastClean:last_clean(*,valet:cleaning_valet(*))`)
             .is('disabled', false),
-        [ 'bedroom_ctg_table', 'employer_table', 'cleaning_book' ]);
+        listenTables: [ 'bedroom_ctg_table', 'employer_table', 'cleaning_book' ],
+    });
 
     const bedroom_categories = React.useMemo(() => {
-        return Array.from( new Map(
-            bedroom_table.list.map(room =>
-                [room.category_id, room.category])
+        return Array.from( new Map( bedroom_table.list
+            .map(room => [ room.category_id, room.category ])
         ).values() ).sort((a, b) => a.price - b.price);
     }, [bedroom_table.list]);
 
 
+    const cleaning_book = useLocalData<CleanType>('cleaning_book', {
+        filter: table => table.select(`*,valet:cleaning_valet(*)`),
+        listenTables: [ 'employer_table' ],
+        onChange: payload => {
+            const oldLine = payload.old as TypeWithTrace<CleanType>;
+            const newLine = payload.new as TypeWithTrace<CleanType>;
+            const valet = employer_table.getId(newLine.id);
+            switch (payload.eventType) {
+                case 'INSERT':
+                    sendNotification({ title: `Entretien CH ${newLine.room_id}`,
+                        body: `Attribué à ${valet ? valet.sexe+" "+valet?.name : "..."}.`, });
+                    break;
+                case 'UPDATE':
+                    if (newLine.done) {
+                        sendNotification({ title: `Entretien ${oldLine.room_id} terminé`,
+                            body: `L'entretien est terminée par ${valet ? `${valet.sexe} ${valet.name}` : '...'}.`, });
+                    } else if (newLine.cancel_date) {
+                        sendNotification({ title: `Entretien ${oldLine.room_id} annulé`,
+                            body: `L'entretien est annulé.`, });
+                    } else {
+                        sendNotification({ title: "Entretien ${oldLine.room_id} modifié",
+                            body: `L'entretien à été modifiée.`, });
+                    }
+                    break;
+                case 'DELETE':
+                    sendNotification({ title: "Entretien ${oldLine.room_id} supprimé",
+                        body: `L'entretien de la chambre à été définitivement supprimé.`, });
+                    break;
+            }
+        },
+    });
 
-    const cleaning_book = useLocalData<CleanType>('cleaning_book',
-        table => table.select(`*,
-            valet:cleaning_valet(*)`),
-        [ 'employer_table' ]);
-
-    const customer_book = useLocalData<CustomerType>('customer_book',
-        table => {
-            const start = new Date(today); start.setHours(0, 0, 0, 0);
+    const customer_book = useLocalData<CustomerType>('customer_book', {
+        filter: table => {
+            const start = new Date(); start.setHours(0, 0, 0, 0);
             const end = new Date(start); end.setDate(end.getDate() + 1);
-            return table.select('*').or(`end.is.null,and(end.gte.${start.toISOString()},end.lt.${end.toISOString()})`)
-        });
+            return table.select('*').or(`end.is.null,and(end.gte.${start.toISOString()},end.lt.${end.toISOString()})`);
+        }
+    });
 
-    const reservation_book = useLocalData<ReservationType>('reservation_book',
-        table => {
-            const start = new Date(today); start.setHours(0, 0, 0, 0);
+    const reservation_book = useLocalData<ReservationType>('reservation_book', {
+        filter: table => {
+            const start = new Date(); start.setHours(0, 0, 0, 0);
             return table.select('*').or(`end_date.gte.${start.toISOString()}`);
-        });
+        }
+    });
 
-    const restaurant_book = useLocalData<RestaurantType>('restaurant_book',
-        () => supabase.rpc('get_active_restaurants'),
-        [ 'customer_book' ]);
+    const restaurant_book = useLocalData<RestaurantType>('restaurant_book', {
+        filter: () => supabase.rpc('get_active_restaurants'),
+        listenTables: [ 'customer_book' ],
+        onChange: payload => {
+            const oldLine = payload.old as TypeWithTrace<RestaurantType>;
+            const newLine = payload.new as TypeWithTrace<RestaurantType>;
+            const article = `${newLine.article[0].toUpperCase()}${newLine.article.slice(1,newLine.article.length)}`;
+            switch (payload.eventType) {
+                case 'INSERT':
+                    sendNotification({ title: "Nouvelle restauration", body: `${article} pour la chambre ${newLine.room_id}.`, });
+                    break;
+                case 'UPDATE':
+                    if (newLine.paid)
+                        sendNotification({ title: "Restauration soldée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été soldée.`, });
+                    else
+                        sendNotification({ title: "Restauration modifiée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été modifiée.`, });
+                    break;
+                case 'DELETE':
+                    sendNotification({ title: "Restauration supprimée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été définitivement supprimée.`, });
+                    break;
+            }
+        },
+    });
 
-    
 
-    React.useEffect(() => {
-        const id = setInterval(() => {
-            setToday( new Date() );
-        }, 3*60*60*1000);
-        return () => clearInterval(id);
+    React.useEffect(() => { // get employer_table when bot connected
+        employer_table.read();
     }, []);
 
-    const getBookedPeriod = React.useCallback((start?: Date, end?: Date | null) => {
-        start ??= new Date();
-        start.setHours(0, 0, 0, 0);
-        end ??= new Date(start.getTime() + 24*60*60*1000);
-        end.setHours(13, 0, 0, 0);
-        return reservation_book.list.filter(rsv => rsv.start_date < end && start < rsv.end_date);
-    }, [today, reservation_book.list]);
-
-    const isBookedToday = React.useCallback((roomId: BedRoom.Id) => {
-        const start = new Date();
-        const comingToday = getBookedPeriod(start);
-        return comingToday.find(rsv => rsv.room_id === roomId) ?? null;
-    }, [getBookedPeriod]);
+    React.useEffect(() => { // get books if authentificated
+        if (logged) {
+            bedroom_table.read();
+            cleaning_book.read();
+            customer_book.read();
+            reservation_book.read();
+            restaurant_book.read();
+        }
+    }, [logged]);
 
 
     return (
@@ -99,9 +136,6 @@ export function DataProvider({ children }: {
             customer_book,
             restaurant_book,
             reservation_book,
-
-            isBookedToday,
-            getBookedPeriod,
         }}>
             { children }
         </dataContext.Provider>

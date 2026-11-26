@@ -10,7 +10,8 @@ export default function RoomLine({ room:bedRoom, className }: {
     className?: string,
 }) {
     return (
-        <div className={twMerge("relative text-[11px] font-bold [&>div]:bg-red-40", className)} >
+        <div className={twMerge("relative text-[11px] font-bold [&>div]:bg-red-40",
+            className, bedRoom.customer ? "shadow-b" : "opacity-50")} >
 
             <div className="flex flex-col">
                 <span className="text-[14px]">{bedRoom.id}</span>

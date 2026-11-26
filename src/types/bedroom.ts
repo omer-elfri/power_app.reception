@@ -38,17 +38,15 @@ namespace BedRoom {
         description?: string,
     }
 
-    export type RoomData2 = RoomData & {
-        category: ConfigType<BedRoom.Category.Type>,
-        clean: TypeWithTrace<CleanType> | null,
-        lastClean: TypeWithTrace<CleanType> | null,
-    }
-
-    export type Type = RoomData2 & {
+    export type Type = RoomData & {
         connected: boolean,
         power: boolean | null,
+        category: ConfigType<BedRoom.Category.Type>,
 
         cleaning: TypeWithTrace<CleanType> | null,
+        lastClean: TypeWithTrace<CleanType> | null,
+        clean: TypeWithTrace<CleanType> | null,
+
         customer: TypeWithTrace<CustomerType> & {
             restaurant: TypeWithTrace<RestaurantType>[],
         } | null,

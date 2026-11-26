@@ -3,7 +3,6 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
-import { useDataContext } from "../../hooks";
 import { useRequest } from "../../hooks/useRequest";
 import { useAnalysis } from "../../hooks/useAnalysis";
 
@@ -18,8 +17,7 @@ export default function BookingForm({ className, selectedDate, setSelectedDate }
   selectedDate: DateRange,
   setSelectedDate: State<DateRange>,
 }) {
-  const { getBookedPeriod, } = useDataContext();
-  const { bedRoomTab } = useAnalysis();
+  const { bedRoomTab, getBookedPeriod } = useAnalysis();
   const { book } = useRequest();
 
   const [selectedRoomId, setSelectedRoomId] = React.useState<

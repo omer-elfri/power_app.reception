@@ -2,25 +2,13 @@
 
 import React from "react";
 import { twMerge } from "tailwind-merge";
+import { useVisual } from "../../hooks/useVisual";
 
 export default function NetworkStatus({ className }: {
     className?: string,
 }) {
-    const [online, setOnline] = React.useState(navigator.onLine);
+    const { online } = useVisual();
     const [show, setShow] = React.useState(false);
-
-    React.useEffect(() => {
-        const onOnline = () => setOnline(true);
-        const onOffline = () => setOnline(false);
-
-        window.addEventListener('online', onOnline);
-        window.addEventListener('offline', onOffline);
-
-        return () => {
-            window.removeEventListener('online', onOnline);
-            window.removeEventListener('offline', onOffline);
-        };
-    }, []);
 
     React.useEffect(() => {
         setShow(true);
@@ -30,7 +18,7 @@ export default function NetworkStatus({ className }: {
     }, [online]);
 
     return (
-        <div className={twMerge("fixed bottom-5 left-0 right-0 flex justify-center pointer-events-none", className)}>
+        <div className={twMerge("z-91 fixed bottom-5 left-0 right-0 flex justify-center pointer-events-none", className)}>
             <div className={twMerge(
               "px-5 py-3 min-w-[500px] text-center rounded font-bold uppercase",
               "backdrop-blur-md shadow transition-all duration-500 ease-in-out",

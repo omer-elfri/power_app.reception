@@ -5,22 +5,25 @@ import { twMerge } from "tailwind-merge";
 import { useVisual } from "../../hooks/useVisual";
 import { useAnalysis } from "../../hooks/useAnalysis";
 import BedRoom from "../../types/bedroom";
+import { getFrenchDate } from "../../tools/date";
 
 import RoomStatus from "../../components/RoomStatus";
 import NoElem from "../../components/NoElem";
 import { AsideDiv } from "../../components/AsideDiv";
 import { PersonSex2 } from "../../components/PersonSex";
+
 import { IoWarning } from "react-icons/io5";
 import { GiBroom } from "react-icons/gi";
 import { HiLightningBolt } from "react-icons/hi";
 import { MdDangerous } from "react-icons/md";
 import { BiBed } from "react-icons/bi";
-import { gridStyle } from ".";
-import { getFrenchDate } from "../../tools/date";
+import { colors } from "../../types";
+import { FaCalendarAlt } from "react-icons/fa";
 
-export default function RoomTable({ roomFiltered, className }: {
+export default function RoomTable({ roomFiltered, className, gridStyle }: {
   roomFiltered: BedRoom.Type[],
   className?: string,
+  gridStyle?: string,
 }) {
   const roomStage = Object.entries( Object.groupBy(roomFiltered, room => room.stage) );
 
@@ -45,7 +48,11 @@ export default function RoomTable({ roomFiltered, className }: {
             </div>
 
             <AsideDiv className="py-1" subClassName="gap-0">
-              { rooms.map(room => <RoomLine key={room.id} room={room} className="last:border-0" /> ) }
+              { rooms.map(room => (
+                <RoomLine key={room.id} room={room}
+                  className={twMerge("last:border-0", gridStyle)}
+                />
+              )) }
             </AsideDiv>
 
           </React.Fragment>
@@ -66,7 +73,7 @@ function RoomLine({ room:bedRoom, className }: {
   return (
     <div onClick={() => addPopup(['ROOM', bedRoom.id])}
       className={twMerge("cursor-pointer hover:bg-blue-300/10 text-gray-600 border-b-[1px] border-gray-400/30 \
-        hover:[&>*]:scale-95 [&>*]:animate-1 [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-in-out", gridStyle, className)}>
+        hover:[&>*]:scale-95 [&>*]:animate-1 [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-in-out", className)}>
 
       <span className="text-black">{bedRoom.name}</span>
 
@@ -80,17 +87,24 @@ function RoomLine({ room:bedRoom, className }: {
 
       <div className="flex flex-row justify-center items-center gap-3 text-[11px]">
         { bedRoom.customer ?
-          bedRoom.customer.sexe + " " + bedRoom.customer.name.toUpperCase()
+          <PersonSex2 size={13} sexe={bedRoom.customer.sexe} color={colors.sold}>
+            { bedRoom.customer.name.toUpperCase() }
+          </PersonSex2>
 
-        : bedRoom.booked ?
-          <PersonSex2 className="text-gray-800/60">{bedRoom.booked.name}</PersonSex2>
-
-        : bedRoom.cleaning?.valet ? <>
-          <GiBroom className={twMerge("", bedRoom.cleaning ? "text-blue-600" : "text-gray-600/50")} />
-          <span className={twMerge("", bedRoom.cleaning ? "" : "text-gray-800/60")}>{bedRoom.cleaning.valet.name}</span>
+        : bedRoom.booked ? <>
+          <FaCalendarAlt color={colors.coming} />
+          <span>{ bedRoom.booked.name.toUpperCase() }</span>
         </>
-        : bedRoom.clean?.done ?
+
+        : bedRoom.cleaning ? <>
+          <GiBroom className="text-blue-600" />
+          <span>{bedRoom.cleaning.valet?.name || "..."}</span>
+        </>
+
+        : bedRoom.clean?.done ? <>
+          <GiBroom className="text-gray-600/50" />
           <span className="text-gray-800/60">{getFrenchDate(bedRoom.clean.done)}</span>
+        </>
         
         : null }
       </div>

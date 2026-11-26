@@ -2,19 +2,18 @@
 
 import React from "react";
 import { useAuth } from "../../hooks/useAuth";
+import { useVisual } from "../../hooks/useVisual";
 
 import { MyInput } from ".";
 import { Bar } from "../../components/SectionBox";
-
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { FaCheck, FaUser } from "react-icons/fa";
 import { LuEyeClosed } from "react-icons/lu";
 import { IoKeyOutline } from "react-icons/io5";
 import { RiUser6Line } from "react-icons/ri";
-import { useVisual } from "../../hooks/useVisual";
 
 export default function LogIn() {
-  const { checkError } = useVisual();
+  const { checkAlert } = useVisual();
   const { connect } = useAuth();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -34,7 +33,7 @@ export default function LogIn() {
   }, [email, password]);
 
   const forgetPass= React.useCallback(() => {
-    checkError(() => {
+    checkAlert(() => {
       throw Error("Cette fonctionnalité n'est pas encore disponible, veuillez vous rapprocher de votre administrateur !");
     })
   }, []);

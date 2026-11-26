@@ -17,7 +17,7 @@ export default function LastCleanedAside({ searchText, className }: {
   searchText: string,
   className?: string,
 }) {
-  const { addPopup, checkError } = useVisual();
+  const { addPopup, checkAlert } = useVisual();
   const { bedRoomTab } = useAnalysis();
 
   const bedRoomFiltered = React.useMemo<BedRoom.Type[]>(() => {
@@ -37,7 +37,7 @@ export default function LastCleanedAside({ searchText, className }: {
   const gridStyle = "w-full grid grid-cols-[50px_40px_1fr_80px_50px] gap-2 py-2 font-bold text-gray-600";
 
   const clickHandler = (room: BedRoom.Type) => {
-    checkError(async () => {
+    checkAlert(async () => {
       if (room.cleaning)
         throw ['info', `La chambre ${room.name} est déjà en néttoyage !`];
       addPopup(['VALLET', room.id]);

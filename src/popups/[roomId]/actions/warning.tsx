@@ -1,11 +1,11 @@
 'use client';
 
 import { twMerge } from 'tailwind-merge';
-import { useVisual } from '../../hooks/useVisual';
-import { useAnalysis } from "../../hooks/useAnalysis";
-import BedRoom from '../../types/bedroom';
+import { useVisual } from '../../../hooks/useVisual';
+import { useAnalysis } from "../../../hooks/useAnalysis";
+import BedRoom from '../../../types/bedroom';
 
-import { AsideDiv } from '../../components/AsideDiv';
+import { AsideDiv } from '../../../components/AsideDiv';
 import { MdError, MdWarning } from 'react-icons/md';
 
 export default function IssueSide({ roomId:bedRoomId }: {
@@ -16,8 +16,8 @@ export default function IssueSide({ roomId:bedRoomId }: {
   const bedRoom = bedRooms[bedRoomId];
 
   return (
-    <AsideDiv icon={<MdWarning size={15} className="text-gray-600" title="A besoin de néttoyage" />}
-      title="A votre attention" subClassName='flex flex-row flex-wrap gap-2'>
+    <AsideDiv icon={<MdWarning size={15} className="text-gray-600/50" title="A besoin de néttoyage" />}
+      title="À votre attention" subClassName='flex flex-row flex-wrap gap-2'>
 
       { bedRoom.issue && <p className={twMerge("grid grid-cols-[auto_1fr] items-center gap-2 rounded px-2 py-1 text-[11px]",
           bedRoom.issue.priority === "high" ? "bg-red-600/20" : "bg-yellow-600/20")}>

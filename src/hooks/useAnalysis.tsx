@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
 import React from "react";
 import { useDataContext } from ".";
 
-import { RestaurantType } from "../types/types";
+import { ReservationType, RestaurantType } from "../types/types";
 import BedRoom from "../types/bedroom";
 import { getCommonIds, getUniqueIds, unifyIds } from "../tools";
 import { TypeWithTrace } from "./useBook";
@@ -43,13 +43,15 @@ export type AnalysisContext = {
     bedRoomTab: BedRoom.Type[];
     updateBedRoom: (roomId: BedRoom.Id, props: Partial<BedRoom.Type>) => void;
     isObsolet: (roomId: string) => boolean,
+    
+    getBookedPeriod: (start?: Date, end?: Date | null) => TypeWithTrace<ReservationType>[],
+    isBookedToday: (roomId: BedRoom.Id) => TypeWithTrace<ReservationType> | null,
 }
 
 export function AnalysisProvider({ children }: { children: React.ReactNode }) {
     const {
         bedroom_table, bedroom_categories,
-        cleaning_book, customer_book, restaurant_book,
-        isBookedToday,
+        cleaning_book, customer_book, reservation_book, restaurant_book,
     } = useDataContext();
 
     const [bedRooms, setBedRooms] = React.useState<BedRoom.Map>({});
@@ -84,6 +86,24 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
         return false;
     }, [bedRooms, customer_book]);
     
+
+
+
+
+    const getBookedPeriod = React.useCallback((start?: Date, end?: Date | null) => {
+        start ??= new Date();
+        start.setHours(0, 0, 0, 0);
+        end ??= new Date(start.getTime() + 24*60*60*1000);
+        end.setHours(13, 0, 0, 0);
+        return reservation_book.list.filter(rsv => rsv.start_date < end && start < rsv.end_date);
+    }, [reservation_book.list]);
+
+    const isBookedToday = React.useCallback((roomId: BedRoom.Id) => {
+        const start = new Date();
+        const comingToday = getBookedPeriod(start);
+        return comingToday.find(rsv => rsv.room_id === roomId) ?? null;
+    }, [getBookedPeriod]);
+
 
 
     React.useEffect(() => {
@@ -152,6 +172,7 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
             analysis,
             bedRooms, bedRoomTab,
             updateBedRoom, isObsolet,
+            isBookedToday, getBookedPeriod,
         }}> { children }
         </analysisContext.Provider>
     );

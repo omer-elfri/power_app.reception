@@ -13,9 +13,32 @@ export default function RoomBox({ room:bedRoom, onClick, className }: {
 }) {
     const { isObsolet } = useAnalysis();
 
+    const res = (
+        bedRoom.cleaning ? {
+            text: bedRoom.cleaning?.valet?.name ?? "...",
+            color: colors.cleaning,
+        }
+        : isObsolet(bedRoom.id) ? {
+            text: "Sale",
+            color: "bg-yellow-600",
+        } : {
+            text: "Propre",
+            color: "",
+        }
+    );
+    const res2 = (
+        bedRoom.customer ? {
+            text: bedRoom.customer?.name.toUpperCase() ?? "...",
+            color: `bg-green-600`,
+        } : {
+            text: "Disponible",
+            color: "",
+        }
+    );
+
     return (
         <div className={twMerge("flex flex-col gap-x-2 gap-y-2 bg-white p-2 rounded-md relative border-1 border-gray-400",
-            className, bedRoom.connected ? "shadow-md" : "opacity-50")} onClick={onClick}>
+            className, bedRoom.customer ? "shadow-md" : "opacity-50")} onClick={onClick}>
 
             <div className="flex flex-row gap-2">
                 <h2 className="flex-1 font-bold text-[15px]">{bedRoom.id}</h2>
@@ -31,14 +54,8 @@ export default function RoomBox({ room:bedRoom, onClick, className }: {
                 null }
             </div>
 
-            <RoundedBull
-                color={bedRoom.cleaning ? colors.cleaning : isObsolet(bedRoom.id) ? "bg-yellow-600" : ""}
-                text={ bedRoom.cleaning?.valet?.name ?? (isObsolet(bedRoom.id) ? "Sale" : "Propre") }
-            />
-            <RoundedBull
-                color={bedRoom.customer ? colors.sold : ""}
-                text={ bedRoom.customer?.name.toUpperCase() ?? "Disponible" }
-            />
+            <RoundedBull color={res.color} text={res.text} />
+            <RoundedBull color={res2.color} text={res2.text} />
         </div>
     );
 }

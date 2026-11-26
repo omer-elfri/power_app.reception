@@ -2,20 +2,20 @@
 
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import { PriorityId, State } from '../../types';
-import BedRoom from '../../types/bedroom';
-import { useRequest } from '../../hooks/useRequest';
-import { useVisual } from '../../hooks/useVisual';
+import { PriorityId, State } from '../../../types';
+import BedRoom from '../../../types/bedroom';
+import { useRequest } from '../../../hooks/useRequest';
+import { useVisual } from '../../../hooks/useVisual';
 
-import { AsideDiv } from '../../components/AsideDiv';
-import MyButton from '../../components/MyButton';
+import { AsideDiv } from '../../../components/AsideDiv';
+import MyButton from '../../../components/MyButton';
 import { MdError, MdWarning } from "react-icons/md";
 
 export default function CommentBox({ room:bedRoom, className }: {
   room: BedRoom.Type,
   className?: string,
 }) {
-  const { checkError } = useVisual();
+  const { checkAlert } = useVisual();
   const { updateIssue } = useRequest();
   const [priority, setPriority] = React.useState(bedRoom.issue?.priority ?? null);
   const [message, setMessage] = React.useState(bedRoom.issue?.message ?? "");
@@ -27,7 +27,7 @@ export default function CommentBox({ room:bedRoom, className }: {
   }, [bedRoom]);
 
   const submitHandler = () => {
-    checkError(async () => {
+    checkAlert(async () => {
       if (!priority) throw ['error', "Précisez la priorité"];
       if (message === '') throw ['error', "Rentrez un commentaire"];
       updateIssue(bedRoom.id, { priority, message });

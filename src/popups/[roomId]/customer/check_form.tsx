@@ -2,11 +2,10 @@
 
 import React from "react";
 import { twMerge } from "tailwind-merge";
-import BedRoom from "../../types/bedroom";
+import BedRoom from "../../../types/bedroom";
 
-import { AsideDiv } from "../../components/AsideDiv";
-import LabelInput from "../../components/LabelInput";
-import { FaRegComment } from "react-icons/fa";
+import { AsideDiv } from "../../../components/AsideDiv";
+import LabelInput from "../../../components/LabelInput";
 import { MdPerson } from "react-icons/md";
 
 const style = "!border-gray-400 h-8";
@@ -26,13 +25,17 @@ export default function CheckForm({ room:bedRoom, className }: {
 
                 <LabelInput required label="Sexe" name="sexe"
                     defaultValue={bedRoom.customer?.sexe}
-                    options={[ { k: "Mr" }, { k: "Mme" }, ]}
+                    options={[
+                        { k: "Mr", value: "HOMME" },
+                        { k: "Mme", value: "FEMME" },
+                    ]}
                     className="col-span-2"
-                    inputClassName={style}
+                    inputClassName={twMerge("", style)}
                 />
 
-                <LabelInput required label="Nom de famille" name="fullname"
-                    placeholder="ABOU John" defaultValue={clientName.toUpperCase()}
+                <LabelInput label="Nom de famille" required
+                    name="fullname" placeholder="ABOU John"
+                    defaultValue={clientName.toUpperCase()}
                     onChangeText={setFullName}
                     className="col-span-4"
                     inputClassName={twMerge("uppercase", style)}
@@ -63,28 +66,10 @@ export default function CheckForm({ room:bedRoom, className }: {
                     className="col-span-2"
                     defaultValue={realPrice.toString()}
                     disabled={!!bedRoom.customer}
-                    inputClassName={twMerge("text-center text-[12px] py-[5px]", style)}
+                    inputClassName={twMerge("text-center text-[15px] py-[5px]", style)}
                 />
 
             </div>
-
-        </AsideDiv>
-    );
-}
-
-export function CheckInComment({ room:bedRoom, className }: {
-    room: BedRoom.Type,
-    className?: string,
-}) {
-    return (
-        <AsideDiv icon={<FaRegComment />} title="Commentaire" className={twMerge("", className)} >
-
-            <LabelInput type='textarea' label="Infos supplémentaires" name='description'
-                className={twMerge("text-[11px] min-h-30", style)}
-                inputClassName="bg-gray-300/20"
-                defaultValue={bedRoom.customer?.description ?? bedRoom.booked?.description}
-                // placeholder="IFU / entreprise / autre description"
-            />
 
         </AsideDiv>
     );

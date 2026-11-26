@@ -13,10 +13,10 @@ export type Sex = 'Mr' | 'Mme';
 
 export type PriorityId = 'low' | 'medium' | 'high';
 
-export type StatusId = 'powered' | 'guest' | 'coming' | 'cleaning' | 'issue' | 'restaurant' | 'sold' | 'free';
+export type StatusId = 'powered' | 'guest' | 'coming' | 'cleaning' | 'issue' | 'restaurant' | 'sold' | 'free' | 'obsolet';
 
 
-export const colors: {[k in (StatusId)]: string} = {
+export const colors: {[k in StatusId]: string} = {
     powered: '#cf0037',
     guest: '#074507',
     sold: '#407236',
@@ -25,6 +25,7 @@ export const colors: {[k in (StatusId)]: string} = {
     restaurant: '#00635b',
     cleaning: '#006a9c',
     issue: '#6a7585',
+    obsolet: '#8a8e01',
 } as const;
 
 export type PopupType =

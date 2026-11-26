@@ -21,8 +21,8 @@ export default function ItemPopup({ onglet, className, subClassName, children }:
   subClassName?: string,
   children: (searchtext: string) => React.ReactNode,
 }) {
-  const { switchPopup } = useVisual();
   const { reservation_book, restaurant_book } = useDataContext();
+  const { switchPopup } = useVisual();
   const { analysis } = useAnalysis();
   const [searchText, setSearchText] = React.useState("");
 
@@ -55,7 +55,7 @@ export default function ItemPopup({ onglet, className, subClassName, children }:
         <input autoFocus placeholder="Rechercher"
           value={searchText}
           onChange={e => setSearchText(e.target.value)}
-          className="w-45 px-2 py-[3px] !border-gray-600/50" />
+          className="w-45 px-2 py-[3px] !border-gray-600/50 bg-white/60" />
         <CloseBtn />
       </>}>Tableau de bord</Title>}
       className={twMerge(className, "h-160")}>

@@ -1,6 +1,5 @@
 import React from "react";
-import { useAuth } from "./useAuth";
-import { useSupabase } from "./useSupabase";
+import { SupabaseObject, useSupabase } from "./useSupabase";
 
 import { Id, TableId } from "../types";
 import BedRoom from "../types/bedroom";
@@ -31,24 +30,28 @@ export type LocalBook<R> = {
 
     list: TypeWithTrace<R>[],
     getId: (id: Id) => TypeWithTrace<R> | null,
+    read: () => Promise<R[]>,
     getRoomId: (roomId: BedRoom.Id, and?: (data: TypeWithTrace<R>) => boolean) => TypeWithTrace<R> | null,
     getRooms: (roomId: BedRoom.Id) => TypeWithTrace<R>[],
     getToday: () => TypeWithTrace<R>[];
 }
 
 export function useLocalData<R extends Object>(
-    tableId: TableId,
-    filter: (get: SupabaseSlt) => SupabaseSelect = e => e.select('*'),
-    listenTables: TableId[] = [],
+    tableId: TableId, {
+        filter = e => e.select('*'),
+        ...props
+    }: SupabaseObject,
 ): LocalBook<R> {
 
-    const mySupabase = useSupabase<TypeWithTrace<R>>(tableId,
-        table => filter(table)
+    const mySupabase = useSupabase<TypeWithTrace<R>>(tableId, {
+        filter: table => filter(table)
             .is('cancel_date', null)
             .order('created_date', { ascending: false }),
-        listenTables);
+        ...props,
+    });
 
-    const { isAuth } = useAuth();
+    const isAuth = () => null;
+    // const { isAuth } = useDataContext();
     const { datas } = mySupabase;
 
     const getRoomId = React.useCallback((
@@ -81,10 +84,12 @@ export function useLocalData<R extends Object>(
     ) => {
         return await mySupabase.add({
             room_id: roomId,
-            created_by: isAuth().id,
+            created_by: 0,// isAuth().id,
             created_date: new Date(),
+            cancel_date: null,
+            cancel_by: null,
             description, ...data,
-        });
+        } as Omit<TypeWithTrace<R>, 'id'>);
     }, [isAuth, mySupabase.add]);
 
     const cancel = React.useCallback(async (
@@ -92,16 +97,16 @@ export function useLocalData<R extends Object>(
     ) => {
         return await mySupabase.update(id, {
             cancel_date: new Date(),
-            cancel_by: isAuth().id,
+            cancel_by: 0,//isAuth().id,
         } as Partial<TypeWithTrace<R>>);
     }, [isAuth, mySupabase.update]);
 
 
     return {
-        list: datas,
-        add, cancel,
+        list: datas, add, cancel,
         getRoomId, getRooms, getToday,
         getId: mySupabase.getId,
+        read: mySupabase.read,
         update: mySupabase.update,
     };
 }

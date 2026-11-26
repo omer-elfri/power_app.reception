@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import React from "react";
 import { useAnalysis } from "../../hooks/useAnalysis";
@@ -27,7 +27,7 @@ export default function RoomsPage() {
 
             <PageTitle />
 
-            <div className="grid grid-cols-[250px_1fr] gap-5">
+            <div className="grid grid-cols-[250px_1fr] items-start gap-5">
 
                 <div className="flex flex-col gap-5 sticky top-18 self-start">
                     <FilterSection form={form} setForm={setForm}
@@ -35,12 +35,10 @@ export default function RoomsPage() {
                     <SoldedAside className="min-h-40" />
                 </div>
 
-                <div className="">
-                    { form === 'line'
-                        ? <LineView roomStages={roomStages} />
-                        : <GridView roomStages={roomStages} />
-                    }
-                </div>
+                { form === 'line'
+                    ? <LineView roomStages={roomStages} />
+                    : <GridView roomStages={roomStages} />
+                }
 
             </div>
 

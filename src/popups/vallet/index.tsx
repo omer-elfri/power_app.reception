@@ -2,14 +2,14 @@
 
 import { twMerge } from "tailwind-merge";
 import { useAnalysis } from "../../hooks/useAnalysis";
+import { useVisual } from "../../hooks/useVisual";
 import { useAuth } from "../../hooks/useAuth";
 import BedRoom from "../../types/bedroom";
 
 import { PopupBody } from "..";
 import { Title } from "../../components/SectionBox";
-import ValetBox from "./ValetBox";
 import MyButton from "../../components/MyButton";
-import { useVisual } from "../../hooks/useVisual";
+import ValetBox from "./ValetBox";
 
 export default function ValletPopup({ roomId:bedRoomId, className }: {
   roomId: BedRoom.Id,

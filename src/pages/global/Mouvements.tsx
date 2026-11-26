@@ -7,7 +7,7 @@ import { CheckInType } from "../../types/types";
 import { getString } from "../../tools";
 import { getFrenchDateTime } from "../../tools/date";
 
-import SectionBox, { Title } from "../../components/SectionBox";
+import SectionBox, { SeeMore, Title } from "../../components/SectionBox";
 import NoElem from "../../components/NoElem";
 import Room from "../../components/Room";
 import { IoArrowUpOutline }  from "react-icons/io5";
@@ -25,7 +25,8 @@ export default function MouvementSection({ className }: {
 
   return (
     <SectionBox className={twMerge("", className)}
-      top={<Title icon={<TbArrowsDoubleNeSw size={20} />} right={getString(customer_book.list.length)}>Mouvements du jour</Title>}>
+      top={<Title icon={<TbArrowsDoubleNeSw size={20} />} right={getString(customer_book.list.length)}>Mouvements du jour</Title>}
+      bottom={<SeeMore value="Toutes les chambres" onClick={() => addPopup(['BEDROOM'])} />}>
 
       <div className={`flex flex-col justify-start text-left text-[11px] font-bold h-full`}>
 

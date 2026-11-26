@@ -1,17 +1,17 @@
 import { twMerge } from "tailwind-merge";
-import { useRequest } from "../../hooks/useRequest";
-import { useVisual } from "../../hooks/useVisual";
-import { getFrenchDateTime } from "../../tools/date";
-import { formatPrice } from "../../tools";
-import BedRoom from "../../types/bedroom";
+import { useRequest } from "../../../hooks/useRequest";
+import { useVisual } from "../../../hooks/useVisual";
+import { getFrenchDateTime } from "../../../tools/date";
+import { formatPrice } from "../../../tools";
+import BedRoom from "../../../types/bedroom";
 
-import { AsideDiv } from "../../components/AsideDiv";
-import LabelValue from "../../components/LabelValue";
-import NoElem from "../../components/NoElem";
-import MyButton from "../../components/MyButton";
+import { AsideDiv } from "../../../components/AsideDiv";
+import LabelValue from "../../../components/LabelValue";
+import NoElem from "../../../components/NoElem";
+import MyButton from "../../../components/MyButton";
 import { MdPerson } from "react-icons/md";
 import { FaExchangeAlt } from "react-icons/fa";
-import { colors } from "../../types";
+import { colors } from "../../../types";
 
 export default function CheckInfos({ room:bedRoom, className }: {
     room: BedRoom.Type,
