@@ -99,10 +99,13 @@ export function DataProvider({ children }: {
                     sendNotification({ title: "Nouvelle restauration", body: `${article} pour la chambre ${newLine.room_id}.`, });
                     break;
                 case 'UPDATE':
-                    if (newLine.paid)
+                    if (newLine.paid) {
                         sendNotification({ title: "Restauration soldée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été soldée.`, });
-                    else
+                    } else if (newLine.cancel_date) {
+                        sendNotification({ title: "Restauration annulée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été annulée.`, });
+                    } else {
                         sendNotification({ title: "Restauration modifiée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été modifiée.`, });
+                    }
                     break;
                 case 'DELETE':
                     sendNotification({ title: "Restauration supprimée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été définitivement supprimée.`, });
