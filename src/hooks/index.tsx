@@ -93,22 +93,26 @@ export function DataProvider({ children }: {
         onChange: payload => {
             const oldLine = payload.old as TypeWithTrace<RestaurantType>;
             const newLine = payload.new as TypeWithTrace<RestaurantType>;
-            const article = `${newLine.article[0].toUpperCase()}${newLine.article.slice(1,newLine.article.length)}`;
             switch (payload.eventType) {
                 case 'INSERT':
-                    sendNotification({ title: "Nouvelle restauration", body: `${article} pour la chambre ${newLine.room_id}.`, });
+                    sendNotification({ title: `Nouvelle restauration CH ${newLine.room_id}`,
+                        body: `Commande de << ${newLine.article} >>.`, });
                     break;
                 case 'UPDATE':
                     if (newLine.paid) {
-                        sendNotification({ title: "Restauration soldée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été soldée.`, });
+                        sendNotification({ title: `Restauration ${newLine.id} CH ${newLine.room_id} soldée`,
+                            body: `La commande << ${newLine.article} >> de la chambre ${newLine.room_id} à été soldée.`, });
                     } else if (newLine.cancel_date) {
-                        sendNotification({ title: "Restauration annulée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été annulée.`, });
+                        sendNotification({ title: `Restauration ${newLine.id} CH ${newLine.room_id} annulée`,
+                            body: `La commande << ${oldLine.article} >> de la chambre ${oldLine.room_id} à été annulée.`, });
                     } else {
-                        sendNotification({ title: "Restauration modifiée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été modifiée.`, });
+                        sendNotification({ title: `Restauration ${newLine.id} CH ${newLine.room_id} modifiée`,
+                            body: `La commande << ${oldLine.article} >> de la chambre ${oldLine.room_id} à été modifiée.`, });
                     }
                     break;
                 case 'DELETE':
-                    sendNotification({ title: "Restauration supprimée", body: `La commande ${oldLine.article} de la chambre ${oldLine.room_id} à été définitivement supprimée.`, });
+                    sendNotification({ title: "Restauration supprimée",
+                        body: `La commande << ${oldLine.article} >> de la chambre ${oldLine.room_id} à été définitivement supprimée.`, });
                     break;
             }
         },
